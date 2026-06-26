@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules & Scoring | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        /* Accordion styling */
+        .accordion {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+        .accordion-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .accordion-header:hover {
+            background-color: var(--bg-tertiary);
+        }
+        .accordion-content {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            color: var(--text-secondary);
+        }
+        .accordion.open .accordion-content {
+            padding: 1rem 1.5rem 1.5rem;
+            max-height: 500px;
+            border-top: 1px solid var(--border-color);
+        }
+        .accordion.open .ph-caret-down {
+            transform: rotate(180deg);
+        }
+        .ph-caret-down {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-wrapper">
+        <!-- Sidebar injected here -->
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Rules & Scoring System</h1>
+                <p class="text-secondary mt-1">Everything you need to know about how points are awarded.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
+                
+                <div>
+                    <h2 class="mb-3">How to Earn Points</h2>
+                    <div id="scoring-rules-list">
+                        <!-- Dynamic scoring rules will be rendered here -->
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="mb-3">Frequently Asked Questions</h2>
+                    <div id="faqs-list">
+                        <!-- Dynamic FAQs will be rendered here -->
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            Components.renderSidebar('rules');
+            
+            try {
+                const rules = await API.fetchRules();
+                const scoringContainer = document.getElementById('scoring-rules-list');
+                const faqContainer = document.getElementById('faqs-list');
+                
+                if (scoringContainer && faqContainer) {
+                    scoringContainer.innerHTML = '';
+                    faqContainer.innerHTML = '';
+                    
+                    rules.forEach(item => {
+                        if (item.category === 'scoring') {
+                            const div = document.createElement('div');
+                            div.className = 'accordion';
+                            const sign = item.points >= 0 ? '+' : '';
+                            div.innerHTML = `
+                                <div class="accordion-header">
+                                    <span>${item.title} (${sign}${item.points} pts)</span>
+                                    <i class="ph ph-caret-down"></i>
+                                </div>
+                                <div class="accordion-content">
+                                    ${item.body}
+                                </div>
+                            `;
+                            scoringContainer.appendChild(div);
+                        } else if (item.category === 'faq') {
+                            const div = document.createElement('div');
+                            div.className = 'accordion';
+                            div.innerHTML = `
+                                <div class="accordion-header">
+                                    ${item.title}
+                                    <i class="ph ph-caret-down"></i>
+                                </div>
+                                <div class="accordion-content">
+                                    ${item.body}
+                                </div>
+                            `;
+                            faqContainer.appendChild(div);
+                        }
+                    });
+                    
+                    // Wire accordions
+                    Components.setupAccordions();
+                }
+            } catch (err) {
+                console.error("Failed to load rules", err);
+                Components.showToast("Failed to load rules & scoring information.", "error");
+            }
+        });
+    </script>
+</body>
+</html>

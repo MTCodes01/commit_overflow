@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .community-card {
+            text-align: center;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        .community-icon {
+            font-size: 4rem;
+        }
+        .verified-badge {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3fb950;
+            font-weight: 500;
+            background: rgba(35, 134, 54, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-wrapper">
+        <!-- Sidebar will be injected here -->
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Community</h1>
+                <p class="text-secondary mt-1">Join the conversation, ask for help, and connect with mentors.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-1 gap-4 mt-2">
+                
+                <div class="card community-card glass-card">
+                    <i class="ph ph-discord-logo community-icon" style="color: var(--accent-secondary);"></i>
+                    <h2>Discord Server</h2>
+                    <p class="text-secondary">Our main hub for announcements, finding teammates, and talking to mentors.</p>
+                    
+                    <div id="discord-unverified" class="mt-2 w-full">
+                        <button class="btn btn-discord btn-block" id="verify-discord-btn">
+                            <i class="ph ph-plugs"></i> Verify Discord Account
+                        </button>
+                    </div>
+                    
+                    <div id="discord-verified" class="verified-badge mt-2">
+                        <i class="ph ph-check-circle"></i> Verified Account Linked
+                    </div>
+                    
+                    <a href="#" class="btn btn-secondary btn-block mt-1" id="discord-link" target="_blank">Join Server</a>
+                </div>
+
+                <div class="card community-card glass-card">
+                    <i class="ph ph-whatsapp-logo community-icon" style="color: #25D366;"></i>
+                    <h2>WhatsApp Community</h2>
+                    <p class="text-secondary">Get quick updates and urgent announcements directly on your phone.</p>
+                    
+                    <a href="#" class="btn btn-primary btn-block mt-auto" id="whatsapp-link" target="_blank" style="background-color: #25D366; border-color: #25D366;">
+                        <i class="ph ph-whatsapp-logo"></i> Join WhatsApp
+                    </a>
+                </div>
+
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="dashboard.html" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
+                    Continue to Dashboard <i class="ph ph-arrow-right"></i>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            Components.renderSidebar('community');
+
+            const unverifiedDiv = document.getElementById('discord-unverified');
+            const verifiedBadge = document.getElementById('discord-verified');
+            const verifyBtn = document.getElementById('verify-discord-btn');
+
+            // 1. Load current user and update UI
+            let currentUser = null;
+            try {
+                currentUser = await API.fetchUserMe();
+                updateDiscordUI(currentUser);
+            } catch (e) {
+                console.error("Failed to fetch user details", e);
+            }
+
+            function updateDiscordUI(user) {
+                if (user && user.discord_verified) {
+                    unverifiedDiv.style.display = 'none';
+                    verifiedBadge.style.display = 'flex';
+                    verifiedBadge.innerHTML = `<i class="ph ph-check-circle"></i> Linked Discord: @${user.discord_username}`;
+                } else {
+                    unverifiedDiv.style.display = 'block';
+                    verifiedBadge.style.display = 'none';
+                }
+            }
+
+            // 2. Check for callback queries
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            const state = params.get('state');
+            if (code && state) {
+                const savedState = sessionStorage.getItem('discord_oauth_state');
+                if (state !== savedState) {
+                    Components.showToast('CSRF State validation failed.', 'error');
+                } else {
+                    sessionStorage.removeItem('discord_oauth_state');
+                    if (verifyBtn) {
+                        verifyBtn.disabled = true;
+                        verifyBtn.innerHTML = '<i class="ph ph-plugs"></i> Verifying...';
+                    }
+                    try {
+                        await API.verifyDiscordOAuth(code, state);
+                        Components.showToast('Discord linked & verified successfully!', 'success');
+                        currentUser = await API.fetchUserMe();
+                        updateDiscordUI(currentUser);
+                    } catch (e) {
+                        Components.showToast('Verification failed: ' + e.message, 'error');
+                    } finally {
+                        if (verifyBtn) {
+                            verifyBtn.disabled = false;
+                            verifyBtn.innerHTML = '<i class="ph ph-plugs"></i> Verify Discord Account';
+                        }
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }
+            }
+
+            // 3. Load links from config
+            const loadLinks = async () => {
+                try {
+                    const config = await API.getConfig();
+                    const dLink = document.getElementById('discord-link');
+                    const wLink = document.getElementById('whatsapp-link');
+                    if (dLink && config.DISCORD_INVITE_URL) dLink.href = config.DISCORD_INVITE_URL;
+                    if (wLink && config.WHATSAPP_COMMUNITY_URL) wLink.href = config.WHATSAPP_COMMUNITY_URL;
+                } catch (e) {
+                    console.error("Failed to load community links", e);
+                }
+            };
+            loadLinks();
+
+            // 4. Verification Button click listener
+            if (verifyBtn) {
+                verifyBtn.addEventListener('click', async () => {
+                    verifyBtn.disabled = true;
+                    verifyBtn.innerHTML = '<i class="ph ph-spinner"></i> Connecting...';
+                    try {
+                        const { url, state } = await API.getDiscordAuthUrl();
+                        sessionStorage.setItem('discord_oauth_state', state);
+                        window.location.href = url;
+                    } catch (e) {
+                        Components.showToast('Failed to start Discord verification: ' + e.message, 'error');
+                        verifyBtn.disabled = false;
+                        verifyBtn.innerHTML = '<i class="ph ph-plugs"></i> Verify Discord Account';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .terminal-container {
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            font-family: var(--font-mono);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .terminal-header {
+            background-color: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            gap: 0.5rem;
+        }
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot.red { background-color: #ff5f56; }
+        .dot.yellow { background-color: #ffbd2e; }
+        .dot.green { background-color: #27c93f; }
+        .terminal-title {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-left: auto;
+            margin-right: auto;
+            transform: translateX(-24px); /* Center offset */
+        }
+        .terminal-body {
+            padding: 1.5rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .log-line {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            display: flex;
+            gap: 1rem;
+        }
+        .log-time {
+            color: var(--text-secondary);
+            min-width: 150px;
+        }
+        .log-level {
+            font-weight: bold;
+            min-width: 90px;
+        }
+        .log-level.INFO { color: #58a6ff; }
+        .log-level.SUCCESS { color: #3fb950; }
+        .log-level.WARNING { color: #d29922; }
+        .log-level.ERROR { color: #f85149; }
+        .log-message {
+            color: #c9d1d9;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-wrapper">
+        <!-- Sidebar injected here -->
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Platform Logs</h1>
+                <p class="text-secondary mt-1">Real-time terminal view of platform activity.</p>
+            </div>
+
+            <div class="card glass-card mb-4" style="padding: 1.25rem;">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Search</label>
+                        <input type="text" id="log-search" class="form-control" placeholder="Search message, user, repo...">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Event Type</label>
+                        <select id="log-type-filter" class="form-control">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Repository</label>
+                        <select id="log-repo-filter" class="form-control">
+                            <option value="">All Repositories</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" style="font-size: 0.8rem; color: var(--text-secondary);">Sort Order</label>
+                        <select id="log-sort" class="form-control">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="points">Highest Points</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <div id="active-filters" class="flex gap-2 flex-wrap items-center">
+                        <!-- Dynamic active filter badges -->
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="btn-reset-filters" class="btn btn-secondary"><i class="ph ph-x"></i> Reset Filters</button>
+                        <button id="btn-refresh" class="btn btn-primary"><i class="ph ph-arrows-clockwise"></i> Refresh</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <div class="terminal-title">bash -- /var/log/commit_overflow.log</div>
+                </div>
+                <div class="terminal-body" id="terminal-body">
+                    <div class="text-secondary text-center py-4">Loading logs...</div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center mt-4 flex-wrap gap-2">
+                <span id="log-pagination-info" class="text-secondary" style="font-size: 0.875rem;">Showing logs...</span>
+                <div class="flex gap-2">
+                    <button class="btn btn-secondary" id="btn-prev-page" disabled><i class="ph ph-caret-left"></i> Prev</button>
+                    <button class="btn btn-secondary" id="btn-next-page" disabled>Next <i class="ph ph-caret-right"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            Components.renderSidebar('logs');
+            
+            const terminalBody = document.getElementById('terminal-body');
+            const searchInput = document.getElementById('log-search');
+            const typeFilter = document.getElementById('log-type-filter');
+            const repoFilter = document.getElementById('log-repo-filter');
+            const sortSelect = document.getElementById('log-sort');
+            const activeFiltersContainer = document.getElementById('active-filters');
+            
+            const btnPrev = document.getElementById('btn-prev-page');
+            const btnNext = document.getElementById('btn-next-page');
+            const pagInfo = document.getElementById('log-pagination-info');
+            const btnReset = document.getElementById('btn-reset-filters');
+            const btnRefresh = document.getElementById('btn-refresh');
+
+            const PAGE_LIMIT = 20;
+            
+            // Parse initial state from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentPage = parseInt(urlParams.get('page')) || 1;
+            
+            // Temporary variables for URL param loading
+            let initialSearch = urlParams.get('search') || '';
+            let initialType = urlParams.get('event_type') || '';
+            let initialRepo = urlParams.get('repo_id') || '';
+            let initialSort = urlParams.get('sort') || 'newest';
+
+            searchInput.value = initialSearch;
+            sortSelect.value = initialSort;
+
+            const renderLogs = (logs) => {
+                if (!terminalBody) return;
+                terminalBody.innerHTML = '';
+                
+                if (!logs || logs.length === 0) {
+                    terminalBody.innerHTML = '<div class="text-secondary text-center py-4">No log lines captured.</div>';
+                    return;
+                }
+                
+                logs.forEach(log => {
+                    let level = 'INFO';
+                    
+                    if (log.points_delta !== undefined && log.points_delta !== null) {
+                        const deltaVal = log.points_delta;
+                        if (deltaVal > 0) {
+                            level = 'SUCCESS';
+                        } else if (deltaVal < 0) {
+                            level = 'WARNING';
+                        }
+                    }
+                    
+                    // Format date
+                    let dateStr = log.created_at;
+                    try {
+                        const d = new Date(log.created_at);
+                        dateStr = d.toISOString().replace('T', ' ').substring(0, 19);
+                    } catch(e) {}
+                    
+                    const div = document.createElement('div');
+                    div.className = 'log-line';
+                    div.innerHTML = `
+                        <span class="log-time">[${dateStr}]</span>
+                        <span class="log-level ${level}">[${level}]</span>
+                        <span class="log-message">${log.message || ''}</span>
+                    `;
+                    terminalBody.appendChild(div);
+                });
+            };
+            
+            const loadLogs = async () => {
+                try {
+                    // Update active filter UI badges
+                    renderActiveFilters();
+
+                    const offset = (currentPage - 1) * PAGE_LIMIT;
+                    let path = `/logs?limit=${PAGE_LIMIT}&offset=${offset}`;
+                    
+                    const searchVal = searchInput.value.trim();
+                    if (searchVal) path += `&search=${encodeURIComponent(searchVal)}`;
+                    if (typeFilter.value) path += `&event_type=${encodeURIComponent(typeFilter.value)}`;
+                    if (repoFilter.value) path += `&repo_id=${encodeURIComponent(repoFilter.value)}`;
+                    if (sortSelect.value) path += `&sort=${encodeURIComponent(sortSelect.value)}`;
+
+                    const logs = await API.request(path);
+                    renderLogs(logs);
+
+                    // Update pagination buttons & text
+                    if (logs && logs.length > 0) {
+                        const start = offset + 1;
+                        const end = offset + logs.length;
+                        pagInfo.textContent = `Showing logs ${start}-${end} (Page ${currentPage})`;
+                    } else {
+                        pagInfo.textContent = `No logs to show (Page ${currentPage})`;
+                    }
+
+                    btnPrev.disabled = (currentPage === 1);
+                    btnNext.disabled = (!logs || logs.length < PAGE_LIMIT);
+
+                } catch (err) {
+                    console.error("Failed to load logs", err);
+                    Components.showToast("Failed to fetch platform logs.", "error");
+                }
+            };
+
+            const updateUrlAndLoad = () => {
+                const params = new URLSearchParams();
+                if (currentPage > 1) params.set('page', currentPage);
+                
+                const searchVal = searchInput.value.trim();
+                if (searchVal) params.set('search', searchVal);
+                if (typeFilter.value) params.set('event_type', typeFilter.value);
+                if (repoFilter.value) params.set('repo_id', repoFilter.value);
+                if (sortSelect.value !== 'newest') params.set('sort', sortSelect.value);
+
+                const newQueryString = params.toString();
+                const newUrl = window.location.pathname + (newQueryString ? '?' + newQueryString : '');
+                history.pushState(null, '', newUrl);
+
+                loadLogs();
+            };
+
+            const renderActiveFilters = () => {
+                activeFiltersContainer.innerHTML = '';
+                
+                const addBadge = (label, onClear) => {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge badge-info';
+                    badge.style.display = 'inline-flex';
+                    badge.style.alignItems = 'center';
+                    badge.style.gap = '6px';
+                    badge.style.padding = '0.35rem 0.65rem';
+                    badge.style.borderRadius = '6px';
+                    badge.innerHTML = `
+                        <span>${label}</span>
+                        <i class="ph ph-x" style="cursor: pointer; font-size: 0.85rem;"></i>
+                    `;
+                    badge.querySelector('i').addEventListener('click', onClear);
+                    activeFiltersContainer.appendChild(badge);
+                };
+
+                const searchVal = searchInput.value.trim();
+                if (searchVal) {
+                    addBadge(`Search: "${searchVal}"`, () => {
+                        searchInput.value = '';
+                        currentPage = 1;
+                        updateUrlAndLoad();
+                    });
+                }
+                if (typeFilter.value) {
+                    addBadge(`Type: ${typeFilter.value}`, () => {
+                        typeFilter.value = '';
+                        currentPage = 1;
+                        updateUrlAndLoad();
+                    });
+                }
+                if (repoFilter.value) {
+                    const repoName = repoFilter.options[repoFilter.selectedIndex].text;
+                    addBadge(`Repo: ${repoName}`, () => {
+                        repoFilter.value = '';
+                        currentPage = 1;
+                        updateUrlAndLoad();
+                    });
+                }
+                if (sortSelect.value !== 'newest') {
+                    const sortLabel = sortSelect.options[sortSelect.selectedIndex].text;
+                    addBadge(`Sort: ${sortLabel}`, () => {
+                        sortSelect.value = 'newest';
+                        currentPage = 1;
+                        updateUrlAndLoad();
+                    });
+                }
+            };
+
+            // Fetch filters dynamically on startup
+            const loadFilters = async () => {
+                try {
+                    const data = await API.request('/logs/filters');
+                    
+                    // Populate Event Types
+                    typeFilter.innerHTML = '<option value="">All Types</option>';
+                    if (data.event_types) {
+                        data.event_types.sort().forEach(type => {
+                            const opt = document.createElement('option');
+                            opt.value = type;
+                            opt.textContent = type;
+                            typeFilter.appendChild(opt);
+                        });
+                    }
+
+                    // Populate Repositories
+                    repoFilter.innerHTML = '<option value="">All Repositories</option>';
+                    if (data.repositories) {
+                        data.repositories.sort((a, b) => a.name.localeCompare(b.name)).forEach(repo => {
+                            const opt = document.createElement('option');
+                            opt.value = repo.id;
+                            opt.textContent = repo.name;
+                            repoFilter.appendChild(opt);
+                        });
+                    }
+
+                    // Once filters are loaded, restore values from URL params
+                    if (initialType) typeFilter.value = initialType;
+                    if (initialRepo) repoFilter.value = initialRepo;
+
+                } catch (e) {
+                    console.error("Failed to load filters", e);
+                }
+            };
+
+            // Initial load of filters and logs
+            await loadFilters();
+            await loadLogs();
+
+            // Set up Search input debounce
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentPage = 1;
+                    updateUrlAndLoad();
+                }, 300);
+            });
+
+            // Set up event listeners for filters & sort
+            typeFilter.addEventListener('change', () => {
+                currentPage = 1;
+                updateUrlAndLoad();
+            });
+            repoFilter.addEventListener('change', () => {
+                currentPage = 1;
+                updateUrlAndLoad();
+            });
+            sortSelect.addEventListener('change', () => {
+                currentPage = 1;
+                updateUrlAndLoad();
+            });
+
+            // Pagination listeners
+            btnPrev.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateUrlAndLoad();
+                }
+            });
+            btnNext.addEventListener('click', () => {
+                currentPage++;
+                updateUrlAndLoad();
+            });
+
+            // Reset and Refresh
+            btnReset.addEventListener('click', () => {
+                searchInput.value = '';
+                typeFilter.value = '';
+                repoFilter.value = '';
+                sortSelect.value = 'newest';
+                currentPage = 1;
+                updateUrlAndLoad();
+            });
+
+            btnRefresh.addEventListener('click', () => {
+                loadLogs();
+            });
+
+            // Handle back/forward navigation in browser
+            window.addEventListener('popstate', () => {
+                const params = new URLSearchParams(window.location.search);
+                currentPage = parseInt(params.get('page')) || 1;
+                searchInput.value = params.get('search') || '';
+                typeFilter.value = params.get('event_type') || '';
+                repoFilter.value = params.get('repo_id') || '';
+                sortSelect.value = params.get('sort') || 'newest';
+                loadLogs();
+            });
+        });
+    </script>
+</body>
+</html>

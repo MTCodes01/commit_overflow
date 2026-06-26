@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Commit Overflow | The Ultimate Open Source Challenge</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	<script src="https://unpkg.com/@phosphor-icons/web"></script>
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/components.css" />
+	<style>
+		/* Landing Page Specific Styles */
+		.hero {
+			padding: 6rem 0 4rem;
+			text-align: center;
+			background: radial-gradient(circle at 50% 0%,
+					rgba(35, 134, 54, 0.15),
+					transparent 70%);
+		}
+
+		.hero h1 {
+			font-size: 3.5rem;
+			margin-bottom: 1.5rem;
+			color: #ffffff;
+		}
+
+		.hero p {
+			font-size: 1.25rem;
+			color: var(--text-secondary);
+			max-width: 600px;
+			margin: 0 auto 2rem;
+		}
+
+		.hero-btns {
+			display: flex;
+			gap: 1rem;
+			justify-content: center;
+		}
+
+		.section-title {
+			text-align: center;
+			font-size: 2rem;
+			margin-bottom: 3rem;
+		}
+
+		.features-grid {
+			margin-bottom: 6rem;
+		}
+
+		.feature-card {
+			text-align: center;
+		}
+
+		.feature-card i {
+			font-size: 3rem;
+			color: var(--accent-primary);
+			margin-bottom: 1rem;
+		}
+
+		.nav-header {
+			padding: 1.5rem 0;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			border-bottom: 1px solid var(--border-color);
+		}
+
+		.logo {
+			font-size: 1.5rem;
+			font-weight: bold;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			color: white;
+		}
+
+		.footer {
+			border-top: 1px solid var(--border-color);
+			padding: 3rem 0;
+			text-align: center;
+			color: var(--text-secondary);
+			margin-top: auto;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<header class="nav-header">
+			<div class="logo">
+				<i class="ph ph-terminal-window"></i>
+				Commit Overflow
+			</div>
+			<div class="nav-links">
+				<a href="about.html" style="margin-right: 1.5rem; color: var(--text-primary); font-weight: 500; vertical-align: middle;">About Us</a>
+				<a href="login.html" class="btn btn-secondary">Login</a>
+				<a href="register.html" class="btn btn-primary">Register</a>
+			</div>
+		</header>
+
+		<section class="hero">
+			<h1>Code. Contribute. Conquer.</h1>
+			<p>
+				Join the ultimate month-long open source competition. Fix bugs, build
+				features, earn points, and climb the leaderboard.
+			</p>
+			<div class="hero-btns">
+				<a href="register.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem">Start
+					Contributing</a>
+				<a href="#how-it-works" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 1rem">Learn
+					More</a>
+			</div>
+		</section>
+		<section id="how-it-works" class="mt-4 mb-4">
+			<h2 class="section-title">How It Works</h2>
+			<div class="grid grid-cols-3 md:grid-cols-1 gap-4 features-grid">
+				<div class="card feature-card">
+					<i class="ph ph-github-logo"></i>
+					<h3>Connect GitHub</h3>
+					<p class="mt-1 text-secondary">
+						Link your GitHub account to automatically track your PRs and
+						Issues.
+					</p>
+				</div>
+				<div class="card feature-card">
+					<i class="ph ph-code"></i>
+					<h3>Make Contributions</h3>
+					<p class="mt-1 text-secondary">
+						Contribute to open source repositories and get your work merged.
+					</p>
+				</div>
+				<div class="card feature-card">
+					<i class="ph ph-trend-up"></i>
+					<h3>Climb Leaderboard</h3>
+					<p class="mt-1 text-secondary">
+						Earn points based on PR complexity and see where you rank.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section id="leaderboard-preview" class="mt-4 mb-4">
+			<h2 class="section-title">Leaderboard Preview</h2>
+			<div class="card glass-card" style="max-width: 800px; margin: 0 auto">
+				<div class="table-responsive">
+					<table>
+						<thead>
+							<tr>
+								<th>Rank</th>
+								<th>User</th>
+								<th>College</th>
+								<th>Score</th>
+							</tr>
+						</thead>
+						<tbody id="leaderboard-preview-body">
+							<tr>
+								<td colspan="4" class="text-center text-secondary py-3">Loading leaderboard...</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="text-center mt-3">
+					<a href="leaderboard.html" class="btn btn-secondary">View Full Leaderboard</a>
+				</div>
+			</div>
+		</section>
+		<section class="mt-4 mb-4 text-center">
+			<h2 class="section-title">Ready to Make an Impact?</h2>
+			<div class="glass-card" style="max-width: 600px; margin: 0 auto">
+				<p class="mb-3">
+					Registrations are open for a limited time. Don't miss out on swags
+					and community recognition.
+				</p>
+				<a href="register.html" class="btn btn-primary btn-block">Join Now</a>
+			</div>
+		</section>
+	</div>
+
+	<footer class="footer">
+		<div class="container">
+			<p>
+				&copy; <span id="current-year"></span> Commit Overflow. Crafted for
+				the Open Source Community by.
+			</p>
+		</div>
+	</footer>
+
+	<script src="js/api.js"></script>
+	<script>
+		document.getElementById("current-year").textContent =
+			new Date().getFullYear();
+
+		document.addEventListener('DOMContentLoaded', async () => {
+			try {
+				const leaderboard = await API.fetchLeaderboard('all');
+				const tbody = document.getElementById('leaderboard-preview-body');
+				if (tbody && leaderboard && leaderboard.length > 0) {
+					tbody.innerHTML = '';
+					// Render top 5 entries
+					const limit = Math.min(leaderboard.length, 5);
+					for (let i = 0; i < limit; i++) {
+						const entry = leaderboard[i];
+						let rankEmoji = entry.rank;
+						if (entry.rank === 1) rankEmoji = '🥇 1';
+						else if (entry.rank === 2) rankEmoji = '🥈 2';
+						else if (entry.rank === 3) rankEmoji = '🥉 3';
+						else rankEmoji = `<strong>${entry.rank}</strong>`;
+						
+						const tr = document.createElement('tr');
+						tr.innerHTML = `
+							<td><strong>${rankEmoji}</strong></td>
+							<td>
+								<div style="display: inline-flex; align-items: center; gap: 0.5rem;">
+									<div style="width:24px;height:24px;background:var(--bg-tertiary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;">
+										${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+									</div>
+									<span>${entry.github_username}</span>
+								</div>
+							</td>
+							<td>${entry.college || '---'}</td>
+							<td class="text-primary font-bold">${entry.total_points}</td>
+						`;
+						tbody.appendChild(tr);
+					}
+				}
+			} catch (err) {
+				console.error("Error loading preview leaderboard", err);
+			}
+		});
+	</script>
+</body>
+
+</html>

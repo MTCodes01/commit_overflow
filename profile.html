@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--bg-tertiary);
+            border: 4px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--text-secondary);
+        }
+        .profile-info h1 {
+            margin-bottom: 0.25rem;
+        }
+        .profile-details {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        .profile-details div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-wrapper">
+        <!-- Sidebar injected here -->
+        
+        <main class="main-content">
+            <div class="card glass-card mb-4">
+                <div class="profile-header">
+                    <div class="avatar">
+                        <i class="ph ph-user"></i>
+                    </div>
+                    <div class="profile-info">
+                        <h1 id="ui-display-name">--</h1>
+                        <p class="text-primary" id="ui-display-github-username">@--</p>
+                        <div class="profile-details">
+                            <div id="ui-college"><i class="ph ph-graduation-cap"></i> --</div>
+                            <div><i class="ph ph-github-logo"></i> --</div>
+                            <div><i class="ph ph-discord-logo"></i> --</div>
+                        </div>
+                        <button class="btn btn-secondary mt-2" id="edit-profile-btn">
+                            <i class="ph ph-pencil-simple"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-1 gap-4">
+                <div class="card">
+                    <h2 class="mb-3">Statistics</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <div class="text-secondary">Rank</div>
+                            <div class="stat-value text-primary" style="font-size: 2rem;">--</div>
+                        </div>
+                        <div>
+                            <div class="text-secondary">Total Score</div>
+                            <div class="stat-value" style="font-size: 2rem;">--</div>
+                        </div>
+                        <div>
+                            <div class="text-secondary">PRs Merged</div>
+                            <div class="stat-value" style="font-size: 2rem;">--</div>
+                        </div>
+                        <div>
+                            <div class="text-secondary">Issues Closed</div>
+                            <div class="stat-value" style="font-size: 2rem;">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="mb-3">Technologies</h2>
+                    <div class="flex flex-wrap gap-2" id="ui-technologies">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="modal-close" id="close-modal-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="edit-profile-form">
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" id="input-display-name" class="form-control" value="" placeholder="Display Name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">College Name</label>
+                    <input type="text" id="input-college-name" class="form-control" value="" placeholder="College Name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Interests (Technologies)</label>
+                    <div class="flex flex-wrap gap-2" id="input-technologies">
+                        <div>
+                            <input type="checkbox" id="tech-js" value="JavaScript" class="tech-checkbox">
+                            <label for="tech-js" class="badge tech-label">JavaScript</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tech-react" value="React" class="tech-checkbox">
+                            <label for="tech-react" class="badge tech-label">React</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tech-node" value="Node.js" class="tech-checkbox">
+                            <label for="tech-node" class="badge tech-label">Node.js</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tech-py" value="Python" class="tech-checkbox">
+                            <label for="tech-py" class="badge tech-label">Python</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tech-java" value="Java" class="tech-checkbox">
+                            <label for="tech-java" class="badge tech-label">Java</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tech-cpp" value="C/C++" class="tech-checkbox">
+                            <label for="tech-cpp" class="badge tech-label">C/C++</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tech-go" value="Go" class="tech-checkbox">
+                            <label for="tech-go" class="badge tech-label">Go</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between gap-2" style="margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary w-full" id="cancel-modal-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary w-full" id="save-profile-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            Components.renderSidebar('profile');
+            Components.setupModal('edit-modal', 'edit-profile-btn', 'modal-close');
+            
+            // Add custom cancel button handler
+            document.getElementById('cancel-modal-btn').addEventListener('click', () => {
+                document.getElementById('edit-modal').classList.remove('active');
+            });
+
+            const currentUser = API.getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Function to update the page UI with user profile & stats data
+            const loadProfileDetails = async () => {
+                try {
+                    // Fetch live profile details
+                    const user = await API.fetchUserMe();
+                    const dashData = await API.fetchDashboardData(user.id);
+                    
+                    // Display details
+                    document.getElementById('ui-display-name').textContent = user.name;
+                    document.getElementById('input-display-name').value = user.name;
+                    
+                    // Display GitHub Username below user name
+                    document.getElementById('ui-display-github-username').textContent = '@' + user.github_username;
+                    
+                    const collegeText = user.college || 'Not Specified';
+                    document.getElementById('ui-college').innerHTML = '<i class="ph ph-graduation-cap"></i> ' + collegeText;
+                    document.getElementById('input-college-name').value = user.college || '';
+                    
+                    // Render Profile details including GitHub and Discord verified status
+                    const githubDetails = document.querySelector('.profile-details');
+                    if (githubDetails) {
+                        const isDiscordVerified = user.discord_verified;
+                        const discordText = isDiscordVerified ? `@${user.discord_username}` : 'Discord Not Connected';
+                        const discordIconColor = isDiscordVerified ? 'var(--accent-secondary)' : 'var(--text-secondary)';
+                        githubDetails.innerHTML = `
+                            <div id="ui-college"><i class="ph ph-graduation-cap"></i> ${collegeText}</div>
+                            <div><i class="ph ph-github-logo"></i> ${user.github_username}</div>
+                            <div><i class="ph ph-discord-logo" style="color: ${discordIconColor};"></i> ${discordText}</div>
+                        `;
+                    }
+                    
+                    // Fill read-only input (if any exists)
+                    
+                    // Update stats
+                    const statsCards = document.querySelectorAll('.stat-value');
+                    if (statsCards.length >= 4) {
+                        statsCards[1].textContent = user.total_points;
+                        statsCards[2].textContent = dashData.stats.prs_merged || 0;
+                        statsCards[3].textContent = dashData.stats.issues_closed || 0;
+                    }
+                    
+                    // Calculate rank
+                    try {
+                        const leaderboard = await API.fetchLeaderboard('all');
+                        const userRank = leaderboard.find(entry => entry.user_id === user.id);
+                        if (userRank && statsCards.length >= 1) {
+                            statsCards[0].textContent = `#${userRank.rank}`;
+                        } else if (statsCards.length >= 1) {
+                            statsCards[0].textContent = 'N/A';
+                        }
+                    } catch (e) {
+                        console.error(e);
+                    }
+
+                    // Load selected technologies from localStorage
+                    const savedInterests = localStorage.getItem(`interests_${user.github_username}`);
+                    const techContainer = document.getElementById('ui-technologies');
+                    if (techContainer) {
+                        techContainer.innerHTML = '';
+                        let interests = ['JavaScript', 'React', 'Node.js']; // Defaults
+                        if (savedInterests) {
+                            try {
+                                interests = JSON.parse(savedInterests);
+                            } catch(e){}
+                        }
+                        
+                        // Set checkboxes in form
+                        const checkboxes = document.querySelectorAll('#input-technologies input[type="checkbox"]');
+                        checkboxes.forEach(cb => cb.checked = interests.includes(cb.value));
+                        
+                        // Render tech badges
+                        interests.forEach(tech => {
+                            let iconClass = 'ph-hexagon';
+                            if (tech === 'JavaScript') iconClass = 'ph-file-js';
+                            if (tech === 'React') iconClass = 'ph-atom';
+                            if (tech === 'Python') iconClass = 'ph-file-py';
+                            if (tech === 'Go') iconClass = 'ph-google-logo';
+                            
+                            const span = document.createElement('span');
+                            span.className = 'badge badge-info';
+                            span.innerHTML = `<i class="ph ${iconClass}"></i> ${tech}`;
+                            techContainer.appendChild(span);
+                        });
+                    }
+
+                } catch (err) {
+                    console.error("Error loading profile details", err);
+                    Components.showToast("Failed to load profile details.", "error");
+                }
+            };
+
+            await loadProfileDetails();
+
+            // Setup profile update submission
+            const editForm = document.getElementById('edit-profile-form');
+            if (editForm) {
+                editForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('input-display-name').value.trim();
+                    const college = document.getElementById('input-college-name').value.trim();
+                    
+                    const saveBtn = document.getElementById('save-profile-btn');
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = "Saving...";
+                    
+                    try {
+                        // Call update profile PATCH endpoint
+                        await API.updateProfile(name, college);
+                        
+                        // Save technologies in local storage
+                        const user = API.getCurrentUser();
+                        const selectedTech = Array.from(document.querySelectorAll('#input-technologies input:checked')).map(cb => cb.value);
+                        localStorage.setItem(`interests_${user.github_username}`, JSON.stringify(selectedTech));
+                        
+                        Components.showToast("Profile updated successfully!", "success");
+                        document.getElementById('edit-modal').classList.remove('active');
+                        
+                        // Reload details
+                        await loadProfileDetails();
+                    } catch (err) {
+                        Components.showToast(err.message || "Failed to update profile.", "error");
+                    } finally {
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = "Save Changes";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositories | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .repo-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid var(--accent-primary);
+        }
+        .repo-card:hover {
+            transform: translateY(-2px);
+            background-color: var(--bg-tertiary);
+            border-color: #a371f7;
+        }
+        .repo-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .repo-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        .repo-meta div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .difficulty-bar {
+            display: flex;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+            background-color: var(--bg-tertiary);
+        }
+        .diff-segment {
+            height: 100%;
+        }
+        .diff-segment.easy { background-color: var(--accent-primary); }
+        .diff-segment.medium { background-color: var(--warning-color); }
+        .diff-segment.hard { background-color: var(--danger-color); }
+        .repo-details-modal {
+            max-width: 700px;
+        }
+        .detail-section {
+            margin-top: 1.5rem;
+        }
+        .detail-list {
+            max-height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-wrapper">
+        <!-- Sidebar injected here -->
+        
+        <main class="main-content">
+            <div class="page-header flex justify-between items-center">
+                <div>
+                    <h1>Tracked Repositories</h1>
+                    <p class="text-secondary mt-1">Explore tracked repositories, tech stacks, and active issues.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-1 gap-4" id="repos-container">
+                <!-- Repo cards injected here -->
+                <div class="text-center py-5 text-secondary col-span-2">Loading repositories...</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Repository Details Modal -->
+    <div class="modal-overlay" id="repo-modal">
+        <div class="modal repo-details-modal">
+            <div class="modal-header">
+                <h3 id="modal-repo-name">Repository Details</h3>
+                <button class="modal-close"><i class="ph ph-x"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <span class="text-secondary text-sm">GitHub Repository URL</span>
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.25rem;">
+                        <input type="text" id="modal-repo-url" class="form-control" readonly>
+                        <a href="#" id="modal-github-btn" class="btn btn-primary" target="_blank" style="width: auto; white-space: nowrap;"><i class="ph ph-github-logo"></i> Visit GitHub</a>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Active Issues</h4>
+                    <div class="detail-list" id="modal-issues-list">
+                        <!-- Dynamic issues -->
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Pull Requests</h4>
+                    <div class="detail-list" id="modal-prs-list">
+                        <!-- Dynamic pull requests -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            Components.renderSidebar('repositories');
+            Components.setupModal('repo-modal', null, 'modal-close');
+
+            const reposContainer = document.getElementById('repos-container');
+            const repoModal = document.getElementById('repo-modal');
+
+            const showRepoDetail = async (repoId) => {
+                try {
+                    const detail = await API.fetchRepoDetail(repoId);
+                    const repo = detail.repository;
+                    
+                    document.getElementById('modal-repo-name').textContent = repo.name;
+                    document.getElementById('modal-repo-url').value = repo.github_url;
+                    document.getElementById('modal-github-btn').href = repo.github_url;
+                    
+                    // Render Issues
+                    const issuesList = document.getElementById('modal-issues-list');
+                    issuesList.innerHTML = '';
+                    if (detail.issues && detail.issues.length > 0) {
+                        detail.issues.forEach(i => {
+                            let badgeClass = 'badge-info';
+                            if (i.status === 'approved') badgeClass = 'badge-success';
+                            else if (i.status === 'assigned') badgeClass = 'badge-warning';
+                            else if (i.status === 'closed') badgeClass = 'badge-secondary';
+
+                            let diffBadge = '';
+                            if (i.difficulty) {
+                                let diffClass = 'badge-info';
+                                if (i.difficulty === 'easy') diffClass = 'badge-success';
+                                else if (i.difficulty === 'hard') diffClass = 'badge-danger';
+                                diffBadge = `<span class="badge ${diffClass}" style="margin-right: 0.5rem;">${i.difficulty.toUpperCase()}</span>`;
+                            }
+
+                            const item = document.createElement('div');
+                            item.className = 'detail-item';
+                            item.innerHTML = `
+                                <div>
+                                    <strong>#${i.github_issue_id}</strong> — ${i.title}
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    ${diffBadge}
+                                    <span class="badge ${badgeClass}">${i.status.toUpperCase()}</span>
+                                </div>
+                            `;
+                            issuesList.appendChild(item);
+                        });
+                    } else {
+                        issuesList.innerHTML = '<div class="text-secondary text-center py-3 text-sm">No issues tracked for this repository.</div>';
+                    }
+
+                    // Render PRs
+                    const prsList = document.getElementById('modal-prs-list');
+                    prsList.innerHTML = '';
+                    if (detail.pull_requests && detail.pull_requests.length > 0) {
+                        detail.pull_requests.forEach(pr => {
+                            let badgeClass = 'badge-info';
+                            if (pr.status === 'merged') badgeClass = 'badge-success';
+                            else if (pr.status === 'closed_unmerged') badgeClass = 'badge-danger';
+
+                            const item = document.createElement('div');
+                            item.className = 'detail-item';
+                            item.innerHTML = `
+                                <div>
+                                    <strong>PR #${pr.github_pr_id}</strong> by @${pr.user_id}
+                                </div>
+                                <span class="badge ${badgeClass}">${pr.status.toUpperCase()}</span>
+                            `;
+                            prsList.appendChild(item);
+                        });
+                    } else {
+                        prsList.innerHTML = '<div class="text-secondary text-center py-3 text-sm">No pull requests submitted yet.</div>';
+                    }
+                    
+                    repoModal.classList.add('active');
+                } catch(e) {
+                    console.error(e);
+                    Components.showToast("Failed to fetch repository details.", "error");
+                }
+            };
+
+            const loadRepos = async () => {
+                try {
+                    const repos = await API.fetchRepos();
+                    if (!reposContainer) return;
+                    reposContainer.innerHTML = '';
+
+                    if (repos.length === 0) {
+                        reposContainer.innerHTML = '<div class="text-secondary text-center py-5 col-span-2">No tracked repositories found.</div>';
+                        return;
+                    }
+
+                    repos.forEach(repo => {
+                        const card = document.createElement('div');
+                        card.className = 'card repo-card glass-card';
+                        
+                        // Tech stack badges
+                        let techBadges = '';
+                        if (repo.tech_stack && repo.tech_stack.length > 0) {
+                            repo.tech_stack.forEach(tech => {
+                                techBadges += `<span class="badge badge-info text-xs">${tech}</span> `;
+                            });
+                        }
+                        
+                        // Difficulty bar percentages
+                        const diff = repo.difficulty_distribution || { easy: 0, medium: 0, hard: 0 };
+                        const totalIssues = diff.easy + diff.medium + diff.hard;
+                        let easyPct = 0, medPct = 0, hardPct = 0;
+                        if (totalIssues > 0) {
+                            easyPct = (diff.easy / totalIssues) * 100;
+                            medPct = (diff.medium / totalIssues) * 100;
+                            hardPct = (diff.hard / totalIssues) * 100;
+                        }
+
+                        card.innerHTML = `
+                            <div class="repo-title">
+                                <span>${repo.name}</span>
+                                <i class="ph ph-git-fork text-primary"></i>
+                            </div>
+                            <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                ${techBadges}
+                            </div>
+                            <div class="repo-meta">
+                                <div><i class="ph ph-users-three"></i> Contributors: ${repo.contributor_count}</div>
+                                <div><i class="ph ph-warning-circle"></i> Open Issues: ${repo.open_issues}</div>
+                                <div><i class="ph ph-git-pull-request"></i> Open PRs: ${repo.open_prs}</div>
+                                <div><i class="ph ph-git-merge"></i> Merged PRs: ${repo.merged_prs}</div>
+                            </div>
+                            <div>
+                                <span class="text-secondary text-xs">Issue Difficulty Spread</span>
+                                <div class="difficulty-bar">
+                                    <div class="diff-segment easy" style="width: ${totalIssues > 0 ? easyPct : 33.3}%"></div>
+                                    <div class="diff-segment medium" style="width: ${totalIssues > 0 ? medPct : 33.3}%"></div>
+                                    <div class="diff-segment hard" style="width: ${totalIssues > 0 ? hardPct : 33.4}%"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                    <span>Easy: ${diff.easy}</span>
+                                    <span>Medium: ${diff.medium}</span>
+                                    <span>Hard: ${diff.hard}</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        card.addEventListener('click', () => showRepoDetail(repo.id));
+                        reposContainer.appendChild(card);
+                    });
+
+                } catch (err) {
+                    console.error("Failed to load repositories", err);
+                    if (reposContainer) {
+                        reposContainer.innerHTML = '<div class="text-secondary text-center py-5 col-span-2">Failed to load repositories list.</div>';
+                    }
+                    Components.showToast("Failed to load repositories.", "error");
+                }
+            };
+
+            const checkStatusAndRender = (status) => {
+                const user = API.getCurrentUser();
+                if (user && (user.is_admin || user.is_super_admin)) {
+                    return false;
+                }
+                if (status === 'PASSIVE') {
+                    const mainContent = document.querySelector('.main-content');
+                    if (mainContent) {
+                        mainContent.innerHTML = `
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; min-height: 60vh; text-align: center; padding: 2rem;">
+                                <i class="ph ph-hourglass-high" style="font-size: 4rem; color: var(--warning-color); animation: pulse 2s infinite; margin-bottom: 1.5rem;"></i>
+                                <h2 style="font-size: 2rem; font-weight: 700; color: white; margin-bottom: 1rem;">Event has not started yet.</h2>
+                                <p class="text-secondary" style="max-width: 450px; font-size: 1.1rem; line-height: 1.6; margin: 0;">Interaction is disabled until the event starts. Please check back later!</p>
+                            </div>
+                        `;
+                    }
+                    return true;
+                }
+                return false;
+            };
+
+            const checkEventStatus = async () => {
+                try {
+                    const data = await API.request('/event/status');
+                    const status = data.status || 'PASSIVE';
+                    sessionStorage.setItem("event_status", status);
+                    return checkStatusAndRender(status);
+                } catch (e) {
+                    console.error("Failed to load event status:", e);
+                    return checkStatusAndRender('PASSIVE');
+                }
+            };
+
+            const isPassive = await checkEventStatus();
+            if (isPassive) {
+                window.addEventListener('eventStatusLoaded', (e) => {
+                    if (e.detail === 'ACTIVE') {
+                        window.location.reload();
+                    }
+                });
+                return;
+            }
+
+            window.addEventListener('eventStatusLoaded', (e) => {
+                if (e.detail === 'PASSIVE') {
+                    checkStatusAndRender('PASSIVE');
+                }
+            });
+
+            await loadRepos();
+        });
+    </script>
+</body>
+</html>

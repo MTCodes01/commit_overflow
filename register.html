@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 500px;
+        }
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="card auth-card glass-card">
+            <div class="auth-logo">
+                <i class="ph ph-terminal-window text-primary"></i><br>
+                Commit Overflow
+            </div>
+            <h2 class="text-center mb-3">Create Account</h2>
+            
+            <form id="register-form">
+                <div class="grid grid-cols-2 md:grid-cols-1 gap-2">
+                    <div class="form-group">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" id="display-name" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GitHub Username</label>
+                        <input type="text" id="github-user" class="form-control" placeholder="octocat" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">College Name</label>
+                    <input type="text" id="college" class="form-control" placeholder="University of Technology">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Min. 6 characters" required minlength="6">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block mb-2" id="register-btn">
+                    Register
+                </button>
+                
+                <div class="text-center mt-2">
+                    <span class="text-secondary">Already have an account?</span> 
+                    <a href="login.html">Back to Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('register-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('display-name').value.trim();
+                    const githubUser = document.getElementById('github-user').value.trim();
+                    const college = document.getElementById('college').value.trim();
+                    const password = document.getElementById('password').value;
+                    const registerBtn = document.getElementById('register-btn');
+                    
+                    registerBtn.disabled = true;
+                    registerBtn.textContent = "Registering...";
+                    
+                    try {
+                        await API.register(name, githubUser, password, college);
+                        Components.showToast("Registration successful!", "success");
+                        setTimeout(() => {
+                            window.location.href = 'onboarding.html';
+                        }, 1000);
+                    } catch (err) {
+                        Components.showToast(err.message || "Registration failed.", "error");
+                        registerBtn.disabled = false;
+                        registerBtn.textContent = "Register";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

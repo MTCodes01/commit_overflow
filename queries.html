@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queries | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .query-card {
+            margin-bottom: 1rem;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .query-card:hover {
+            background-color: var(--bg-tertiary);
+        }
+        .query-card.priority-high { border-left-color: var(--danger-color); }
+        .query-card.priority-medium { border-left-color: var(--warning-color); }
+        .query-card.priority-low { border-left-color: var(--accent-primary); }
+        
+        .query-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .query-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .query-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="app-wrapper">
+        <!-- Sidebar injected here -->
+        
+        <main class="main-content">
+            <div class="page-header flex justify-between items-center">
+                <div>
+                    <h1>Support Queries</h1>
+                    <p class="text-secondary mt-1">Need help? Raise a ticket for our mentors.</p>
+                </div>
+                <button class="btn btn-primary" id="create-query-btn">
+                    <i class="ph ph-plus"></i> New Query
+                </button>
+            </div>
+
+            <div class="card glass-card">
+                <div class="flex gap-2 mb-3">
+                    <button class="btn btn-secondary active" id="btn-filter-all">All Queries</button>
+                    <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-open">Open</button>
+                    <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-resolved">Resolved</button>
+                </div>
+
+                <div id="queries-list">
+                    <div class="text-center py-4">
+                        <i class="ph ph-spinner-gap loading-spinner" style="font-size: 2rem;"></i>
+                        <p class="text-secondary mt-1">Loading queries...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- View Query Details Modal -->
+    <div class="modal-overlay" id="view-query-modal">
+        <div class="modal" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3 id="view-query-title-head">Query Details</h3>
+                <button class="modal-close" onclick="document.getElementById('view-query-modal').classList.remove('active')"><i class="ph ph-x"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <input type="hidden" id="view-query-id">
+                    <h4 id="view-query-title" style="color: white; font-size: 1.1rem; margin-bottom: 0.25rem; line-height: 1.4;"></h4>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <span id="view-query-cat" class="badge badge-info">Category</span>
+                        <span id="view-query-status" class="badge">Status</span>
+                    </div>
+                </div>
+                <div style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px;">
+                    <p id="view-query-body" style="white-space: pre-wrap; font-size: 0.9rem; color: var(--text-primary); line-height: 1.5;"></p>
+                </div>
+                <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <h4 style="font-size: 0.95rem; color: white; margin-bottom: 0.75rem;">Replies</h4>
+                    <div id="view-query-replies" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                        <!-- Replies -->
+                    </div>
+                    <form id="query-reply-form" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <textarea id="query-reply-input" class="form-control" rows="2" placeholder="Type your reply here..." required></textarea>
+                        <button type="submit" class="btn btn-primary" style="align-self: flex-end;">Send Reply</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Query Modal -->
+    <div class="modal-overlay" id="create-query-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Raise New Query</h3>
+                <button class="modal-close"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="new-query-form">
+                <div class="form-group">
+                    <label class="form-label">Query Title</label>
+                    <input type="text" id="query-title" class="form-control" placeholder="Brief summary of issue" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select id="query-category" class="form-control" required>
+                        <option value="git_help">Git Help</option>
+                        <option value="repo_bug">Repo Bug</option>
+                        <option value="website_bug">Website Bug</option>
+                        <option value="general">General Support</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea id="query-desc" class="form-control" rows="4" placeholder="Detailed explanation..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="submit-query-btn">Submit Query</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            Components.renderSidebar('queries');
+            Components.setupModal('create-query-modal', 'create-query-btn', 'modal-close');
+
+            let allQueries = [];
+            let currentFilter = 'all';
+
+            const renderQueries = () => {
+                const listContainer = document.getElementById('queries-list');
+                if (!listContainer) return;
+                listContainer.innerHTML = '';
+
+                const filtered = allQueries.filter(q => {
+                    if (currentFilter === 'all') return true;
+                    if (currentFilter === 'open') return q.status === 'open' || q.status === 'answered';
+                    if (currentFilter === 'resolved') return q.status === 'resolved';
+                    return true;
+                });
+
+                if (filtered.length === 0) {
+                    listContainer.innerHTML = `<div class="text-secondary text-center py-4">No ${currentFilter !== 'all' ? currentFilter : ''} queries found.</div>`;
+                    return;
+                }
+
+                filtered.forEach(q => {
+                    let priorityClass = 'priority-low';
+                    let badgeClass = 'badge-success';
+                    if (q.status === 'open') {
+                        priorityClass = 'priority-high';
+                        badgeClass = 'badge-warning';
+                    } else if (q.status === 'answered') {
+                        priorityClass = 'priority-medium';
+                        badgeClass = 'badge-info';
+                    }
+                    
+                    // Format date
+                    let dateStr = q.created_at;
+                    try {
+                        const d = new Date(q.created_at);
+                        dateStr = d.toLocaleDateString();
+                    } catch(e) {}
+                    
+                    // Category formatting
+                    let catLabel = q.category;
+                    if (q.category === 'git_help') catLabel = 'Git Help';
+                    else if (q.category === 'repo_bug') catLabel = 'Repo Bug';
+                    else if (q.category === 'website_bug') catLabel = 'Website Bug';
+                    else if (q.category === 'general') catLabel = 'General Support';
+
+                    const div = document.createElement('div');
+                    div.className = `card query-card ${priorityClass}`;
+                    div.innerHTML = `
+                        <div class="query-header">
+                            <div class="query-title">${q.title}</div>
+                            <span class="badge ${badgeClass}">${q.status.charAt(0).toUpperCase() + q.status.slice(1)}</span>
+                        </div>
+                        <div class="query-meta">
+                            <span><i class="ph ph-calendar"></i> ${dateStr}</span>
+                            <span><i class="ph ph-tag"></i> Category: ${catLabel}</span>
+                        </div>
+                        <div class="text-secondary text-sm mt-2" style="white-space: pre-wrap;">${q.body}</div>
+                    `;
+                    div.addEventListener('click', () => viewQueryDetail(q.id));
+                    listContainer.appendChild(div);
+                });
+            };
+
+            const viewQueryDetail = async (queryId) => {
+                const modal = document.getElementById('view-query-modal');
+                const title = document.getElementById('view-query-title');
+                const cat = document.getElementById('view-query-cat');
+                const status = document.getElementById('view-query-status');
+                const body = document.getElementById('view-query-body');
+                const repliesList = document.getElementById('view-query-replies');
+
+                document.getElementById('view-query-id').value = queryId;
+                repliesList.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-secondary); text-align: center; padding: 1rem;">Loading replies...</div>';
+                modal.classList.add('active');
+
+                try {
+                    const res = await API.request(`/queries/${queryId}`);
+                    const q = res.query;
+                    const replies = res.replies;
+
+                    title.textContent = q.title;
+                    body.textContent = q.body;
+                    
+                    let catLabel = q.category;
+                    if (q.category === 'git_help') catLabel = 'Git Help';
+                    else if (q.category === 'repo_bug') catLabel = 'Repo Bug';
+                    else if (q.category === 'website_bug') catLabel = 'Website Bug';
+                    else if (q.category === 'general') catLabel = 'General Support';
+                    cat.textContent = catLabel;
+
+                    status.textContent = q.status.toUpperCase();
+                    status.className = 'badge';
+                    if (q.status === 'open') status.classList.add('badge-warning');
+                    else if (q.status === 'answered') status.classList.add('badge-info');
+                    else status.classList.add('badge-success');
+
+                    repliesList.innerHTML = '';
+                    if (replies && replies.length > 0) {
+                        replies.forEach(r => {
+                            const div = document.createElement('div');
+                            div.style.padding = '0.5rem 0.75rem';
+                            div.style.backgroundColor = 'var(--bg-secondary)';
+                            div.style.border = '1px solid var(--border-color)';
+                            div.style.borderRadius = '6px';
+                            const authorName = r.author_name || r.author_github || 'User';
+                            div.innerHTML = `
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <strong>${authorName}</strong>
+                                    <span>${new Date(r.created_at).toLocaleString()}</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap; line-height: 1.4;">${r.message}</div>
+                            `;
+                            repliesList.appendChild(div);
+                        });
+                    } else {
+                        repliesList.innerHTML = '<div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; padding: 1rem;">No replies yet.</div>';
+                    }
+                } catch (e) {
+                    repliesList.innerHTML = `<div style="font-size: 0.75rem; color: var(--danger-color); text-align: center; padding: 1rem;">Error: ${e.message}</div>`;
+                }
+            };
+
+            const loadQueries = async () => {
+                try {
+                    allQueries = await API.fetchQueries();
+                    renderQueries();
+                } catch (err) {
+                    console.error(err);
+                    Components.showToast("Failed to fetch queries.", "error");
+                }
+            };
+
+            await loadQueries();
+
+            // Set up filters
+            const filterAllBtn = document.getElementById('btn-filter-all');
+            const filterOpenBtn = document.getElementById('btn-filter-open');
+            const filterResolvedBtn = document.getElementById('btn-filter-resolved');
+
+            const setFilter = (filter, activeBtn) => {
+                currentFilter = filter;
+                [filterAllBtn, filterOpenBtn, filterResolvedBtn].forEach(btn => {
+                    if (btn) {
+                        btn.classList.remove('active');
+                        btn.style.opacity = '0.7';
+                    }
+                });
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                    activeBtn.style.opacity = '1';
+                }
+                renderQueries();
+            };
+
+            if (filterAllBtn) filterAllBtn.addEventListener('click', () => setFilter('all', filterAllBtn));
+            if (filterOpenBtn) filterOpenBtn.addEventListener('click', () => setFilter('open', filterOpenBtn));
+            if (filterResolvedBtn) filterResolvedBtn.addEventListener('click', () => setFilter('resolved', filterResolvedBtn));
+
+            // Handle submission of query
+            const form = document.getElementById('new-query-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const title = document.getElementById('query-title').value.trim();
+                    const category = document.getElementById('query-category').value;
+                    const body = document.getElementById('query-desc').value.trim();
+                    const submitBtn = document.getElementById('submit-query-btn');
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Submitting...";
+                    
+                    try {
+                        await API.createQuery(title, body, category);
+                        Components.showToast("Query raised successfully!", "success");
+                        form.reset();
+                        document.getElementById('create-query-modal').classList.remove('active');
+                        await loadQueries();
+                    } catch (err) {
+                        Components.showToast(err.message || "Failed to submit query.", "error");
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "Submit Query";
+                    }
+                });
+            }
+
+            // Wire reply form submit
+            const replyForm = document.getElementById('query-reply-form');
+            if (replyForm) {
+                replyForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const queryId = document.getElementById('view-query-id').value;
+                    const message = document.getElementById('query-reply-input').value.trim();
+                    const replyBtn = replyForm.querySelector('button[type="submit"]');
+
+                    if (!message || !queryId) return;
+
+                    replyBtn.disabled = true;
+                    replyBtn.textContent = 'Sending...';
+
+                    try {
+                        await API.replyQuery(queryId, message);
+                        document.getElementById('query-reply-input').value = '';
+                        Components.showToast('Reply submitted successfully!', 'success');
+                        await viewQueryDetail(queryId);
+                    } catch (err) {
+                        Components.showToast('Failed to send reply: ' + err.message, 'error');
+                    } finally {
+                        replyBtn.disabled = false;
+                        replyBtn.textContent = 'Send Reply';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

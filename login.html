@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-container">
+        <div class="card auth-card glass-card">
+            <div class="auth-logo">
+                <i class="ph ph-terminal-window text-primary"></i><br>
+                Commit Overflow
+            </div>
+            <h2 class="text-center mb-3">Welcome Back</h2>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="username">GitHub Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="octocat" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block mb-2" id="login-btn">
+                    Login
+                </button>
+
+                <div class="text-center mt-2">
+                    <span class="text-secondary">Don't have an account?</span>
+                    <a href="register.html">Register Instead</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('login-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value.trim();
+                    const password = document.getElementById('password').value;
+                    const loginBtn = document.getElementById('login-btn');
+                    
+                    loginBtn.disabled = true;
+                    loginBtn.textContent = "Logging in...";
+                    
+                    try {
+                        await API.login(username, password);
+                        Components.showToast("Login successful!", "success");
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
+                    } catch (err) {
+                        Components.showToast(err.message || "Login failed. Please check your credentials.", "error");
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = "Login";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

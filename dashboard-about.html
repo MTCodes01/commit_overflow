@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    
+    <div class="app-wrapper">
+        <!-- Sidebar injected here -->
+        
+        <main class="main-content">
+            <div class="page-header">
+                <h1>About Commit Overflow</h1>
+                <p class="text-secondary mt-1">Learn more about our mission, rules, and the event.</p>
+            </div>
+
+            <div class="card mb-4" style="padding: 2rem;">
+                <div id="about-content" class="markdown-body">
+                    <p class="text-secondary">Loading about details...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Render Sidebar
+            Components.renderSidebar('about');
+
+            try {
+                // Fetch About Us content
+                const data = await API.fetchAboutUs();
+                const aboutContent = document.getElementById('about-content');
+                if (data && data.content) {
+                    // Simple newline conversion or basic text display
+                    aboutContent.innerHTML = data.content.replace(/\n/g, '<br>');
+                } else {
+                    aboutContent.innerHTML = "<p>No information available.</p>";
+                }
+            } catch (err) {
+                console.error("Failed to load about us details:", err);
+                Components.showToast("Failed to load details.", "error");
+            }
+        });
+    </script>
+</body>
+</html>

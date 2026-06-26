@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .public-wrapper {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+        .public-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .public-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .public-logo i {
+            color: var(--accent-primary);
+            font-size: 1.75rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .about-content {
+            font-size: 1.1rem;
+            line-height: 1.75;
+            color: var(--text-primary);
+            white-space: pre-wrap; /* Preserves newlines and spaces */
+        }
+        .footer-credits {
+            text-align: center;
+            margin-top: 5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="public-wrapper">
+        <header class="public-nav">
+            <a href="index.html" class="public-logo">
+                <i class="ph ph-terminal-window"></i>
+                <span>Commit Overflow</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="login.html" class="btn btn-secondary" style="padding: 0.4rem 1rem;">Login</a>
+                <a href="register.html" class="btn btn-primary" style="padding: 0.4rem 1rem;">Register</a>
+            </nav>
+        </header>
+
+        <main class="card glass-card">
+            <h1 class="mb-3"><i class="ph ph-info" style="color: var(--accent-primary); vertical-align: middle;"></i> About Us</h1>
+            <div id="about-text-container" class="about-content">
+                <div class="text-center py-4">
+                    <i class="ph ph-spinner-gap loading-spinner" style="font-size: 2rem;"></i>
+                    <p class="text-secondary mt-1">Loading About Us content...</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer-credits">
+            <p>&copy; 2026 Commit Overflow Community. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('about-text-container');
+            try {
+                const data = await API.fetchAboutUs();
+                container.textContent = data.content || "Welcome to Commit Overflow! Manage this content in the Admin Control Console.";
+            } catch (e) {
+                console.error("Failed to fetch About Us content", e);
+                container.innerHTML = `
+                    <div style="color: var(--danger-color); text-align: center; padding: 2rem 0;">
+                        <i class="ph ph-warning" style="font-size: 2rem;"></i>
+                        <p class="mt-1">Failed to load content from server: ${e.message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

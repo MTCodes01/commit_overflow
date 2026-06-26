@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding | Commit Overflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .onboarding-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 3rem 0;
+        }
+        .tech-card {
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .tech-card:hover {
+            border-color: var(--text-secondary);
+        }
+        .tech-card.selected {
+            border-color: var(--accent-primary);
+            background-color: rgba(35, 134, 54, 0.1);
+            color: white;
+        }
+        .tech-card i {
+            font-size: 2.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="onboarding-container">
+        <h1>What are your interests?</h1>
+        <p class="text-secondary mt-1">Select the technologies you want to contribute to. We'll use this to recommend repositories.</p>
+        
+        <div class="tech-grid" id="tech-grid">
+            <div class="tech-card" data-tech="python"><i class="ph ph-file-py"></i> Python</div>
+            <div class="tech-card" data-tech="java"><i class="ph ph-coffee"></i> Java</div>
+            <div class="tech-card" data-tech="javascript"><i class="ph ph-file-js"></i> JavaScript</div>
+            <div class="tech-card" data-tech="typescript"><i class="ph ph-file-ts"></i> TypeScript</div>
+            <div class="tech-card" data-tech="go"><i class="ph ph-google-logo"></i> Go</div>
+            <div class="tech-card" data-tech="flutter"><i class="ph ph-device-mobile"></i> Flutter</div>
+            <div class="tech-card" data-tech="react"><i class="ph ph-atom"></i> React</div>
+            <div class="tech-card" data-tech="nodejs"><i class="ph ph-hexagon"></i> Node.js</div>
+            <div class="tech-card" data-tech="rust"><i class="ph ph-gear"></i> Rust</div>
+            <div class="tech-card" data-tech="cpp"><i class="ph ph-file-c"></i> C/C++</div>
+        </div>
+
+        <a href="community.html" class="btn btn-primary" id="continue-btn" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
+            Continue to Community <i class="ph ph-arrow-right"></i>
+        </a>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!API.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const currentUser = API.getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Tech card selection UI logic
+            const cards = document.querySelectorAll('.tech-card');
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('selected');
+                });
+            });
+
+            // Save interests on continue
+            const continueBtn = document.getElementById('continue-btn');
+            if (continueBtn) {
+                continueBtn.addEventListener('click', (e) => {
+                    const selectedCards = document.querySelectorAll('.tech-card.selected');
+                    const interests = Array.from(selectedCards).map(card => card.textContent.trim());
+                    localStorage.setItem(`interests_${currentUser.github_username}`, JSON.stringify(interests));
+                });
+            }
+        });
+    </script>
+</body>
+</html>
