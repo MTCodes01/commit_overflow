@@ -10,10 +10,10 @@ const API = {
     if (!this.baseUrlPromise) {
       this.baseUrlPromise = fetch('config.json')
         .then(res => res.json())
-        .then(config => config.API_BASE_URL || "http://localhost:8080")
+        .then(config => config.API_BASE_URL)
         .catch(err => {
-          console.warn("Failed to load config.json, using default", err);
-          return "http://localhost:8080";
+          console.warn("Failed to load config.json", err);
+          return 0;
         });
     }
     return this.baseUrlPromise;
