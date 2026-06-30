@@ -106,21 +106,9 @@
             </div>
             `;
 
-            try {
-                // Fetch About Us content
-                const data = await API.fetchAboutUs();
-                const aboutContent = document.getElementById('about-content');
-                if (data && data.content) {
-                    // Simple newline conversion or basic text display
-                    aboutContent.innerHTML = data.content.replace(/\n/g, '<br>');
-                } else {
-                    aboutContent.innerHTML = defaultAboutHTML;
-                }
-            } catch (err) {
-                console.error("Failed to load about us details:", err);
-                const aboutContent = document.getElementById('about-content');
-                if (aboutContent) aboutContent.innerHTML = defaultAboutHTML;
-                Components.showToast("Failed to load details. Showing default.", "error");
+            const aboutContent = document.getElementById('about-content');
+            if (aboutContent) {
+                aboutContent.innerHTML = defaultAboutHTML;
             }
         });
     </script>

@@ -216,5 +216,9 @@ const API = {
       method: 'PATCH',
       body: JSON.stringify({ is_active: true })
     });
+  },
+
+  async fetchTagStats(userId) {
+    return this.request(`/users/${userId}/tag-stats`);
   }
 };

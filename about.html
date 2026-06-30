@@ -154,19 +154,9 @@
         </div>
         `;
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('about-text-container');
-            try {
-                const data = await API.fetchAboutUs();
-                if (data && data.content) {
-                    container.innerHTML = data.content.replace(/\n/g, '<br>');
-                } else {
-                    container.innerHTML = defaultAboutHTML;
-                }
-            } catch (e) {
-                console.error("Failed to fetch About Us content", e);
-                container.innerHTML = defaultAboutHTML;
-            }
+            container.innerHTML = defaultAboutHTML;
         });
     </script>
 </body>
