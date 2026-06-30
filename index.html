@@ -189,7 +189,7 @@
 		<div class="container">
 			<p>
 				&copy; <span id="current-year"></span> Commit Overflow. Crafted for
-				the Open Source Community by.
+				the Open Source Community by <a href="https://foss.ceal.in" target="_blank">FOSS CEAL</a>.
 			</p>
 		</div>
 	</footer>
@@ -200,6 +200,11 @@
 			new Date().getFullYear();
 
 		document.addEventListener('DOMContentLoaded', async () => {
+			if (API.isAuthenticated && API.isAuthenticated()) {
+				window.location.href = 'dashboard.html';
+				return;
+			}
+
 			try {
 				const leaderboard = await API.fetchLeaderboard('all');
 				const tbody = document.getElementById('leaderboard-preview-body');

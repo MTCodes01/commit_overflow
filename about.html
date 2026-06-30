@@ -31,6 +31,17 @@
             font-weight: 700;
             color: var(--text-primary);
         }
+        .public-logo:hover {
+            color: white;
+            text-decoration: none;
+        }
+        .public-logo img {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: rotateY(0deg);
+        }
+        .public-logo:hover img {
+            transform: rotateY(360deg);
+        }
         .public-logo i {
             color: var(--accent-primary);
             font-size: 1.75rem;
@@ -62,15 +73,10 @@
                 <img src="logo/Commit%20Overflow%20-%20Logo%20-%20clr.svg" alt="Logo" style="height: 36px; width: auto;">
                 <span>Commit Overflow</span>
             </a>
-            <nav class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="login.html" class="btn btn-secondary" style="padding: 0.4rem 1rem;">Login</a>
-                <a href="register.html" class="btn btn-primary" style="padding: 0.4rem 1rem;">Register</a>
-            </nav>
         </header>
 
         <main class="card glass-card">
-            <h1 class="mb-3"><i class="ph ph-info" style="color: var(--accent-primary); vertical-align: middle;"></i> About Us</h1>
+            <h1><i class="ph ph-info" style="color: var(--accent-primary); vertical-align: middle;"></i> About Us</h1>
             <div id="about-text-container" class="about-content">
                 <div class="loading-container">
                     <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
@@ -86,19 +92,80 @@
 
     <script src="js/api.js"></script>
     <script>
+        const defaultAboutHTML = `
+        <div class="text-center" style="white-space: normal; max-width: 900px; margin: 0;">
+            <div style="text-align: left; font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary);">
+            
+                <p>
+                    <strong>Commit Overflow</strong> is an online open-source contribution event
+                    organized by the <strong>FOSS Club, College of Engineering Attingal (CEAL)</strong>.
+                    The event is designed to introduce students to real-world collaborative software
+                    development through GitHub while encouraging quality contributions to open-source projects.
+                </p>
+            
+                <p>
+                    Participants explore repositories, identify improvements, create issues,
+                    implement solutions, and submit pull requests. Every contribution goes
+                    through mentor review to ensure fairness, maintain code quality, and provide
+                    valuable feedback throughout the event.
+                </p>
+            
+                <h4 style="margin-top:2rem;">Our Goal</h4>
+                <p>
+                    Our objective is to bridge the gap between learning and real-world software
+                    development by providing participants with practical experience in version
+                    control, collaboration, code reviews, and the complete open-source workflow.
+                </p>
+            
+                <h4 style="margin-top:2rem;">What Makes Commit Overflow Different?</h4>
+            
+                <ul style="margin-left:1.5rem;">
+                    <li>Real GitHub-based open-source workflow</li>
+                    <li>Participants identify and solve genuine project issues</li>
+                    <li>Mentor-reviewed issues and pull requests</li>
+                    <li>Live leaderboard with transparent scoring</li>
+                    <li>Dedicated dashboard for tracking contributions</li>
+                    <li>Recognition through awards, certificates, and the Commit Overflow Fellowship</li>
+                </ul>
+            
+                <h4 style="margin-top:2rem;">Our Mentors</h4>
+            
+                <p>
+                    Each repository is maintained by experienced mentors who review issues,
+                    assign difficulty levels, provide guidance, review pull requests, and help
+                    participants follow industry-standard development practices.
+                </p>
+            
+                <h4 style="margin-top:2rem;">Acknowledgements</h4>
+            
+                <p>
+                    Commit Overflow is inspired by community-driven open-source events such as
+                    <strong>Hack the Stack</strong> conducted by <strong>FOSS LBSTW</strong>,
+                    while introducing our own contribution workflow and event platform.
+                </p>
+            
+                <p>
+                    We sincerely thank every participant, mentor, maintainer, and volunteer who
+                    contributes their time and effort to making this event a meaningful learning
+                    experience.
+                </p>
+            
+            </div>
+        </div>
+        `;
+
         document.addEventListener('DOMContentLoaded', async () => {
             const container = document.getElementById('about-text-container');
             try {
                 const data = await API.fetchAboutUs();
-                container.textContent = data.content || "Welcome to Commit Overflow! Manage this content in the Admin Control Console.";
+                if (data && data.content) {
+                    container.innerHTML = data.content.replace(/\n/g, '<br>');
+                } else {
+                    container.innerHTML = defaultAboutHTML;
+                }
             } catch (e) {
                 console.error("Failed to fetch About Us content", e);
-                container.innerHTML = `
-                    <div style="color: var(--danger-color); text-align: center; padding: 2rem 0;">
-                        <i class="ph ph-warning" style="font-size: 2rem;"></i>
-                        <p class="mt-1">Failed to load content from server: ${e.message}</p>
-                    </div>
-                `;
+                container.innerHTML = defaultAboutHTML;
             }
         });
     </script>
