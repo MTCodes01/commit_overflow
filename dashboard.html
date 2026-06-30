@@ -126,7 +126,7 @@
             </div>
 
             <!-- Stats Row -->
-            <div class="grid grid-cols-4 md:grid-cols-2 gap-3 mb-4">
+            <div class="grid grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-3 mb-4">
                 <div class="card stat-card">
                     <span class="stat-label">Current Points</span>
                     <span class="stat-value text-primary" id="stat-points">--</span>
@@ -168,7 +168,10 @@
                     <div class="card">
                         <h2 class="mb-3">Recent Activity Feed</h2>
                         <div class="activity-feed" id="activity-feed-container">
-                            <div class="text-secondary text-center py-3">Loading activity...</div>
+                            <div class="loading-container">
+                                <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                                <p class="text-secondary mt-2">Loading activity...</p>
+                            </div>
                         </div>
                     </div>
 
@@ -214,7 +217,7 @@
             }
             
             // Set initial name based on currentUser
-            const formattedName = currentUser.name;
+            const formattedName = currentUser.name.split(' ')[0];
             document.getElementById('hero-username').textContent = formattedName;
             
             try {
@@ -224,7 +227,7 @@
                 
                 // Update user details
                 if (dashData.profile) {
-                    const formatted = dashData.profile.name.toLowerCase().replace(/\s+/g, '_');
+                    const formatted = dashData.profile.name.split(' ')[0];
                     document.getElementById('hero-username').textContent = formatted;
                     document.getElementById('stat-points').textContent = dashData.profile.total_points;
                 }

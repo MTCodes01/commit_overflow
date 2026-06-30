@@ -15,7 +15,6 @@
             align-items: flex-end;
             gap: 1rem;
             margin: 3rem 0;
-            min-height: 300px;
         }
         .podium-place {
             display: flex;
@@ -68,11 +67,11 @@
         @media (max-width: 480px) {
             .podium-container {
                 gap: 0.5rem;
-                min-height: 240px;
                 margin: 1.5rem 0;
             }
             .podium-place {
-                width: 100px;
+                flex: 1;
+                min-width: 0;
             }
             .podium-avatar {
                 width: 48px;
@@ -102,11 +101,28 @@
             justify-content: space-between;
             margin-bottom: 1rem;
             gap: 1rem;
+            flex-wrap: wrap;
         }
         .search-wrapper {
             flex-grow: 1;
             max-width: 400px;
             position: relative;
+        }
+        @media (max-width: 576px) {
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-wrapper {
+                max-width: 100%;
+            }
+            .controls-bar > .flex {
+                width: 100%;
+                flex-direction: column;
+            }
+            .controls-bar select {
+                width: 100% !important;
+            }
         }
         .search-wrapper i {
             position: absolute;
@@ -133,7 +149,10 @@
             </div>
 
             <div class="podium-container" id="podium-container">
-                <div class="text-secondary text-center py-4 w-full">Loading podium places...</div>
+                <div class="loading-container w-full">
+                    <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                    <p class="text-secondary mt-2">Loading podium places...</p>
+                </div>
             </div>
 
             <div class="card glass-card">
@@ -153,22 +172,35 @@
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>User</th>
-                                <th>College</th>
-                                <th>Score</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-body">
-                            <tr>
-                                <td colspan="4" class="text-center text-secondary py-3">Loading leaderboard...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="desktop-leaderboard">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>User</th>
+                                    <th>College</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="loading-container">
+                                            <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                                            <p class="text-secondary mt-2">Loading leaderboard...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="mobile-leaderboard-container" class="mobile-leaderboard-container">
+                    <div class="loading-container">
+                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                        <p class="text-secondary mt-2">Loading leaderboard...</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -241,35 +273,72 @@
                 
                 // 3. Render leaderboard body rows
                 const tbody = document.getElementById('leaderboard-body');
+                const mobileContainer = document.getElementById('mobile-leaderboard-container');
+                
                 const renderTable = (data) => {
-                    if (!tbody) return;
-                    tbody.innerHTML = '';
+                    if (tbody) tbody.innerHTML = '';
+                    if (mobileContainer) mobileContainer.innerHTML = '';
                     
                     if (data.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">No participants found.</td></tr>`;
+                        if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center text-secondary py-3">No participants found.</td></tr>`;
+                        if (mobileContainer) mobileContainer.innerHTML = `<div class="text-center text-secondary py-3">No participants found.</div>`;
                         return;
                     }
                     
                     data.forEach(entry => {
+                        // Desktop Table Rendering
                         let rankEmoji = entry.rank;
                         if (entry.rank === 1) rankEmoji = '🥇 1';
                         else if (entry.rank === 2) rankEmoji = '🥈 2';
                         else if (entry.rank === 3) rankEmoji = '🥉 3';
                         
-                        const tr = document.createElement('tr');
-                        tr.dataset.college = (entry.college || '').toLowerCase();
-                        tr.innerHTML = `
-                            <td><strong>${rankEmoji}</strong></td>
-                            <td class="flex items-center gap-2">
-                                <div style="width:24px;height:24px;background:var(--bg-tertiary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;">
-                                    ${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                        if (tbody) {
+                            const tr = document.createElement('tr');
+                            tr.dataset.college = (entry.college || '').toLowerCase();
+                            tr.innerHTML = `
+                                <td><strong>${rankEmoji}</strong></td>
+                                <td class="flex items-center gap-2">
+                                    <div style="width:24px;height:24px;background:var(--bg-tertiary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;">
+                                        ${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                                    </div>
+                                    ${entry.github_username}
+                                </td>
+                                <td>${entry.college || '---'}</td>
+                                <td class="text-primary font-bold">${entry.total_points}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+
+                        // Mobile Card Rendering
+                        if (mobileContainer) {
+                            const isTop3 = entry.rank <= 3;
+                            let mobileRankIcon = `<span class="text-secondary font-bold">#${entry.rank}</span>`;
+                            if (entry.rank === 1) mobileRankIcon = `<i class="ph ph-crown" style="color: gold; font-size: 1.5rem;"></i>`;
+                            else if (entry.rank === 2) mobileRankIcon = `<i class="ph ph-crown" style="color: silver; font-size: 1.5rem;"></i>`;
+                            else if (entry.rank === 3) mobileRankIcon = `<i class="ph ph-crown" style="color: #cd7f32; font-size: 1.5rem;"></i>`;
+                            
+                            const card = document.createElement('div');
+                            card.className = `mobile-lb-card ${entry.rank === 1 ? 'rank-1' : ''}`;
+                            card.innerHTML = `
+                                <div class="mobile-lb-username">${(entry.github_username || entry.name || 'UNKNOWN').toUpperCase()}</div>
+                                <div class="mobile-lb-content">
+                                    <div class="mobile-lb-rank">${mobileRankIcon}</div>
+                                    <div class="mobile-lb-avatar">
+                                        ${entry.avatar_url ? `<img src="${entry.avatar_url}" alt="avatar">` : `<i class="ph ph-user"></i>`}
+                                    </div>
+                                    <div class="mobile-lb-stats">
+                                        <div class="stat text-blue"><i class="ph ph-git-merge"></i> ${entry.prs || 0} PRs</div>
+                                        <div class="stat text-red"><i class="ph ph-warning-circle"></i> ${entry.issues || 0} Issues</div>
+                                        <div class="stat text-purple"><i class="ph ph-stack"></i> ${entry.repos || 0} Repos</div>
+                                    </div>
+                                    <div class="mobile-lb-scorebox">
+                                        <div class="score-val">${entry.total_points}</div>
+                                        <div class="score-lbl">STACK SCORE</div>
+                                    </div>
                                 </div>
-                                ${entry.github_username}
-                            </td>
-                            <td>${entry.college || '---'}</td>
-                            <td class="text-primary font-bold">${entry.total_points}</td>
-                        `;
-                        tbody.appendChild(tr);
+                            `;
+                            mobileContainer.appendChild(card);
+                        }
                     });
                 };
                 

@@ -64,9 +64,9 @@
                 </div>
 
                 <div id="queries-list">
-                    <div class="text-center py-4">
-                        <i class="ph ph-spinner-gap loading-spinner" style="font-size: 2rem;"></i>
-                        <p class="text-secondary mt-1">Loading queries...</p>
+                    <div class="loading-container">
+                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                        <p class="text-secondary mt-2">Loading queries...</p>
                     </div>
                 </div>
             </div>
@@ -220,7 +220,7 @@
                 const repliesList = document.getElementById('view-query-replies');
 
                 document.getElementById('view-query-id').value = queryId;
-                repliesList.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-secondary); text-align: center; padding: 1rem;">Loading replies...</div>';
+                repliesList.innerHTML = '<div class="loading-container py-3"><i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 1.5rem;"></i><p class="text-secondary mt-2">Loading replies...</p></div>';
                 modal.classList.add('active');
 
                 try {
