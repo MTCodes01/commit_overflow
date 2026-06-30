@@ -114,6 +114,7 @@
     </style>
 </head>
 <body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
     
     <div class="app-wrapper">
         <!-- Sidebar injected here -->
@@ -213,7 +214,7 @@
             }
             
             // Set initial name based on currentUser
-            const formattedName = currentUser.name.toLowerCase().replace(/\s+/g, '_');
+            const formattedName = currentUser.name;
             document.getElementById('hero-username').textContent = formattedName;
             
             try {
