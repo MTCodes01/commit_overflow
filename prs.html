@@ -94,6 +94,7 @@
     </style>
 </head>
 <body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
 
     <div class="app-wrapper">
         <!-- Sidebar will be injected here -->
@@ -125,9 +126,9 @@
 
                 <div id="prs-list">
                     <!-- Loaded dynamically -->
-                    <div class="text-center py-4">
-                        <i class="ph ph-spinner-gap loading-spinner" style="font-size: 2rem;"></i>
-                        <p class="text-secondary mt-1">Loading pull requests...</p>
+                    <div class="loading-container">
+                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                        <p class="text-secondary mt-2">Loading pull requests...</p>
                     </div>
                 </div>
             </div>

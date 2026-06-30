@@ -88,10 +88,11 @@
 </head>
 
 <body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
 	<div class="container">
 		<header class="nav-header">
 			<div class="logo">
-				<i class="ph ph-terminal-window"></i>
+				<img src="logo/Commit%20Overflow%20-%20Logo%20-%20clr.svg" alt="Logo" style="height: 36px; width: auto;">
 				Commit Overflow
 			</div>
 			<div class="nav-links">
@@ -157,7 +158,12 @@
 						</thead>
 						<tbody id="leaderboard-preview-body">
 							<tr>
-								<td colspan="4" class="text-center text-secondary py-3">Loading leaderboard...</td>
+								<td colspan="4">
+									<div class="loading-container">
+										<i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+										<p class="text-secondary mt-2">Loading leaderboard...</p>
+									</div>
+								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -183,7 +189,7 @@
 		<div class="container">
 			<p>
 				&copy; <span id="current-year"></span> Commit Overflow. Crafted for
-				the Open Source Community by.
+				the Open Source Community by <a href="https://foss.ceal.in" target="_blank">FOSS CEAL</a>.
 			</p>
 		</div>
 	</footer>
@@ -194,6 +200,11 @@
 			new Date().getFullYear();
 
 		document.addEventListener('DOMContentLoaded', async () => {
+			if (API.isAuthenticated && API.isAuthenticated()) {
+				window.location.href = 'dashboard.html';
+				return;
+			}
+
 			try {
 				const leaderboard = await API.fetchLeaderboard('all');
 				const tbody = document.getElementById('leaderboard-preview-body');

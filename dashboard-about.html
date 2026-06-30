@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
     
     <div class="app-wrapper">
         <!-- Sidebar injected here -->
@@ -22,7 +23,10 @@
 
             <div class="card mb-4" style="padding: 2rem;">
                 <div id="about-content" class="markdown-body">
-                    <p class="text-secondary">Loading about details...</p>
+                    <div class="loading-container">
+                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                        <p class="text-secondary mt-2">Loading about details...</p>
+                    </div>
                 </div>
             </div>
         </main>
@@ -39,6 +43,68 @@
 
             // Render Sidebar
             Components.renderSidebar('about');
+            
+            const defaultAboutHTML = `
+            <div class="text-center" style="white-space: normal; max-width: 900px; margin: 0;">
+                <div style="text-align: left; font-size: 1.05rem; line-height: 1.8; color: var(--text-secondary);">
+                
+                    <p>
+                        <strong>Commit Overflow</strong> is an online open-source contribution event
+                        organized by the <strong>FOSS Club, College of Engineering Attingal (CEAL)</strong>.
+                        The event is designed to introduce students to real-world collaborative software
+                        development through GitHub while encouraging quality contributions to open-source projects.
+                    </p>
+                
+                    <p>
+                        Participants explore repositories, identify improvements, create issues,
+                        implement solutions, and submit pull requests. Every contribution goes
+                        through mentor review to ensure fairness, maintain code quality, and provide
+                        valuable feedback throughout the event.
+                    </p>
+                
+                    <h4 style="margin-top:2rem;">Our Goal</h4>
+                    <p>
+                        Our objective is to bridge the gap between learning and real-world software
+                        development by providing participants with practical experience in version
+                        control, collaboration, code reviews, and the complete open-source workflow.
+                    </p>
+                
+                    <h4 style="margin-top:2rem;">What Makes Commit Overflow Different?</h4>
+                
+                    <ul style="margin-left:1.5rem;">
+                        <li>Real GitHub-based open-source workflow</li>
+                        <li>Participants identify and solve genuine project issues</li>
+                        <li>Mentor-reviewed issues and pull requests</li>
+                        <li>Live leaderboard with transparent scoring</li>
+                        <li>Dedicated dashboard for tracking contributions</li>
+                        <li>Recognition through awards, certificates, and the Commit Overflow Fellowship</li>
+                    </ul>
+                
+                    <h4 style="margin-top:2rem;">Our Mentors</h4>
+                
+                    <p>
+                        Each repository is maintained by experienced mentors who review issues,
+                        assign difficulty levels, provide guidance, review pull requests, and help
+                        participants follow industry-standard development practices.
+                    </p>
+                
+                    <h4 style="margin-top:2rem;">Acknowledgements</h4>
+                
+                    <p>
+                        Commit Overflow is inspired by community-driven open-source events such as
+                        <strong>Hack the Stack</strong> conducted by <strong>FOSS LBSTW</strong>,
+                        while introducing our own contribution workflow and event platform.
+                    </p>
+                
+                    <p>
+                        We sincerely thank every participant, mentor, maintainer, and volunteer who
+                        contributes their time and effort to making this event a meaningful learning
+                        experience.
+                    </p>
+                
+                </div>
+            </div>
+            `;
 
             try {
                 // Fetch About Us content
@@ -48,11 +114,13 @@
                     // Simple newline conversion or basic text display
                     aboutContent.innerHTML = data.content.replace(/\n/g, '<br>');
                 } else {
-                    aboutContent.innerHTML = "<p>No information available.</p>";
+                    aboutContent.innerHTML = defaultAboutHTML;
                 }
             } catch (err) {
                 console.error("Failed to load about us details:", err);
-                Components.showToast("Failed to load details.", "error");
+                const aboutContent = document.getElementById('about-content');
+                if (aboutContent) aboutContent.innerHTML = defaultAboutHTML;
+                Components.showToast("Failed to load details. Showing default.", "error");
             }
         });
     </script>
