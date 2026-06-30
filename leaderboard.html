@@ -64,35 +64,50 @@
         .podium-bar.second { height: 180px; border-color: #8b949e; background: linear-gradient(180deg, rgba(139,148,158,0.2) 0%, var(--bg-secondary) 100%); }
         .podium-bar.third { height: 140px; border-color: #a371f7; background: linear-gradient(180deg, rgba(163,113,247,0.2) 0%, var(--bg-secondary) 100%); }
         
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
             .podium-container {
-                gap: 0.5rem;
-                margin: 1.5rem 0;
+                gap: 0.25rem;
+                margin: 1rem 0;
+                padding: 0;
+                width: 100%;
+                box-sizing: border-box;
             }
             .podium-place {
-                flex: 1;
+                flex: 1 1 0;
+                width: auto;
                 min-width: 0;
             }
             .podium-avatar {
-                width: 48px;
-                height: 48px;
-                margin-bottom: -24px;
-                font-size: 1.5rem;
+                width: 40px !important;
+                height: 40px !important;
+                margin-bottom: -20px !important;
+                font-size: 1rem;
+                border-width: 2px;
             }
             .podium-place:nth-child(2) .podium-avatar {
-                width: 60px;
-                height: 60px;
-                margin-bottom: -30px;
+                width: 50px !important;
+                height: 50px !important;
+                margin-bottom: -25px !important;
+                border-width: 2px;
             }
-            .podium-bar.first { height: 170px; }
-            .podium-bar.second { height: 145px; }
-            .podium-bar.third { height: 120px; }
+            .podium-bar.first { height: 130px; }
+            .podium-bar.second { height: 110px; }
+            .podium-bar.third { height: 90px; }
             .podium-bar {
-                padding-top: 30px;
-                font-size: 0.875rem;
+                padding-top: 25px;
+                font-size: 0.7rem;
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
             }
             .podium-bar .text-sm {
-                font-size: 0.75rem !important;
+                font-size: 0.65rem !important;
+            }
+            .podium-bar strong {
+                font-size: 0.8rem;
+                display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
             }
         }
         

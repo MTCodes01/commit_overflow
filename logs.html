@@ -59,10 +59,14 @@
         .log-time {
             color: var(--text-secondary);
             min-width: 150px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .log-level {
             font-weight: bold;
             min-width: 90px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         .log-level.INFO { color: #58a6ff; }
         .log-level.SUCCESS { color: #3fb950; }
@@ -75,6 +79,21 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .log-line {
+                flex-wrap: wrap;
+                gap: 0.25rem 1rem;
+            }
+            .log-message {
+                flex-basis: 100%;
+            }
+            .log-time {
+                min-width: auto;
+            }
+            .log-level {
+                min-width: auto;
+            }
         }
     </style>
 </head>

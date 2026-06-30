@@ -111,6 +111,37 @@
         .legend-box.level-2 { background-color: #006d32; }
         .legend-box.level-3 { background-color: #26a641; }
         .legend-box.level-4 { background-color: #39d353; }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .tag-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tag-stat-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .tag-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -145,9 +176,9 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 md:grid-cols-1 gap-4">
+            <div class="dashboard-grid">
                 <!-- Left Column -->
-                <div class="grid-cols-2" style="grid-column: span 2;">
+                <div>
                     
                     <div class="card mb-4">
                         <h2 class="mb-3">Contribution Activity</h2>
@@ -179,6 +210,15 @@
 
                 <!-- Right Column -->
                 <div>
+                    <div class="card glass-card mb-4">
+                        <h2 class="mb-2">Tag Statistics</h2>
+                        <div id="tag-stats-container">
+                            <div class="loading-container" style="padding: 1rem 0;">
+                                <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card glass-card mb-4">
                         <h2 class="mb-2">Quick Actions</h2>
                         <div class="flex flex-col gap-2">
@@ -248,6 +288,46 @@
                 } catch (e) {
                     console.error("Failed to load leaderboard rank", e);
                     document.getElementById('stat-rank').textContent = '--';
+                }
+
+                // Fetch Tag Stats
+                try {
+                    const tagStatsContainer = document.getElementById('tag-stats-container');
+                    const tagStats = await API.fetchTagStats(currentUser.id);
+                    
+                    if (tagStatsContainer) {
+                        tagStatsContainer.innerHTML = '';
+                        if (!tagStats || Object.keys(tagStats).length === 0) {
+                            tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">No tags assigned yet.</div>';
+                        } else {
+                            // Define badge colors for different tags
+                            const tagColors = {
+                                'easy': '#3fb950', // green
+                                'medium': '#d29922', // yellow/orange
+                                'hard': '#f85149', // red
+                                'documentation': '#58a6ff', // blue
+                                'bug': '#f85149',
+                                'enhancement': '#a371f7' // purple
+                            };
+                            
+                            Object.entries(tagStats).forEach(([tag, count]) => {
+                                const color = tagColors[tag.toLowerCase()] || '#8b949e'; // default gray
+                                const div = document.createElement('div');
+                                div.className = 'tag-stat-item';
+                                div.innerHTML = `
+                                    <span class="text-secondary" style="text-transform: capitalize;">${tag}</span>
+                                    <span class="tag-badge" style="background-color: ${color};">${count}</span>
+                                `;
+                                tagStatsContainer.appendChild(div);
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch tag stats", e);
+                    const tagStatsContainer = document.getElementById('tag-stats-container');
+                    if (tagStatsContainer) {
+                        tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">Failed to load stats.</div>';
+                    }
                 }
                 
                 // Render Activity Feed
