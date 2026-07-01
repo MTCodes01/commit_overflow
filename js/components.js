@@ -70,7 +70,7 @@ const Components = {
                     <i class="ph ph-list"></i>
                 </button>
                 <div class="mobile-logo">
-                    <img src="logo/Commit%20Overflow%20-%20Logo%20-%20clr.svg" alt="Logo" style="height: 36px; width: auto;">
+                    <img src="logo/logo-light-clr.svg" alt="Logo" width="36" height="36" style="height: 36px; width: auto;">
                 </div>
             </div>
         `,

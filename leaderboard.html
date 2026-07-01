@@ -20,8 +20,11 @@
     <meta property="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="preload" href="css/components.css" as="style">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
     <style>
@@ -257,7 +260,7 @@
                         <!-- Second Place -->
                         <div class="podium-place">
                             <div class="podium-avatar" style="border-color: #8b949e; overflow: hidden;">
-                                ${second && second.avatar_url ? `<img src="${second.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                                ${second && second.avatar_url ? `<img src="${second.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
                             </div>
                             <div class="podium-bar second">
                                 <div>2</div>
@@ -268,7 +271,7 @@
                         <!-- First Place -->
                         <div class="podium-place">
                             <div class="podium-avatar" style="border-color: #d29922; width: 80px; height: 80px; margin-bottom: -40px; overflow: hidden;">
-                                ${first && first.avatar_url ? `<img src="${first.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-crown" style="color: #d29922;"></i>'}
+                                ${first && first.avatar_url ? `<img src="${first.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-crown" style="color: #d29922;"></i>'}
                             </div>
                             <div class="podium-bar first">
                                 <div style="font-size: 1.5rem;">1</div>
@@ -279,7 +282,7 @@
                         <!-- Third Place -->
                         <div class="podium-place">
                             <div class="podium-avatar" style="border-color: #a371f7; overflow: hidden;">
-                                ${third && third.avatar_url ? `<img src="${third.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                                ${third && third.avatar_url ? `<img src="${third.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
                             </div>
                             <div class="podium-bar third">
                                 <div>3</div>
@@ -330,7 +333,7 @@
                                 <td><strong>${rankEmoji}</strong></td>
                                 <td class="flex items-center gap-2">
                                     <div style="width:24px;height:24px;background:var(--bg-tertiary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;">
-                                        ${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                                        ${entry.avatar_url ? `<img src="${entry.avatar_url}" width="32" height="32" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
                                     </div>
                                     ${entry.github_username}
                                 </td>
@@ -355,7 +358,7 @@
                                 <div class="mobile-lb-content">
                                     <div class="mobile-lb-rank">${mobileRankIcon}</div>
                                     <div class="mobile-lb-avatar">
-                                        ${entry.avatar_url ? `<img src="${entry.avatar_url}" alt="avatar">` : `<i class="ph ph-user"></i>`}
+                                        ${entry.avatar_url ? `<img src="${entry.avatar_url}" width="32" height="32" alt="avatar">` : `<i class="ph ph-user"></i>`}
                                     </div>
                                     <div class="mobile-lb-stats">
                                         <div class="stat text-blue"><i class="ph ph-git-merge"></i> ${entry.prs || 0} PRs</div>
