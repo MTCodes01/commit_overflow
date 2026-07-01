@@ -57,6 +57,7 @@
   border-radius: 8px;
   padding: 1.5rem;
   transition: transform 0.2s, border-color 0.2s;
+  min-width: 0;
 }
 .card:hover {
   border-color: #8b949e;

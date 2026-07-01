@@ -119,14 +119,41 @@
         .legend-box.level-3 { background-color: #26a641; }
         .legend-box.level-4 { background-color: #39d353; }
         
-        .dashboard-grid {
+        .bento-dashboard {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            grid-auto-flow: dense;
         }
-        @media (max-width: 992px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
+        
+        .bento-card {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100%;
+        }
+
+        .bento-stat { grid-column: span 1; }
+        .bento-heatmap { grid-column: span 2; }
+        .bento-feed { grid-column: span 2; grid-row: span 2; }
+        .bento-tags { grid-column: span 1; grid-row: span 2; }
+        .bento-issues { grid-column: span 2; }
+        .bento-actions { grid-column: span 1; }
+
+        @media (max-width: 1200px) {
+            .bento-dashboard { grid-template-columns: repeat(2, 1fr); }
+            .bento-heatmap { grid-column: span 2; }
+            .bento-tags { grid-column: span 1; grid-row: span 1; }
+            .bento-feed { grid-column: span 2; grid-row: span 1; }
+            .bento-issues { grid-column: span 2; }
+            .bento-actions { grid-column: span 2; }
+        }
+
+        @media (max-width: 768px) {
+            .bento-dashboard { grid-template-columns: 1fr; }
+            .bento-stat, .bento-heatmap, .bento-tags, .bento-feed, .bento-issues, .bento-actions {
+                grid-column: span 1;
+                grid-row: auto;
             }
         }
         
@@ -163,84 +190,79 @@
                 <p class="text-secondary mt-1">Here is your current progress in the competition.</p>
             </div>
 
-            <!-- Stats Row -->
-            <div class="grid grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-3 mb-4">
-                <div class="card stat-card">
+            <div class="bento-dashboard">
+                <div class="card stat-card bento-card bento-stat">
                     <span class="stat-label">Current Points</span>
                     <span class="stat-value text-primary" id="stat-points">--</span>
                 </div>
-                <div class="card stat-card">
+                <div class="card stat-card bento-card bento-stat">
                     <span class="stat-label">Leaderboard Rank</span>
                     <span class="stat-value" id="stat-rank">--</span>
                 </div>
-                <div class="card stat-card">
+                <div class="card stat-card bento-card bento-stat">
                     <span class="stat-label">Repos Contributed</span>
                     <span class="stat-value" id="stat-repos">--</span>
                 </div>
-                <div class="card stat-card">
+                <div class="card stat-card bento-card bento-stat">
                     <span class="stat-label">Projected Score</span>
                     <span class="stat-value" style="color: #a371f7;" id="stat-projected">--</span>
                 </div>
-            </div>
 
-            <div class="dashboard-grid">
-                <!-- Left Column -->
-                <div>
-                    
-                    <div class="card mb-4">
-                        <h2 class="mb-3">Contribution Activity</h2>
-                        <div class="heatmap-container mb-2">
-                            <div class="heatmap-grid" id="heatmap-grid"></div>
-                            <div class="heatmap-legend">
-                                <span>Less</span>
-                                <span class="legend-box level-0"></span>
-                                <span class="legend-box level-1"></span>
-                                <span class="legend-box level-2"></span>
-                                <span class="legend-box level-3"></span>
-                                <span class="legend-box level-4"></span>
-                                <span>More</span>
-                            </div>
+                <div class="card bento-card bento-heatmap">
+                    <h2 class="mb-3">Contribution Activity</h2>
+                    <div class="heatmap-container mb-2">
+                        <div class="heatmap-grid" id="heatmap-grid"></div>
+                        <div class="heatmap-legend">
+                            <span>Less</span>
+                            <span class="legend-box level-0"></span>
+                            <span class="legend-box level-1"></span>
+                            <span class="legend-box level-2"></span>
+                            <span class="legend-box level-3"></span>
+                            <span class="legend-box level-4"></span>
+                            <span>More</span>
                         </div>
                     </div>
-
-                    <div class="card">
-                        <h2 class="mb-3">Recent Activity Feed</h2>
-                        <div class="activity-feed" id="activity-feed-container">
-                            <div class="loading-container">
-                                <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
-                                <p class="text-secondary mt-2">Loading activity...</p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- Right Column -->
-                <div>
-                    <div class="card glass-card mb-4">
-                        <h2 class="mb-2">Tag Statistics</h2>
-                        <div id="tag-stats-container">
-                            <div class="loading-container" style="padding: 1rem 0;">
-                                <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 1.5rem;"></i>
-                            </div>
+                <div class="card bento-card bento-feed">
+                    <h2 class="mb-3">Recent Activity Feed</h2>
+                    <div class="activity-feed" id="activity-feed-container" style="flex-grow: 1; overflow-y: auto; max-height: 400px; padding-right: 0.5rem;">
+                        <div class="loading-container">
+                            <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                            <p class="text-secondary mt-2">Loading activity...</p>
                         </div>
                     </div>
+                </div>
 
-                    <div class="card glass-card mb-4">
-                        <h2 class="mb-2">Quick Actions</h2>
-                        <div class="flex flex-col gap-2">
-                            <a href="queries.html" class="btn btn-primary btn-block justify-between">
-                                Raise a Query <i class="ph ph-arrow-right"></i>
-                            </a>
-                            <a href="leaderboard.html" class="btn btn-secondary btn-block justify-between">
-                                View Leaderboard <i class="ph ph-arrow-right"></i>
-                            </a>
-                            <a href="rules.html" class="btn btn-secondary btn-block justify-between">
-                                Read Rules <i class="ph ph-arrow-right"></i>
-                            </a>
+                <div class="card glass-card bento-card bento-tags">
+                    <h2 class="mb-2">Tag Statistics</h2>
+                    <div id="tag-stats-container" style="flex-grow: 1; overflow-y: auto; max-height: 400px; padding-right: 0.5rem;">
+                        <div class="loading-container" style="padding: 1rem 0;">
+                            <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 1.5rem;"></i>
                         </div>
                     </div>
+                </div>
 
+                <div class="card glass-card bento-card bento-issues">
+                    <h2 class="mb-2">Active Issues</h2>
+                    <div id="active-issues-container" style="flex-grow: 1; overflow-y: auto; max-height: 250px; padding-right: 0.5rem;">
+                        <div class="text-secondary py-2">Loading active issues...</div>
+                    </div>
+                </div>
+
+                <div class="card glass-card bento-card bento-actions">
+                    <h2 class="mb-2">Quick Actions</h2>
+                    <div class="flex flex-col gap-2">
+                        <a href="queries.html" class="btn btn-primary btn-block justify-between">
+                            Raise a Query <i class="ph ph-arrow-right"></i>
+                        </a>
+                        <a href="leaderboard.html" class="btn btn-secondary btn-block justify-between">
+                            View Leaderboard <i class="ph ph-arrow-right"></i>
+                        </a>
+                        <a href="rules.html" class="btn btn-secondary btn-block justify-between">
+                            Read Rules <i class="ph ph-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </main>
@@ -402,6 +424,35 @@
                                 </div>
                             `;
                             container.appendChild(div);
+                        });
+                    }
+                }
+
+                // Render Active Issues
+                const activeIssuesContainer = document.getElementById('active-issues-container');
+                if (activeIssuesContainer) {
+                    activeIssuesContainer.innerHTML = '';
+                    const activeIssues = dashData.active_issues || [];
+                    if (activeIssues.length === 0) {
+                        activeIssuesContainer.innerHTML = '<div class="text-secondary py-2 text-sm">No active issues.</div>';
+                    } else {
+                        activeIssues.forEach(issue => {
+                            let difficultyColor = 'var(--text-secondary)';
+                            if (issue.difficulty === 'easy') difficultyColor = '#3fb950';
+                            else if (issue.difficulty === 'medium') difficultyColor = '#d29922';
+                            else if (issue.difficulty === 'hard') difficultyColor = '#f85149';
+                            
+                            const div = document.createElement('div');
+                            div.className = 'mb-3 pb-3 border-b border-color last:border-0 last:mb-0 last:pb-0';
+                            div.style.borderBottom = '1px solid var(--border-color)';
+                            div.innerHTML = `
+                                <div class="font-medium mb-1"><a href="https://github.com/zyndor1548/my-first-site/issues/${issue.github_issue_id}" target="_blank" style="color: var(--text-primary); text-decoration: none;">${issue.title} <span class="text-secondary text-sm">#${issue.github_issue_id}</span></a></div>
+                                <div class="flex gap-2 text-xs">
+                                    <span style="color: ${difficultyColor}; text-transform: capitalize;">${issue.difficulty}</span>
+                                    <span class="text-secondary">${issue.repo}</span>
+                                </div>
+                            `;
+                            activeIssuesContainer.appendChild(div);
                         });
                     }
                 }

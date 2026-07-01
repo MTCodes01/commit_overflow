@@ -223,12 +223,22 @@
                         `;
                     }
                     
+                    // Load avatar
+                    if (dashData.profile && dashData.profile.avatar_url) {
+                        const avatarDiv = document.querySelector('.profile-header .avatar');
+                        if (avatarDiv) {
+                            avatarDiv.style.overflow = 'hidden';
+                            avatarDiv.style.padding = '0';
+                            avatarDiv.innerHTML = `<img src="${dashData.profile.avatar_url}" alt="Profile Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                        }
+                    }
+                    
                     // Fill read-only input (if any exists)
                     
                     // Update stats
                     const statsCards = document.querySelectorAll('.stat-value');
                     if (statsCards.length >= 4) {
-                        statsCards[1].textContent = user.total_points;
+                        statsCards[1].textContent = dashData.profile.total_points || 0;
                         statsCards[2].textContent = dashData.stats.prs_merged || 0;
                         statsCards[3].textContent = dashData.stats.issues_closed || 0;
                     }
