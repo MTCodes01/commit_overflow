@@ -344,11 +344,7 @@
                             const iconColorClass = isPR ? 'pr' : 'issue';
                             
                             // Format date nicely
-                            let dateStr = item.created_at;
-                            try {
-                                const date = new Date(item.created_at);
-                                dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                            } catch(e) {}
+                            let dateStr = API.formatDateTime(item.created_at);
                             
                             // Format related GitHub link
                             let linkHtml = '';

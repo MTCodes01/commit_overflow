@@ -285,21 +285,21 @@
 
                     // Format deadline
                     const deadlineText = issue.deadline_at 
-                        ? new Date(issue.deadline_at).toLocaleDateString()
+                        ? API.formatDateTime(issue.deadline_at)
                         : 'No Deadline';
 
                     // Format timing fields
                     const createdText = issue.created_at
-                        ? new Date(issue.created_at).toLocaleDateString()
+                        ? API.formatDateTime(issue.created_at)
                         : 'N/A';
                     const assignedText = issue.assigned_at
-                        ? new Date(issue.assigned_at).toLocaleString()
+                        ? API.formatDateTime(issue.assigned_at)
                         : 'N/A';
                     const startedText = issue.started_at
-                        ? new Date(issue.started_at).toLocaleString()
+                        ? API.formatDateTime(issue.started_at)
                         : 'N/A';
                     const finishedText = issue.finished_at
-                        ? new Date(issue.finished_at).toLocaleString()
+                        ? API.formatDateTime(issue.finished_at)
                         : 'N/A';
 
                     let durationText = 'N/A';

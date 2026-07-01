@@ -111,9 +111,8 @@
             <div class="card glass-card">
                 <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
                     <div class="flex gap-2">
-                        <button class="btn btn-secondary active" id="tab-open">Open</button>
+                        <button class="btn btn-secondary active" id="tab-pending">Pending Review</button>
                         <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-merged">Merged</button>
-                        <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-closed">Closed / Unmerged</button>
                     </div>
                 </div>
 
@@ -150,7 +149,7 @@
             Components.renderSidebar('prs');
 
             let allPRs = [];
-            let activeTab = 'open'; // 'open', 'merged', 'closed'
+            let activeTab = 'pending'; // 'pending', 'merged'
             const user = API.getCurrentUser();
 
             const searchInput = document.getElementById('prs-search');
@@ -158,32 +157,27 @@
             const prsListContainer = document.getElementById('prs-list');
 
             // Tabs
-            const tabOpen = document.getElementById('tab-open');
+            const tabPending = document.getElementById('tab-pending');
             const tabMerged = document.getElementById('tab-merged');
-            const tabClosed = document.getElementById('tab-closed');
 
             const setTab = (tab) => {
                 activeTab = tab;
-                [tabOpen, tabMerged, tabClosed].forEach(t => {
+                [tabPending, tabMerged].forEach(t => {
                     t.classList.remove('active');
                     t.style.opacity = '0.7';
                 });
-                if (tab === 'open') {
-                    tabOpen.classList.add('active');
-                    tabOpen.style.opacity = '1';
+                if (tab === 'pending') {
+                    tabPending.classList.add('active');
+                    tabPending.style.opacity = '1';
                 } else if (tab === 'merged') {
                     tabMerged.classList.add('active');
                     tabMerged.style.opacity = '1';
-                } else if (tab === 'closed') {
-                    tabClosed.classList.add('active');
-                    tabClosed.style.opacity = '1';
                 }
                 renderPRs();
             };
 
-            tabOpen.addEventListener('click', () => setTab('open'));
+            tabPending.addEventListener('click', () => setTab('pending'));
             tabMerged.addEventListener('click', () => setTab('merged'));
-            tabClosed.addEventListener('click', () => setTab('closed'));
 
             searchInput.addEventListener('input', renderPRs);
             repoFilter.addEventListener('change', renderPRs);
@@ -224,12 +218,10 @@
                 const selectedRepo = repoFilter.value;
 
                 let filtered = allPRs.filter(pr => {
-                    if (activeTab === 'open') {
+                    if (activeTab === 'pending') {
                         return pr.status === 'under_review' || pr.status === 'approved' || pr.status === 'needs_changes';
                     } else if (activeTab === 'merged') {
                         return pr.status === 'merged';
-                    } else if (activeTab === 'closed') {
-                        return pr.status === 'closed_unmerged' || pr.status === 'invalid_assignment';
                     }
                     return false;
                 });
@@ -284,8 +276,8 @@
 
                     // Format date
                     const dateText = pr.status === 'merged' && pr.merged_at
-                        ? `Merged on ${new Date(pr.merged_at).toLocaleDateString()}`
-                        : `Submitted on ${new Date(pr.created_at).toLocaleDateString()}`;
+                        ? `Merged on ${API.formatDateTime(pr.merged_at)}`
+                        : `Submitted on ${API.formatDateTime(pr.created_at)}`;
 
                     // PR external GitHub link
                     const prLink = `${pr.repo_url}/pull/${pr.github_pr_id}`;
@@ -294,7 +286,7 @@
                     if (pr.difficulty === 'easy') basePoints = 20;
                     else if (pr.difficulty === 'medium') basePoints = 35;
                     else if (pr.difficulty === 'hard') basePoints = 50;
-                    else if (pr.difficulty === 'documentation') basePoints = 15;
+                    else if (pr.difficulty === 'documentation') basePoints = 10;
 
                     const pointsText = pr.status === 'merged' 
                         ? `<span class="text-primary" style="font-weight: 600;">+${basePoints} Points Awarded</span>` 
@@ -324,6 +316,7 @@
                         </p>
                         <div class="pr-meta-info">
                             <span><i class="ph ph-clock"></i> ${dateText}</span>
+                            <span><i class="ph ph-user"></i> Contributed by: <strong>${pr.github_username || pr.user_id}</strong></span>
                             <span><i class="ph ph-sparkle"></i> Points status: ${pointsText}</span>
                         </div>
                     `;

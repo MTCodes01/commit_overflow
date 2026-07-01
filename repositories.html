@@ -212,7 +212,7 @@
                             item.className = 'detail-item';
                             item.innerHTML = `
                                 <div>
-                                    <strong>PR #${pr.github_pr_id}</strong> by @${pr.user_id}
+                                    <strong>PR #${pr.github_pr_id}</strong> by @${pr.github_username || pr.user_id}
                                 </div>
                                 <span class="badge ${badgeClass}">${pr.status.toUpperCase()}</span>
                             `;

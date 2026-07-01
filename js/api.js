@@ -8,7 +8,7 @@ const API = {
 
   async getBaseUrl() {
     if (!this.baseUrlPromise) {
-      this.baseUrlPromise = fetch('config.json')
+      this.baseUrlPromise = fetch('config.json?t=' + Date.now())
         .then(res => res.json())
         .then(config => config.API_BASE_URL)
         .catch(err => {
@@ -122,11 +122,11 @@ const API = {
   },
 
   async fetchDashboardData(userId) {
-    return this.request(`/users/${userId}/dashboard`);
+    return this.request(`/users/me/dashboard`);
   },
 
   async fetchProjectedScore(userId) {
-    return this.request(`/users/${userId}/projected`);
+    return this.request(`/users/me/projected`);
   },
 
   async fetchLogs() {
@@ -175,7 +175,7 @@ const API = {
   },
 
   async getConfig() {
-    return fetch('config.json').then(res => res.json()).catch(() => ({}));
+    return fetch('config.json?t=' + Date.now()).then(res => res.json()).catch(() => ({}));
   },
 
   async fetchRepos() {
@@ -212,6 +212,35 @@ const API = {
   },
 
   async fetchTagStats(userId) {
-    return this.request(`/users/${userId}/tag-stats`);
+    return this.request(`/users/me/tag-stats`);
+  },
+
+  formatDateTime(dateInput) {
+    if (!dateInput) return '';
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return '';
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short'
+      }).formatToParts(date);
+
+      const day = parts.find(p => p.type === 'day').value;
+      const month = parts.find(p => p.type === 'month').value;
+      const year = parts.find(p => p.type === 'year').value;
+      const hour = parts.find(p => p.type === 'hour').value;
+      const minute = parts.find(p => p.type === 'minute').value;
+      const dayPeriod = parts.find(p => p.type === 'dayPeriod').value;
+      const timeZoneName = parts.find(p => p.type === 'timeZoneName').value;
+
+      return `${day} ${month} ${year}, ${hour}:${minute} ${dayPeriod} ${timeZoneName}`;
+    } catch (e) {
+      return date.toLocaleString();
+    }
   }
 };
