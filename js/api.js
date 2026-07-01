@@ -108,10 +108,10 @@ const API = {
     return user;
   },
 
-  async updateProfile(name, college) {
+  async updateProfile(name, college, technologies) {
     const user = await this.request('/users/me', {
       method: 'PATCH',
-      body: JSON.stringify({ name, college })
+      body: JSON.stringify({ name, college, technologies })
     });
     localStorage.setItem('currentUser', JSON.stringify(user));
     return user;
@@ -170,15 +170,8 @@ const API = {
     });
   },
 
-  async fetchAboutUs() {
-    return this.request('/about');
-  },
-
-  async updateAboutUs(content) {
-    return this.request('/admin/about', {
-      method: 'PATCH',
-      body: JSON.stringify({ content })
-    });
+  async fetchTechnologies() {
+    return this.request('/technologies');
   },
 
   async getConfig() {

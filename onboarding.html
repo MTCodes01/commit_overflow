@@ -54,16 +54,10 @@
         <p class="text-secondary mt-1">Select the technologies you want to contribute to. We'll use this to recommend repositories.</p>
         
         <div class="tech-grid" id="tech-grid">
-            <div class="tech-card" data-tech="python"><i class="ph ph-file-py"></i> Python</div>
-            <div class="tech-card" data-tech="java"><i class="ph ph-coffee"></i> Java</div>
-            <div class="tech-card" data-tech="javascript"><i class="ph ph-file-js"></i> JavaScript</div>
-            <div class="tech-card" data-tech="typescript"><i class="ph ph-file-ts"></i> TypeScript</div>
-            <div class="tech-card" data-tech="go"><i class="ph ph-google-logo"></i> Go</div>
-            <div class="tech-card" data-tech="flutter"><i class="ph ph-device-mobile"></i> Flutter</div>
-            <div class="tech-card" data-tech="react"><i class="ph ph-atom"></i> React</div>
-            <div class="tech-card" data-tech="nodejs"><i class="ph ph-hexagon"></i> Node.js</div>
-            <div class="tech-card" data-tech="rust"><i class="ph ph-gear"></i> Rust</div>
-            <div class="tech-card" data-tech="cpp"><i class="ph ph-file-c"></i> C/C++</div>
+            <div class="loading-container">
+                <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                <p class="text-secondary mt-2">Loading interests...</p>
+            </div>
         </div>
 
         <a href="community.html" class="btn btn-primary" id="continue-btn" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
@@ -74,7 +68,7 @@
     <script src="js/api.js"></script>
     <script src="js/components.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             if (!API.isAuthenticated()) {
                 window.location.href = 'login.html';
                 return;
@@ -86,21 +80,61 @@
                 return;
             }
 
-            // Tech card selection UI logic
-            const cards = document.querySelectorAll('.tech-card');
-            cards.forEach(card => {
-                card.addEventListener('click', () => {
-                    card.classList.toggle('selected');
-                });
-            });
+            // Load technologies dynamically
+            const renderTechs = async () => {
+                try {
+                    const techs = await API.fetchTechnologies();
+                    const grid = document.getElementById('tech-grid');
+                    if (grid) {
+                        grid.innerHTML = '';
+                        techs.forEach(t => {
+                            let icon = 'ph-hexagon';
+                            if (t.name === 'javascript') icon = 'ph-file-js';
+                            else if (t.name === 'react') icon = 'ph-atom';
+                            else if (t.name === 'python') icon = 'ph-file-py';
+                            else if (t.name === 'go') icon = 'ph-google-logo';
+                            else if (t.name === 'rust') icon = 'ph-gear';
+                            else if (t.name === 'typescript') icon = 'ph-file-ts';
+                            else if (t.name === 'java') icon = 'ph-coffee';
+                            else if (t.name === 'flutter') icon = 'ph-device-mobile';
+                            else if (t.name === 'cpp') icon = 'ph-file-c';
+
+                            const div = document.createElement('div');
+                            div.className = 'tech-card';
+                            div.setAttribute('data-tech', t.name);
+                            div.innerHTML = `<i class="ph ${icon}"></i> ${t.display_name}`;
+                            div.addEventListener('click', () => {
+                                div.classList.toggle('selected');
+                            });
+                            grid.appendChild(div);
+                        });
+                    }
+                } catch(e) {
+                    console.error("Failed to load technologies", e);
+                }
+            };
+            
+            await renderTechs();
 
             // Save interests on continue
             const continueBtn = document.getElementById('continue-btn');
             if (continueBtn) {
-                continueBtn.addEventListener('click', (e) => {
+                continueBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    
                     const selectedCards = document.querySelectorAll('.tech-card.selected');
-                    const interests = Array.from(selectedCards).map(card => card.textContent.trim());
-                    localStorage.setItem(`interests_${currentUser.github_username}`, JSON.stringify(interests));
+                    const interests = Array.from(selectedCards).map(card => card.getAttribute('data-tech')).join(',');
+                    
+                    try {
+                        continueBtn.style.pointerEvents = 'none';
+                        continueBtn.textContent = 'Saving...';
+                        
+                        await API.updateProfile(currentUser.name, currentUser.college || '', interests);
+                        window.location.href = 'community.html';
+                    } catch (err) {
+                        console.error("Failed to save interests:", err);
+                        window.location.href = 'community.html';
+                    }
                 });
             }
         });

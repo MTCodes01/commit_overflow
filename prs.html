@@ -44,8 +44,11 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .pr-card.status-under_review { border-left-color: var(--accent-secondary); }
+        .pr-card.status-approved { border-left-color: #3fb950; }
+        .pr-card.status-needs_changes { border-left-color: #d29922; }
         .pr-card.status-merged { border-left-color: var(--accent-primary); }
         .pr-card.status-closed_unmerged { border-left-color: var(--danger-color); }
+        .pr-card.status-invalid_assignment { border-left-color: var(--danger-color); }
 
         .pr-header {
             display: flex;
@@ -222,11 +225,11 @@
 
                 let filtered = allPRs.filter(pr => {
                     if (activeTab === 'open') {
-                        return pr.status === 'under_review';
+                        return pr.status === 'under_review' || pr.status === 'approved' || pr.status === 'needs_changes';
                     } else if (activeTab === 'merged') {
                         return pr.status === 'merged';
                     } else if (activeTab === 'closed') {
-                        return pr.status === 'closed_unmerged';
+                        return pr.status === 'closed_unmerged' || pr.status === 'invalid_assignment';
                     }
                     return false;
                 });
@@ -239,6 +242,7 @@
                     filtered = filtered.filter(pr => 
                         pr.github_pr_id.toString().includes(searchQuery) ||
                         pr.repo_name.toLowerCase().includes(searchQuery) ||
+                        (pr.title && pr.title.toLowerCase().includes(searchQuery)) ||
                         (pr.issue_title && pr.issue_title.toLowerCase().includes(searchQuery))
                     );
                 }
@@ -267,6 +271,15 @@
                     } else if (pr.status === 'closed_unmerged') {
                         statusLabel = 'Closed (Unmerged)';
                         badgeClass = 'badge-danger';
+                    } else if (pr.status === 'approved') {
+                        statusLabel = 'Approved';
+                        badgeClass = 'badge-success';
+                    } else if (pr.status === 'needs_changes') {
+                        statusLabel = 'Needs Changes';
+                        badgeClass = 'badge-warning';
+                    } else if (pr.status === 'invalid_assignment') {
+                        statusLabel = 'Invalid Assignment';
+                        badgeClass = 'badge-danger';
                     }
 
                     // Format date
@@ -277,29 +290,41 @@
                     // PR external GitHub link
                     const prLink = `${pr.repo_url}/pull/${pr.github_pr_id}`;
 
+                    let basePoints = 50;
+                    if (pr.difficulty === 'easy') basePoints = 20;
+                    else if (pr.difficulty === 'medium') basePoints = 35;
+                    else if (pr.difficulty === 'hard') basePoints = 50;
+                    else if (pr.difficulty === 'documentation') basePoints = 15;
+
+                    const pointsText = pr.status === 'merged' 
+                        ? `<span class="text-primary" style="font-weight: 600;">+${basePoints} Points Awarded</span>` 
+                        : (pr.status === 'closed_unmerged' || pr.status === 'invalid_assignment'
+                            ? '<span style="color: var(--danger-color); font-weight: 600;">0 Points</span>' 
+                            : `<span style="color: var(--warning-color); font-weight: 600;">+${basePoints} Points Projected</span>`);
+
+                    const difficultyBadge = pr.difficulty
+                        ? `<span class="badge" style="background-color: ${pr.difficulty === 'easy' ? '#3fb950' : (pr.difficulty === 'medium' ? '#d29922' : (pr.difficulty === 'documentation' ? '#58a6ff' : '#f85149'))}; text-transform: capitalize; font-size: 0.75rem; padding: 0.2rem 0.5rem; margin-left: 0.5rem;">${pr.difficulty}</span>`
+                        : '';
+
                     card.innerHTML = `
                         <div class="pr-header">
                             <div class="pr-title-area">
                                 <a href="repositories.html?id=${pr.repo_id}" class="pr-repo">${pr.repo_name}</a>
                                 <h3>
-                                    <a href="${prLink}" target="_blank">PR #${pr.github_pr_id}</a>
+                                    <a href="${prLink}" target="_blank">${pr.title || `PR #${pr.github_pr_id}`}</a>
                                     <i class="ph ph-arrow-square-out" style="font-size: 0.85rem; color: var(--text-secondary);"></i>
                                 </h3>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">PR Number: #${pr.github_pr_id}</div>
                             </div>
                             <span class="badge ${badgeClass}">${statusLabel}</span>
                         </div>
-                        <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.5rem;">
+                        <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.5rem; display: flex; align-items: center;">
                             ${pr.issue_title ? `Addresses issue: <strong>${pr.issue_title}</strong>` : 'General contribution (no linked issue).'}
+                            ${difficultyBadge}
                         </p>
                         <div class="pr-meta-info">
                             <span><i class="ph ph-clock"></i> ${dateText}</span>
-                            <span><i class="ph ph-sparkle"></i> Points status: 
-                                ${pr.status === 'merged' 
-                                    ? '<span class="text-primary" style="font-weight: 600;">+50 Points Awarded</span>' 
-                                    : (pr.status === 'closed_unmerged' 
-                                        ? '<span style="color: var(--danger-color); font-weight: 600;">0 Points</span>' 
-                                        : '<span style="color: var(--warning-color); font-weight: 600;">+50 Points Projected</span>')}
-                            </span>
+                            <span><i class="ph ph-sparkle"></i> Points status: ${pointsText}</span>
                         </div>
                     `;
                     prsListContainer.appendChild(card);

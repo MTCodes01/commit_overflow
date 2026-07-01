@@ -297,26 +297,26 @@
                     
                     if (tagStatsContainer) {
                         tagStatsContainer.innerHTML = '';
-                        if (!tagStats || Object.keys(tagStats).length === 0) {
-                            tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">No tags assigned yet.</div>';
+                        if (!tagStats) {
+                            tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">No stats available.</div>';
                         } else {
                             // Define badge colors for different tags
                             const tagColors = {
                                 'easy': '#3fb950', // green
                                 'medium': '#d29922', // yellow/orange
                                 'hard': '#f85149', // red
-                                'documentation': '#58a6ff', // blue
-                                'bug': '#f85149',
-                                'enhancement': '#a371f7' // purple
+                                'documentation': '#58a6ff' // blue
                             };
                             
-                            Object.entries(tagStats).forEach(([tag, count]) => {
-                                const color = tagColors[tag.toLowerCase()] || '#8b949e'; // default gray
+                            const displayTags = ['easy', 'medium', 'hard', 'documentation'];
+                            displayTags.forEach(tag => {
+                                const count = tagStats[tag] !== undefined ? tagStats[tag] : 0;
+                                const color = tagColors[tag] || '#8b949e';
                                 const div = document.createElement('div');
                                 div.className = 'tag-stat-item';
                                 div.innerHTML = `
                                     <span class="text-secondary" style="text-transform: capitalize;">${tag}</span>
-                                    <span class="tag-badge" style="background-color: ${color};">${count}</span>
+                                    <span class="tag-badge" style="background-color: ${color}; font-size: 0.85rem; padding: 0.25rem 0.75rem; border-radius: 6px;">${count}</span>
                                 `;
                                 tagStatsContainer.appendChild(div);
                             });

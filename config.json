@@ -1,5 +1,5 @@
 {
-	"API_BASE_URL": "https://co.sreedevss.in",
+	"API_BASE_URL": "https://localhost:8080",
 	"DISCORD_INVITE_URL": "https://discord.gg/PSsrSu8dxt",
 	"WHATSAPP_COMMUNITY_URL": "https://chat.whatsapp.com/EYn3ryaX5dXDiSAtgpbaFi?s=cl&p=a&ilr=2"
 }
