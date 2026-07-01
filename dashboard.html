@@ -335,8 +335,8 @@
                                 const div = document.createElement('div');
                                 div.className = 'tag-stat-item';
                                 div.innerHTML = `
-                                    <span class="text-secondary" style="text-transform: capitalize;">${tag}</span>
-                                    <span class="tag-badge" style="background-color: ${color};">${count}</span>
+                                    <span class="text-secondary" style="text-transform: capitalize;">${tag.replace(/_/g, ' ')}</span>
+                                    <span class="tag-badge" style="background-color: ${color}; font-size: 0.85rem; padding: 0.25rem 0.75rem; border-radius: 6px;">${count}</span>
                                 `;
                                 tagStatsContainer.appendChild(div);
                             });
@@ -364,11 +364,7 @@
                             const iconColorClass = isPR ? 'pr' : 'issue';
                             
                             // Format date nicely
-                            let dateStr = item.created_at;
-                            try {
-                                const date = new Date(item.created_at);
-                                dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                            } catch(e) {}
+                            let dateStr = API.formatDateTime(item.created_at);
                             
                             // Format related GitHub link
                             let linkHtml = '';

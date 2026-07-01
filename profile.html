@@ -239,35 +239,61 @@
                         console.error(e);
                     }
 
-                    // Load selected technologies from localStorage
-                    const savedInterests = localStorage.getItem(`interests_${user.github_username}`);
+                    // Load dynamic technologies from backend
+                    let availableTechs = [];
+                    try {
+                        availableTechs = await API.fetchTechnologies();
+                    } catch(e) {
+                        console.error("Failed to fetch available technologies:", e);
+                    }
+
+                    // Populate form checkboxes dynamically
+                    const inputTechContainer = document.getElementById('input-technologies');
+                    if (inputTechContainer && availableTechs.length > 0) {
+                        inputTechContainer.innerHTML = '';
+                        availableTechs.forEach(t => {
+                            const div = document.createElement('div');
+                            div.innerHTML = `
+                                <input type="checkbox" id="tech-${t.id}" value="${t.display_name}" data-name="${t.name}" class="tech-checkbox">
+                                <label for="tech-${t.id}" class="badge tech-label">${t.display_name}</label>
+                            `;
+                            inputTechContainer.appendChild(div);
+                        });
+                    }
+
+                    const userTechs = user.technologies ? user.technologies.split(',').map(s => s.trim().toLowerCase()) : [];
+                    
+                    // Set checkboxes checked status
+                    const checkboxes = document.querySelectorAll('#input-technologies input[type="checkbox"]');
+                    checkboxes.forEach(cb => {
+                        const name = cb.getAttribute('data-name');
+                        cb.checked = userTechs.includes(name);
+                    });
+
+                    // Render selected tech badges
                     const techContainer = document.getElementById('ui-technologies');
                     if (techContainer) {
                         techContainer.innerHTML = '';
-                        let interests = ['JavaScript', 'React', 'Node.js']; // Defaults
-                        if (savedInterests) {
-                            try {
-                                interests = JSON.parse(savedInterests);
-                            } catch(e){}
+                        if (userTechs.length === 0) {
+                            techContainer.innerHTML = '<span class="text-secondary text-sm">No interests specified</span>';
+                        } else {
+                            userTechs.forEach(techName => {
+                                const found = availableTechs.find(t => t.name === techName);
+                                const displayName = found ? found.display_name : techName;
+                                
+                                let iconClass = 'ph-hexagon';
+                                if (techName === 'javascript') iconClass = 'ph-file-js';
+                                else if (techName === 'react') iconClass = 'ph-atom';
+                                else if (techName === 'python') iconClass = 'ph-file-py';
+                                else if (techName === 'go') iconClass = 'ph-google-logo';
+                                else if (techName === 'rust') iconClass = 'ph-terminal';
+                                
+                                const span = document.createElement('span');
+                                span.className = 'badge badge-info';
+                                span.innerHTML = `<i class="ph ${iconClass}"></i> ${displayName}`;
+                                techContainer.appendChild(span);
+                            });
                         }
-                        
-                        // Set checkboxes in form
-                        const checkboxes = document.querySelectorAll('#input-technologies input[type="checkbox"]');
-                        checkboxes.forEach(cb => cb.checked = interests.includes(cb.value));
-                        
-                        // Render tech badges
-                        interests.forEach(tech => {
-                            let iconClass = 'ph-hexagon';
-                            if (tech === 'JavaScript') iconClass = 'ph-file-js';
-                            if (tech === 'React') iconClass = 'ph-atom';
-                            if (tech === 'Python') iconClass = 'ph-file-py';
-                            if (tech === 'Go') iconClass = 'ph-google-logo';
-                            
-                            const span = document.createElement('span');
-                            span.className = 'badge badge-info';
-                            span.innerHTML = `<i class="ph ${iconClass}"></i> ${tech}`;
-                            techContainer.appendChild(span);
-                        });
                     }
 
                 } catch (err) {
@@ -291,13 +317,10 @@
                     saveBtn.textContent = "Saving...";
                     
                     try {
-                        // Call update profile PATCH endpoint
-                        await API.updateProfile(name, college);
+                        const selectedTech = Array.from(document.querySelectorAll('#input-technologies input:checked')).map(cb => cb.getAttribute('data-name')).join(',');
                         
-                        // Save technologies in local storage
-                        const user = API.getCurrentUser();
-                        const selectedTech = Array.from(document.querySelectorAll('#input-technologies input:checked')).map(cb => cb.value);
-                        localStorage.setItem(`interests_${user.github_username}`, JSON.stringify(selectedTech));
+                        // Call update profile PATCH endpoint
+                        await API.updateProfile(name, college, selectedTech);
                         
                         Components.showToast("Profile updated successfully!", "success");
                         document.getElementById('edit-modal').classList.remove('active');

@@ -180,11 +180,7 @@
                     }
                     
                     // Format date
-                    let dateStr = q.created_at;
-                    try {
-                        const d = new Date(q.created_at);
-                        dateStr = d.toLocaleDateString();
-                    } catch(e) {}
+                    let dateStr = API.formatDateTime(q.created_at);
                     
                     // Category formatting
                     let catLabel = q.category;
@@ -256,7 +252,7 @@
                             div.innerHTML = `
                                 <div style="font-size: 0.75rem; color: var(--text-secondary); display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
                                     <strong>${authorName}</strong>
-                                    <span>${new Date(r.created_at).toLocaleString()}</span>
+                                    <span>${API.formatDateTime(r.created_at)}</span>
                                 </div>
                                 <div style="font-size: 0.85rem; color: var(--text-primary); white-space: pre-wrap; line-height: 1.4;">${r.message}</div>
                             `;

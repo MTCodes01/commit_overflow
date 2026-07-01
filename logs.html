@@ -235,11 +235,7 @@
                     }
                     
                     // Format date
-                    let dateStr = log.created_at;
-                    try {
-                        const d = new Date(log.created_at);
-                        dateStr = d.toISOString().replace('T', ' ').substring(0, 19);
-                    } catch(e) {}
+                    let dateStr = API.formatDateTime(log.created_at);
                     
                     const div = document.createElement('div');
                     div.className = 'log-line';
