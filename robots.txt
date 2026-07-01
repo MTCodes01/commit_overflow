@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /dashboard-about.html
+Disallow: /issues.html
+Disallow: /profile.html
+Disallow: /prs.html
+Disallow: /queries.html
+Disallow: /repositories.html
+Disallow: /logs.html
+Disallow: /onboarding.html
+
+Sitemap: https://commitoverflow.com/sitemap.xml

@@ -11,7 +11,7 @@ const Components = {
       <aside class="${sidebarClass}" id="app-sidebar">
         <div class="sidebar-header">
           <div class="sidebar-logo" id="sidebar-logo-btn" title="Toggle Sidebar">
-            <img src="logo/Commit%20Overflow%20-%20Logo%20-%20clr.svg" alt="Logo" style="height: 32px; width: auto;">
+            <img src="logo/logo-light-clr.svg" alt="Logo" style="height: 32px; width: auto;">
             <span class="sidebar-text">Commit Overflow</span>
           </div>
         </div>

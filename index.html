@@ -5,10 +5,55 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Commit Overflow | The Ultimate Open Source Challenge</title>
+	<meta name="description" content="Join the ultimate month-long open source competition. Fix bugs, build features, earn points, and climb the leaderboard on Commit Overflow." />
+	<meta name="keywords" content="open source, competition, github, coding, hackathon, developer challenge" />
+	<meta name="author" content="FOSS CEAL" />
+	
+	<!-- Canonical URL -->
+	<link rel="canonical" href="https://commitoverflow.com/" />
+	
+	<!-- Favicons -->
+	<link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+    <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+    <meta name="apple-mobile-web-app-title" content="C-O" />
+    <link rel="manifest" href="/site.webmanifest?v=20260702" />
+	
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://commitoverflow.com/" />
+	<meta property="og:title" content="Commit Overflow | The Ultimate Open Source Challenge" />
+	<meta property="og:description" content="Join the ultimate month-long open source competition. Fix bugs, build features, earn points, and climb the leaderboard on Commit Overflow." />
+	<meta property="og:image" content="https://commitoverflow.com/logo/logo-dark-clr.svg" />
+	
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:url" content="https://commitoverflow.com/" />
+	<meta property="twitter:title" content="Commit Overflow | The Ultimate Open Source Challenge" />
+	<meta property="twitter:description" content="Join the ultimate month-long open source competition. Fix bugs, build features, earn points, and climb the leaderboard on Commit Overflow." />
+	<meta property="twitter:image" content="https://commitoverflow.com/logo/logo-dark-clr.svg" />
+
+	<!-- Structured Data (JSON-LD) -->
+	<script type="application/ld+json">
+	{
+	  "@context": "https://schema.org",
+	  "@type": "WebSite",
+	  "name": "Commit Overflow",
+	  "url": "https://commitoverflow.com/",
+	  "description": "The Ultimate Open Source Challenge by FOSS CEAL",
+	  "publisher": {
+	    "@type": "Organization",
+	    "name": "FOSS CEAL",
+	    "logo": "https://commitoverflow.com/logo/logo-dark-clr.svg"
+	  }
+	}
+	</script>
+
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-	<script src="https://unpkg.com/@phosphor-icons/web"></script>
+	<script src="https://unpkg.com/@phosphor-icons/web" defer></script>
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="stylesheet" href="css/components.css" />
 	<style>
@@ -140,7 +185,7 @@
 	<div class="container">
 		<header class="nav-header">
 			<div class="logo">
-				<img src="logo/Commit%20Overflow%20-%20Logo%20-%20clr.svg" alt="Logo" style="height: 36px; width: auto;">
+				<img src="logo/logo-light-clr.svg" alt="Logo" style="height: 36px; width: auto;">
 				Commit Overflow
 			</div>
 			<div class="nav-links" id="nav-links-container">
@@ -286,7 +331,7 @@
 							<td>
 								<div style="display: inline-flex; align-items: center; gap: 0.5rem;">
 									<div style="width:24px;height:24px;background:var(--bg-tertiary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;">
-										${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+										${entry.avatar_url ? `<img src="${entry.avatar_url}" alt="${entry.github_username}'s avatar" style="width:100%;height:100%;object-fit:cover;" loading="lazy" decoding="async" />` : '<i class="ph ph-user"></i>'}
 									</div>
 									<span>${entry.github_username}</span>
 								</div>
