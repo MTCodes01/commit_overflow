@@ -297,22 +297,41 @@
                     
                     if (tagStatsContainer) {
                         tagStatsContainer.innerHTML = '';
-                        if (!tagStats) {
-                            tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">No stats available.</div>';
+                        if (!tagStats || Object.keys(tagStats).length === 0) {
+                            tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">No tag statistics available.</div>';
                         } else {
-                            // Define badge colors for different tags
-                            const tagColors = {
-                                'easy': '#3fb950', // green
-                                'medium': '#d29922', // yellow/orange
-                                'hard': '#f85149', // red
-                                'documentation': '#58a6ff' // blue
+                            // Predefined palette for well-known labels; unknown labels get
+                            // a deterministic muted color so new labels are never invisible.
+                            const knownTagColors = {
+                                'easy':          '#3fb950', // green
+                                'medium':        '#d29922', // amber
+                                'hard':          '#f85149', // red
+                                'documentation': '#58a6ff', // blue
+                                'docs':          '#58a6ff', // blue (alias)
+                                'bug':           '#f85149', // red
+                                'enhancement':   '#a371f7', // purple
+                                'feature':       '#a371f7', // purple
+                                'good first issue': '#3fb950', // green
+                                'duplicate': '#8b949e', // gray
                             };
-                            
-                            // Iterate dynamically through all keys in the response
-                            const displayTags = Object.keys(tagStats).sort();
-                            displayTags.forEach(tag => {
-                                const count = tagStats[tag] !== undefined ? tagStats[tag] : 0;
-                                const color = tagColors[tag.toLowerCase()] || '#8b949e';
+
+                            // Simple deterministic hash → hue for completely unknown labels
+                            function labelToColor(label) {
+                                if (knownTagColors[label.toLowerCase()]) {
+                                    return knownTagColors[label.toLowerCase()];
+                                }
+                                let hash = 0;
+                                for (let i = 0; i < label.length; i++) {
+                                    hash = label.charCodeAt(i) + ((hash << 5) - hash);
+                                }
+                                const hue = Math.abs(hash) % 360;
+                                return `hsl(${hue}, 55%, 55%)`;
+                            }
+
+                            // Sort entries so the display is stable across renders
+                            const sorted = Object.entries(tagStats).sort((a, b) => b[1] - a[1]);
+                            sorted.forEach(([tag, count]) => {
+                                const color = labelToColor(tag);
                                 const div = document.createElement('div');
                                 div.className = 'tag-stat-item';
                                 div.innerHTML = `
@@ -327,7 +346,7 @@
                     console.error("Failed to fetch tag stats", e);
                     const tagStatsContainer = document.getElementById('tag-stats-container');
                     if (tagStatsContainer) {
-                        tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">Failed to load stats.</div>';
+                        tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">Failed to load tag statistics.</div>';
                     }
                 }
                 
