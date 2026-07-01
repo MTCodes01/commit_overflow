@@ -308,14 +308,15 @@
                                 'documentation': '#58a6ff' // blue
                             };
                             
-                            const displayTags = ['easy', 'medium', 'hard', 'documentation'];
+                            // Iterate dynamically through all keys in the response
+                            const displayTags = Object.keys(tagStats).sort();
                             displayTags.forEach(tag => {
                                 const count = tagStats[tag] !== undefined ? tagStats[tag] : 0;
-                                const color = tagColors[tag] || '#8b949e';
+                                const color = tagColors[tag.toLowerCase()] || '#8b949e';
                                 const div = document.createElement('div');
                                 div.className = 'tag-stat-item';
                                 div.innerHTML = `
-                                    <span class="text-secondary" style="text-transform: capitalize;">${tag}</span>
+                                    <span class="text-secondary" style="text-transform: capitalize;">${tag.replace(/_/g, ' ')}</span>
                                     <span class="tag-badge" style="background-color: ${color}; font-size: 0.85rem; padding: 0.25rem 0.75rem; border-radius: 6px;">${count}</span>
                                 `;
                                 tagStatsContainer.appendChild(div);
