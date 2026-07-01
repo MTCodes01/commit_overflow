@@ -54,20 +54,27 @@
             font-size: 1.1rem;
             line-height: 1.75;
             color: var(--text-primary);
-            white-space: pre-wrap; /* Preserves newlines and spaces */
+            white-space: pre-wrap;
+            position: relative;
+            z-index: 10;
         }
         .footer-credits {
             text-align: center;
             margin-top: 5rem;
             color: var(--text-secondary);
             font-size: 0.875rem;
+            position: relative;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 <script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
 
-    <div class="public-wrapper">
+
+    <canvas id="bg-ascii-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;"></canvas>
+
+    <div class="public-wrapper" style="position: relative; z-index: 10;">
         <header class="public-nav">
             <a href="index.html" class="public-logo">
                 <img src="logo/Commit%20Overflow%20-%20Logo%20-%20clr.svg" alt="Logo" style="height: 36px; width: auto;">
@@ -91,6 +98,7 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/ascii-ripple.js"></script>
     <script>
         const defaultAboutHTML = `
         <div class="text-center" style="white-space: normal; max-width: 900px; margin: 0;">

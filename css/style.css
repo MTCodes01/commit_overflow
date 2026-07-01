@@ -145,3 +145,31 @@ h1, h2, h3, h4, h5, h6 {
   50% { transform: scale(1.05); opacity: 0.7; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Active ascii anim on text */
+.as {
+  cursor: default;
+  user-select: none;
+}
+
+/* Disable text selection during ASCII animation */
+.as::selection {
+  background: transparent;
+}
+
+/* hover state for text with ASCII animation */
+.as:hover {
+  position: relative;
+}
