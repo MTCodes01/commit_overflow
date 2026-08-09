@@ -283,9 +283,14 @@
 
 	<footer class="footer">
 		<div class="container">
+			<div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-weight: 500;">
+				<a href="https://foss.ceal.in" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="logo/FOSS-light.png" alt="FOSS CEAL Logo" class="footer-logo" style="height: 2.5rem; width: auto;"></a>
+				<span style="color: var(--text-secondary); font-size: 0.9rem;">x</span>
+				<a href="https://fossclub-lbsitw.github.io/FOSS-WEBSITE/" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="logo/LBSITW.png" alt="FOSS LBSITW Logo" class="footer-logo" style="height: 3.5rem; width: auto;"></a>
+			</div>
 			<p>
 				&copy; <span id="current-year"></span> Commit Overflow. Crafted for
-				the Open Source Community by <a href="https://foss.ceal.in" target="_blank">FOSS CEAL</a>.
+				the Open Source Community.
 			</p>
 		</div>
 	</footer>
@@ -303,13 +308,13 @@
 					if (navContainer) {
 						navContainer.innerHTML = `
 							<span style="margin-right: 1rem; color: var(--text-secondary);">Hello, <strong style="color: var(--text-primary);">${currentUser.name.split(' ')[0]}</strong></span>
-							<a href="dashboard.html" class="btn btn-primary">Dashboard</a>
+							<a href="profile.html" class="btn btn-primary">Dashboard</a>
 						`;
 					}
 					
 					const heroBtn = document.getElementById('hero-cta-btn');
 					if (heroBtn) {
-						heroBtn.href = "dashboard.html";
+						heroBtn.href = "profile.html";
 						heroBtn.textContent = "Go to Dashboard";
 					}
 				}

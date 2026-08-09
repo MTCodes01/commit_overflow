@@ -99,6 +99,21 @@
   box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.3);
 }
 
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-box i {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+.search-box .form-control {
+  padding-left: 2.25rem;
+}
+
 .badge {
   display: inline-block;
   padding: 0.25em 0.6em;
@@ -261,7 +276,6 @@ tr:hover {
   width: 260px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
-  padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
   z-index: 100;
@@ -456,7 +470,6 @@ tr:hover {
   width: 260px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
-  padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
   z-index: 100;
@@ -568,6 +581,70 @@ tr:hover {
   flex-shrink: 0;
   padding: 1.5rem 1rem;
   border-top: 1px solid var(--border-color);
+}
+.sidebar-user-badge {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+.user-badge-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+.user-badge-link:hover {
+  background-color: var(--bg-tertiary);
+  text-decoration: none;
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-color);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-handle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar.collapsed .sidebar-user-badge {
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: none;
+}
+.sidebar.collapsed .user-info {
+  display: none;
+}
+.sidebar.collapsed .user-badge-link {
+  justify-content: center;
+  padding: 0.5rem 0;
 }
 .mobile-header {
   display: none;
@@ -731,4 +808,43 @@ tr:hover {
   justify-content: center;
   padding: 1.5rem 0;
   width: 100%;
+}
+
+/* Pagination Styles */
+.pagination-btn {
+  background-color: var(--bg-tertiary, #1f2937);
+  color: var(--text-secondary, #9ca3af);
+  border: 1px solid var(--border-color, #374151);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--bg-secondary, #374151);
+  color: var(--text-primary, #ffffff);
+}
+
+.pagination-btn.active {
+  background-color: var(--accent-primary, #3b82f6);
+  color: #ffffff;
+  border-color: var(--accent-primary, #3b82f6);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-select {
+  background-color: var(--bg-tertiary, #1f2937);
+  color: var(--text-primary, #ffffff);
+  border: 1px solid var(--border-color, #374151);
+  border-radius: 4px;
 }

@@ -121,20 +121,20 @@ const API = {
     return this.request(`/leaderboard?period=${period}`);
   },
 
-  async fetchDashboardData(userId) {
-    return this.request(`/users/me/dashboard`);
+  async fetchDashboardData(userId = 'me') {
+    return this.request(`/users/${userId}/dashboard`);
   },
 
-  async fetchProjectedScore(userId) {
-    return this.request(`/users/me/projected`);
+  async fetchProjectedScore(userId = 'me') {
+    return this.request(`/users/${userId}/projected`);
   },
 
   async fetchLogs() {
     return this.request('/logs');
   },
 
-  async fetchQueries() {
-    return this.request('/queries');
+  async fetchQueries(page = 1, limit = 10) {
+    return this.request(`/queries?page=${page}&limit=${limit}`);
   },
 
   async createQuery(title, body, category) {
@@ -155,12 +155,12 @@ const API = {
     });
   },
 
-  async fetchUserIssues() {
-    return this.request('/users/me/issues');
+  async fetchUserIssues(page = 1, limit = 10, tab = 'open') {
+    return this.request(`/users/me/issues?page=${page}&limit=${limit}&tab=${tab}`);
   },
 
-  async fetchUserPRs() {
-    return this.request('/users/me/prs');
+  async fetchUserPRs(page = 1, limit = 10) {
+    return this.request(`/users/me/prs?page=${page}&limit=${limit}`);
   },
 
   async replyQuery(queryId, message) {
@@ -178,8 +178,8 @@ const API = {
     return fetch('config.json?t=' + Date.now()).then(res => res.json()).catch(() => ({}));
   },
 
-  async fetchRepos() {
-    return this.request('/repos');
+  async fetchRepos(page = 1, limit = 10) {
+    return this.request(`/repos?page=${page}&limit=${limit}`);
   },
 
   async fetchRepoDetail(id) {
@@ -211,8 +211,8 @@ const API = {
     });
   },
 
-  async fetchTagStats(userId) {
-    return this.request(`/users/me/tag-stats`);
+  async fetchTagStats(userId = 'me') {
+    return this.request(`/users/${userId}/tag-stats`);
   },
 
   formatDateTime(dateInput) {

@@ -17,17 +17,19 @@
     <link rel="stylesheet" href="css/components.css">
     <style>
         .query-card {
-            margin-bottom: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            border-left: 4px solid transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
         }
         .query-card:hover {
-            background-color: var(--bg-tertiary);
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px -10px rgba(35, 134, 54, 0.2);
         }
-        .query-card.priority-high { border-left-color: var(--danger-color); }
-        .query-card.priority-medium { border-left-color: var(--warning-color); }
-        .query-card.priority-low { border-left-color: var(--accent-primary); }
-        
         .query-header {
             display: flex;
             justify-content: space-between;
@@ -40,9 +42,19 @@
         }
         .query-meta {
             display: flex;
-            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1.25rem;
             color: var(--text-secondary);
-            font-size: 0.875rem;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .query-meta > span {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
     </style>
 </head>
@@ -63,20 +75,28 @@
                 </button>
             </div>
 
-            <div class="card glass-card">
-                <div class="flex gap-2 mb-3">
-                    <button class="btn btn-secondary active" id="btn-filter-all">All Queries</button>
-                    <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-open">Open</button>
-                    <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-resolved">Resolved</button>
-                </div>
-
-                <div id="queries-list">
-                    <div class="loading-container">
-                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
-                        <p class="text-secondary mt-2">Loading queries...</p>
+            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary active" id="btn-filter-all">All Queries</button>
+                        <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-open">Open</button>
+                        <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-resolved">Resolved</button>
+                    </div>
+                    <div class="search-box" style="flex: 1; min-width: 250px;">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="queries-search" class="form-control" placeholder="Search queries by title or description...">
                     </div>
                 </div>
             </div>
+
+            <div id="queries-list" class="grid grid-dynamic gap-4">
+                <div class="loading-container" style="grid-column: 1 / -1;">
+                    <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                    <p class="text-secondary mt-2">Loading queries...</p>
+                </div>
+            </div>
+            
+            <div id="queries-pagination" class="mt-4"></div>
         </main>
     </div>
 
@@ -157,21 +177,29 @@
 
             let allQueries = [];
             let currentFilter = 'all';
+            const queriesSearchInput = document.getElementById('queries-search');
 
             const renderQueries = () => {
                 const listContainer = document.getElementById('queries-list');
                 if (!listContainer) return;
                 listContainer.innerHTML = '';
 
+                const searchQuery = queriesSearchInput ? queriesSearchInput.value.toLowerCase().trim() : '';
+
                 const filtered = allQueries.filter(q => {
-                    if (currentFilter === 'all') return true;
-                    if (currentFilter === 'open') return q.status === 'open' || q.status === 'answered';
-                    if (currentFilter === 'resolved') return q.status === 'resolved';
+                    if (currentFilter === 'open' && q.status !== 'open' && q.status !== 'answered') return false;
+                    if (currentFilter === 'resolved' && q.status !== 'resolved') return false;
+                    
+                    if (searchQuery) {
+                        const matchTitle = q.title && q.title.toLowerCase().includes(searchQuery);
+                        const matchBody = q.body && q.body.toLowerCase().includes(searchQuery);
+                        if (!matchTitle && !matchBody) return false;
+                    }
                     return true;
                 });
 
                 if (filtered.length === 0) {
-                    listContainer.innerHTML = `<div class="text-secondary text-center py-4">No ${currentFilter !== 'all' ? currentFilter : ''} queries found.</div>`;
+                    listContainer.innerHTML = `<div class="text-secondary text-center py-4" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center;">No ${currentFilter !== 'all' ? currentFilter : ''} queries found.</div>`;
                     return;
                 }
 
@@ -200,14 +228,14 @@
                     div.className = `card query-card ${priorityClass}`;
                     div.innerHTML = `
                         <div class="query-header">
-                            <div class="query-title">${q.title}</div>
-                            <span class="badge ${badgeClass}">${q.status.charAt(0).toUpperCase() + q.status.slice(1)}</span>
+                            <h3 class="query-title" style="margin: 0; font-size: 1.15rem;">${q.title}</h3>
+                            <span class="badge ${badgeClass}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${q.status.charAt(0).toUpperCase() + q.status.slice(1)}</span>
                         </div>
+                        <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.75rem; margin-bottom: 0.5rem; line-height: 1.5; white-space: pre-wrap;">${q.body}</p>
                         <div class="query-meta">
-                            <span><i class="ph ph-calendar"></i> ${dateStr}</span>
-                            <span><i class="ph ph-tag"></i> Category: ${catLabel}</span>
+                            <span><i class="ph ph-calendar-blank text-secondary"></i> <span class="text-secondary">${dateStr}</span></span>
+                            <span><i class="ph ph-tag text-primary"></i> Category: <strong class="text-primary">${catLabel}</strong></span>
                         </div>
-                        <div class="text-secondary text-sm mt-2" style="white-space: pre-wrap;">${q.body}</div>
                     `;
                     div.addEventListener('click', () => viewQueryDetail(q.id));
                     listContainer.appendChild(div);
@@ -273,15 +301,32 @@
                 }
             };
 
+            let currentPage = 1;
+            let currentLimit = 10;
+
             const loadQueries = async () => {
                 try {
-                    allQueries = await API.fetchQueries();
+                    const res = await API.fetchQueries(currentPage, currentLimit);
+                    allQueries = res.data || [];
                     renderQueries();
+                    
+                    Components.renderPagination('queries-pagination', res.meta, (p) => {
+                        currentPage = p;
+                        loadQueries();
+                    }, (l) => {
+                        currentLimit = l;
+                        currentPage = 1;
+                        loadQueries();
+                    });
                 } catch (err) {
                     console.error(err);
                     Components.showToast("Failed to fetch queries.", "error");
                 }
             };
+
+            if (queriesSearchInput) {
+                queriesSearchInput.addEventListener('input', renderQueries);
+            }
 
             await loadQueries();
 

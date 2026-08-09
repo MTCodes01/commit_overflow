@@ -17,14 +17,22 @@
     <link rel="stylesheet" href="css/components.css">
     <style>
         .repo-card {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            border-left: 4px solid var(--accent-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         .repo-card:hover {
-            transform: translateY(-2px);
-            background-color: var(--bg-tertiary);
-            border-color: #a371f7;
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px -10px rgba(35, 134, 54, 0.2);
         }
         .repo-title {
             font-size: 1.25rem;
@@ -38,7 +46,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 0.75rem;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
             font-size: 0.875rem;
             color: var(--text-secondary);
         }
@@ -46,21 +54,30 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            background: var(--bg-tertiary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+        .repo-meta div:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
         .difficulty-bar {
             display: flex;
-            height: 8px;
-            border-radius: 4px;
+            height: 6px;
+            border-radius: 3px;
             overflow: hidden;
-            margin-top: 1rem;
+            margin-top: 0.75rem;
             background-color: var(--bg-tertiary);
         }
         .diff-segment {
             height: 100%;
         }
-        .diff-segment.easy { background-color: var(--accent-primary); }
-        .diff-segment.medium { background-color: var(--warning-color); }
-        .diff-segment.hard { background-color: var(--danger-color); }
+        .diff-segment.easy { background-color: #3fb950; }
+        .diff-segment.medium { background-color: #d29922; }
+        .diff-segment.hard { background-color: #f85149; }
         .repo-details-modal {
             max-width: 700px;
         }
@@ -102,6 +119,32 @@
                 </div>
             </div>
 
+            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div class="search-box" style="flex: 1; min-width: 250px;">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="repos-search" class="form-control" placeholder="Search repositories by name or tech stack...">
+                    </div>
+                    <div style="min-width: 150px;">
+                        <select id="filter-language" class="form-control filter-select" style="width: 100%;">
+                            <option value="">All Languages</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; min-width: 200px;">
+                        <select id="sort-repo" class="form-control filter-select" style="flex: 1;">
+                            <option value="name">Name</option>
+                            <option value="contributors">Contributors</option>
+                            <option value="open_issues">Open Issues</option>
+                            <option value="open_prs">Open PRs</option>
+                            <option value="merged_prs">Merged PRs</option>
+                        </select>
+                        <button id="sort-repo-dir" class="btn btn-secondary" style="padding: 0.5rem;" title="Toggle Sort Direction">
+                            <i id="sort-repo-icon" class="ph ph-sort-descending"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 md:grid-cols-1 gap-4" id="repos-container">
                 <!-- Repo cards injected here -->
                 <div class="col-span-2">
@@ -111,6 +154,8 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="repos-pagination" class="mt-4"></div>
         </main>
     </div>
 
@@ -236,80 +281,188 @@
                 }
             };
 
+            let allRepos = [];
+            const reposSearchInput = document.getElementById('repos-search');
+            const filterLanguage = document.getElementById('filter-language');
+            const sortRepo = document.getElementById('sort-repo');
+            const sortRepoDir = document.getElementById('sort-repo-dir');
+            const sortRepoIcon = document.getElementById('sort-repo-icon');
+            let currentSortDir = 'desc'; // Default to descending for most metrics
+
+            if (sortRepoDir) {
+                sortRepoDir.addEventListener('click', () => {
+                    currentSortDir = currentSortDir === 'desc' ? 'asc' : 'desc';
+                    sortRepoIcon.className = currentSortDir === 'desc' ? 'ph ph-sort-descending' : 'ph ph-sort-ascending';
+                    renderRepos();
+                });
+            }
+
+            // Auto-set direction when changing sort field
+            if (sortRepo) {
+                sortRepo.addEventListener('change', () => {
+                    if (sortRepo.value === 'name') {
+                        currentSortDir = 'asc';
+                    } else {
+                        currentSortDir = 'desc';
+                    }
+                    sortRepoIcon.className = currentSortDir === 'desc' ? 'ph ph-sort-descending' : 'ph ph-sort-ascending';
+                    renderRepos();
+                });
+            }
+
+            const renderRepos = () => {
+                if (!reposContainer) return;
+                reposContainer.innerHTML = '';
+                
+                const query = reposSearchInput.value.toLowerCase().trim();
+                const selectedLanguage = filterLanguage.value;
+                const sortBy = sortRepo.value;
+
+                let filteredRepos = allRepos.filter(repo => {
+                    const matchName = repo.name && repo.name.toLowerCase().includes(query);
+                    const matchTechQuery = repo.tech_stack && repo.tech_stack.some(t => t.toLowerCase().includes(query));
+                    const matchQuery = matchName || matchTechQuery;
+
+                    let matchLang = true;
+                    if (selectedLanguage) {
+                        matchLang = repo.tech_stack && repo.tech_stack.includes(selectedLanguage);
+                    }
+
+                    return matchQuery && matchLang;
+                });
+
+                // Apply Sorting
+                filteredRepos.sort((a, b) => {
+                    const dirMultiplier = currentSortDir === 'asc' ? 1 : -1;
+                    
+                    switch (sortBy) {
+                        case 'name':
+                            return (a.name || '').localeCompare(b.name || '') * dirMultiplier;
+                        case 'contributors':
+                            return ((a.contributor_count || 0) - (b.contributor_count || 0)) * dirMultiplier;
+                        case 'open_issues':
+                            return ((a.open_issues || 0) - (b.open_issues || 0)) * dirMultiplier;
+                        case 'open_prs':
+                            return ((a.open_prs || 0) - (b.open_prs || 0)) * dirMultiplier;
+                        case 'merged_prs':
+                            return ((a.merged_prs || 0) - (b.merged_prs || 0)) * dirMultiplier;
+                        default:
+                            return 0;
+                    }
+                });
+
+                if (filteredRepos.length === 0) {
+                    reposContainer.innerHTML = `
+                        <div class="text-center py-5 text-secondary col-span-2" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center;">
+                            <i class="ph ph-books" style="font-size: 2.5rem;"></i>
+                            <p class="mt-1">No matching repositories found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                filteredRepos.forEach(repo => {
+                    const card = document.createElement('div');
+                    card.className = 'card repo-card glass-card';
+                    
+                    // Tech stack badges
+                    let techBadges = '';
+                    if (repo.tech_stack && repo.tech_stack.length > 0) {
+                        repo.tech_stack.forEach(tech => {
+                            techBadges += `<span class="badge badge-info text-xs">${tech}</span> `;
+                        });
+                    }
+                    
+                    // Difficulty bar percentages
+                    const diff = repo.difficulty_distribution || { easy: 0, medium: 0, hard: 0 };
+                    const totalIssues = diff.easy + diff.medium + diff.hard;
+                    let easyPct = 0, medPct = 0, hardPct = 0;
+                    if (totalIssues > 0) {
+                        easyPct = (diff.easy / totalIssues) * 100;
+                        medPct = (diff.medium / totalIssues) * 100;
+                        hardPct = (diff.hard / totalIssues) * 100;
+                    }
+
+                    card.innerHTML = `
+                        <div class="repo-title">
+                            <span>${repo.name}</span>
+                            <i class="ph ph-git-fork text-primary"></i>
+                        </div>
+                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                            ${techBadges}
+                        </div>
+                        <div class="repo-meta">
+                            <div><i class="ph ph-users-three text-primary"></i> <span>Contributors: <strong class="text-primary">${repo.contributor_count}</strong></span></div>
+                            <div><i class="ph ph-warning-circle text-primary"></i> <span>Open Issues: <strong style="color: #d29922;">${repo.open_issues}</strong></span></div>
+                            <div><i class="ph ph-git-pull-request text-primary"></i> <span>Open PRs: <strong style="color: #a371f7;">${repo.open_prs}</strong></span></div>
+                            <div><i class="ph ph-git-merge text-primary"></i> <span>Merged PRs: <strong style="color: #3fb950;">${repo.merged_prs}</strong></span></div>
+                        </div>
+                        <div>
+                            <span class="text-secondary text-xs">Issue Difficulty Spread</span>
+                            <div class="difficulty-bar">
+                                <div class="diff-segment easy" style="width: ${totalIssues > 0 ? easyPct : 33.3}%"></div>
+                                <div class="diff-segment medium" style="width: ${totalIssues > 0 ? medPct : 33.3}%"></div>
+                                <div class="diff-segment hard" style="width: ${totalIssues > 0 ? hardPct : 33.4}%"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                <span>Easy: ${diff.easy}</span>
+                                <span>Medium: ${diff.medium}</span>
+                                <span>Hard: ${diff.hard}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    card.addEventListener('click', () => showRepoDetail(repo.id));
+                    reposContainer.appendChild(card);
+                });
+            };
+
+            let currentPage = 1;
+            let currentLimit = 10;
+
             const loadRepos = async () => {
                 try {
-                    const repos = await API.fetchRepos();
-                    if (!reposContainer) return;
-                    reposContainer.innerHTML = '';
-
-                    if (repos.length === 0) {
-                        reposContainer.innerHTML = '<div class="text-secondary text-center py-5 col-span-2">No tracked repositories found.</div>';
-                        return;
-                    }
-
-                    repos.forEach(repo => {
-                        const card = document.createElement('div');
-                        card.className = 'card repo-card glass-card';
-                        
-                        // Tech stack badges
-                        let techBadges = '';
-                        if (repo.tech_stack && repo.tech_stack.length > 0) {
-                            repo.tech_stack.forEach(tech => {
-                                techBadges += `<span class="badge badge-info text-xs">${tech}</span> `;
-                            });
+                    const res = await API.fetchRepos(currentPage, currentLimit);
+                    allRepos = res.data;
+                    
+                    // Populate language filter
+                    const languageSet = new Set();
+                    allRepos.forEach(repo => {
+                        if (repo.tech_stack) {
+                            repo.tech_stack.forEach(tech => languageSet.add(tech));
                         }
-                        
-                        // Difficulty bar percentages
-                        const diff = repo.difficulty_distribution || { easy: 0, medium: 0, hard: 0 };
-                        const totalIssues = diff.easy + diff.medium + diff.hard;
-                        let easyPct = 0, medPct = 0, hardPct = 0;
-                        if (totalIssues > 0) {
-                            easyPct = (diff.easy / totalIssues) * 100;
-                            medPct = (diff.medium / totalIssues) * 100;
-                            hardPct = (diff.hard / totalIssues) * 100;
-                        }
-
-                        card.innerHTML = `
-                            <div class="repo-title">
-                                <span>${repo.name}</span>
-                                <i class="ph ph-git-fork text-primary"></i>
-                            </div>
-                            <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem;">
-                                ${techBadges}
-                            </div>
-                            <div class="repo-meta">
-                                <div><i class="ph ph-users-three"></i> Contributors: ${repo.contributor_count}</div>
-                                <div><i class="ph ph-warning-circle"></i> Open Issues: ${repo.open_issues}</div>
-                                <div><i class="ph ph-git-pull-request"></i> Open PRs: ${repo.open_prs}</div>
-                                <div><i class="ph ph-git-merge"></i> Merged PRs: ${repo.merged_prs}</div>
-                            </div>
-                            <div>
-                                <span class="text-secondary text-xs">Issue Difficulty Spread</span>
-                                <div class="difficulty-bar">
-                                    <div class="diff-segment easy" style="width: ${totalIssues > 0 ? easyPct : 33.3}%"></div>
-                                    <div class="diff-segment medium" style="width: ${totalIssues > 0 ? medPct : 33.3}%"></div>
-                                    <div class="diff-segment hard" style="width: ${totalIssues > 0 ? hardPct : 33.4}%"></div>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                                    <span>Easy: ${diff.easy}</span>
-                                    <span>Medium: ${diff.medium}</span>
-                                    <span>Hard: ${diff.hard}</span>
-                                </div>
-                            </div>
-                        `;
-                        
-                        card.addEventListener('click', () => showRepoDetail(repo.id));
-                        reposContainer.appendChild(card);
                     });
 
-                } catch (err) {
-                    console.error("Failed to load repositories", err);
-                    if (reposContainer) {
-                        reposContainer.innerHTML = '<div class="text-secondary text-center py-5 col-span-2">Failed to load repositories list.</div>';
-                    }
-                    Components.showToast("Failed to load repositories.", "error");
+                    filterLanguage.innerHTML = '<option value="">All Languages</option>';
+                    Array.from(languageSet).sort().forEach(tech => {
+                        const opt = document.createElement('option');
+                        opt.value = tech;
+                        opt.textContent = tech;
+                        filterLanguage.appendChild(opt);
+                    });
+
+                    renderRepos();
+                    
+                    Components.renderPagination('repos-pagination', res.meta, (p) => {
+                        currentPage = p;
+                        loadRepos();
+                    }, (l) => {
+                        currentLimit = l;
+                        currentPage = 1;
+                        loadRepos();
+                    });
+                } catch(e) {
+                    console.error(e);
+                    reposContainer.innerHTML = '<div class="text-secondary text-center py-5 col-span-2" style="grid-column: 1 / -1;">Failed to load repositories. Please try again later.</div>';
                 }
             };
+
+            if (reposSearchInput) {
+                reposSearchInput.addEventListener('input', renderRepos);
+            }
+            if (filterLanguage) {
+                filterLanguage.addEventListener('change', renderRepos);
+            }
 
             const checkStatusAndRender = (status) => {
                 const user = API.getCurrentUser();

@@ -26,26 +26,218 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
     <style>
-        .community-card {
-            text-align: center;
-            padding: 3rem 2rem;
+        /* Asymmetrical Tech Grid Styles */
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        @media (max-width: 992px) {
+            .community-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .community-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tech-card {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
-        .community-icon {
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top left, var(--tech-glow, rgba(255,255,255,0.05)), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .tech-card:hover {
+            border-color: var(--tech-color, rgba(255, 255, 255, 0.3));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px -10px var(--tech-glow);
+        }
+
+        .tech-card:hover::before {
+            opacity: 1;
+        }
+
+        .tech-card.discord-card {
+            grid-column: 1 / -1;
+            flex-direction: row;
+            align-items: center;
+            padding: 3rem;
+            gap: 3rem;
+            --tech-color: #5865F2;
+            --tech-glow: rgba(88, 101, 242, 0.25);
+        }
+        
+        @media (max-width: 992px) {
+            .tech-card.discord-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+                gap: 1.5rem;
+            }
+            .discord-card .tech-actions {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+
+        .whatsapp-card {
+            --tech-color: #25D366;
+            --tech-glow: rgba(37, 211, 102, 0.15);
+        }
+
+        .foss-card {
+            --tech-color: #25D366;
+        }
+        
+        .foss-card::before {
+            background: linear-gradient(90deg, 
+                #E50000, 
+                #FFE700, 
+                #008BFF, 
+                #00DF08, 
+                #960F70
+            );
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 150px);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 150px);
+            animation: none;
+        }
+
+        .lbs-card {
+            --tech-color: #25D366;
+            --tech-glow: rgba(63, 185, 80, 0.15);
+        }
+
+        .tech-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--tech-color);
+            font-size: 3rem;
+            flex-shrink: 0;
+            position: relative;
+            box-shadow: inset 0 0 20px var(--tech-glow);
+        }
+
+        .discord-card .tech-icon-container {
+            width: 100px;
+            height: 100px;
             font-size: 4rem;
         }
-        .verified-badge {
+
+        .tech-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tech-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 0.75rem 0;
+            line-height: 1.2;
+        }
+        
+        .discord-card .tech-title {
+            font-size: 2.5rem;
+        }
+
+        .tech-desc {
+            color: #9ca3af;
+            line-height: 1.6;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .tech-actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .discord-card .tech-actions {
+            margin-top: 0;
+            flex-direction: column;
+            min-width: 250px;
+            gap: 1rem;
+        }
+
+        .tech-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .tech-btn:hover {
+            background: var(--tech-color);
+            border-color: var(--tech-color);
+            color: #fff;
+        }
+
+        .tech-btn-primary {
+            background: var(--tech-color);
+            border-color: var(--tech-color);
+            color: #fff;
+        }
+
+        .tech-btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .discord-verified-badge {
             display: none;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             color: #3fb950;
-            font-weight: 500;
-            background: rgba(35, 134, 54, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
+            font-weight: 600;
+            background: rgba(35, 134, 54, 0.15);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(63, 185, 80, 0.3);
+            width: 100%;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -61,40 +253,84 @@
                 <p class="text-secondary mt-1">Join the conversation, ask for help, and connect with mentors.</p>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-1 gap-4 mt-2">
+            <div class="community-grid">
                 
-                <div class="card community-card glass-card">
-                    <i class="ph ph-discord-logo community-icon" style="color: var(--accent-secondary);"></i>
-                    <h2>Discord Server</h2>
-                    <p class="text-secondary">Our main hub for announcements, finding teammates, and talking to mentors.</p>
-                    
-                    <div id="discord-unverified" class="mt-2 w-full">
-                        <button class="btn btn-discord btn-block" id="verify-discord-btn">
-                            <i class="ph ph-plugs"></i> Verify Discord Account
-                        </button>
+                <!-- Large Discord Card -->
+                <div class="tech-card discord-card">
+                    <div class="tech-icon-container">
+                        <i class="ph ph-discord-logo"></i>
                     </div>
                     
-                    <div id="discord-verified" class="verified-badge mt-2">
-                        <i class="ph ph-check-circle"></i> Verified Account Linked
+                    <div class="tech-content">
+                        <h2 class="tech-title">Discord Server</h2>
+                        <p class="tech-desc">Join our official server for real-time announcements, Updates and directly communicating with project mentors.</p>
                     </div>
                     
-                    <a href="#" class="btn btn-secondary btn-block mt-1" id="discord-link" target="_blank">Join Server</a>
+                    <div class="tech-actions">
+                        <div id="discord-unverified" class="w-full">
+                            <button class="tech-btn tech-btn-primary" id="verify-discord-btn">
+                                <i class="ph ph-plugs"></i> Verify Account
+                            </button>
+                        </div>
+                        
+                        <div id="discord-verified" class="discord-verified-badge">
+                            <i class="ph ph-check-circle"></i> Verified
+                        </div>
+                        
+                        <a href="#" class="tech-btn" id="discord-link" target="_blank">Launch Server</a>
+                    </div>
                 </div>
 
-                <div class="card community-card glass-card">
-                    <i class="ph ph-whatsapp-logo community-icon" style="color: #25D366;"></i>
-                    <h2>WhatsApp Community</h2>
-                    <p class="text-secondary">Get quick updates and urgent announcements directly on your phone.</p>
-                    
-                    <a href="#" class="btn btn-primary btn-block mt-auto" id="whatsapp-link" target="_blank" style="background-color: #25D366; border-color: #25D366;">
-                        <i class="ph ph-whatsapp-logo"></i> Join WhatsApp
-                    </a>
+                <!-- Small Cards -->
+                <div class="tech-card whatsapp-card">
+                    <div class="tech-icon-container" style="margin-bottom: 1.5rem;">
+                        <i class="ph ph-whatsapp-logo"></i>
+                    </div>
+                    <div class="tech-content">
+                        <h2 class="tech-title" style="font-size: 1.5rem;">WhatsApp</h2>
+                        <p class="tech-desc" style="font-size: 0.9rem;">Get quick updates and urgent announcements directly on your phone.</p>
+                    </div>
+                    <div class="tech-actions">
+                        <a href="#" class="tech-btn" id="whatsapp-link" target="_blank">
+                            <i class="ph ph-whatsapp-logo"></i> Connect
+                        </a>
+                    </div>
+                </div>
+
+                <div class="tech-card foss-card">
+                    <div class="tech-icon-container" style="margin-bottom: 1.5rem; background: transparent; border: none; box-shadow: none;">
+                        <img src="logo/FOSS-light.png" alt="FOSS CEAL Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <div class="tech-content">
+                        <h2 class="tech-title" style="font-size: 1.5rem;">FOSS CEAL</h2>
+                        <p class="tech-desc" style="font-size: 0.9rem;">Visit the official website to learn more about our initiatives.</p>
+                    </div>
+                    <div class="tech-actions">
+                        <a href="https://foss.ceal.in" class="tech-btn" target="_blank">
+                            Visit Website <i class="ph ph-arrow-up-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="tech-card lbs-card">
+                    <div class="tech-icon-container" style="margin-bottom: 1.5rem; background: transparent; border: none; box-shadow: none;">
+                        <img src="logo/LBSITW.png" alt="FOSS LBSITW Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <div class="tech-content">
+                        <h2 class="tech-title" style="font-size: 1.5rem;">FOSS LBSITW</h2>
+                        <p class="tech-desc" style="font-size: 0.9rem;">Discover our open source collaborations and events.</p>
+                    </div>
+                    <div class="tech-actions">
+                        <a href="https://fossclub-lbsitw.github.io/FOSS-WEBSITE/" class="tech-btn" target="_blank">
+                            Visit Website <i class="ph ph-arrow-up-right"></i>
+                        </a>
+                    </div>
                 </div>
 
             </div>
             
             <div class="text-center mt-4">
-                <a href="dashboard.html" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
+                <a href="profile.html" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
                     Continue to Dashboard <i class="ph ph-arrow-right"></i>
                 </a>
             </div>

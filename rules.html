@@ -30,17 +30,24 @@
         .accordion {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
             overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .accordion:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px -10px rgba(35, 134, 54, 0.2);
+            transform: translateY(-2px);
         }
         .accordion-header {
-            padding: 1rem 1.5rem;
+            padding: 1.25rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1.1rem;
         }
         .accordion-header:hover {
             background-color: var(--bg-tertiary);
@@ -51,11 +58,12 @@
             overflow: hidden;
             transition: max-height 0.3s ease, padding 0.3s ease;
             color: var(--text-secondary);
+            line-height: 1.5;
         }
         .accordion.open .accordion-content {
-            padding: 1rem 1.5rem 1.5rem;
-            max-height: 500px;
-            border-top: 1px solid var(--border-color);
+            padding: 0 1.5rem 1.5rem;
+            max-height: 800px;
+            margin-top: 0.5rem;
         }
         .accordion.open .ph-caret-down {
             transform: rotate(180deg);
@@ -124,11 +132,15 @@
                             const sign = item.points >= 0 ? '+' : '';
                             div.innerHTML = `
                                 <div class="accordion-header">
-                                    <span>${item.title} (${sign}${item.points} pts)</span>
-                                    <i class="ph ph-caret-down"></i>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <i class="ph ph-star text-warning"></i>
+                                        <span>${item.title}</span>
+                                        <span class="badge ${item.points >= 0 ? 'badge-success' : 'badge-danger'}" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 12px;">${sign}${item.points} pts</span>
+                                    </div>
+                                    <i class="ph ph-caret-down text-secondary"></i>
                                 </div>
                                 <div class="accordion-content">
-                                    ${item.body}
+                                    <p>${item.body}</p>
                                 </div>
                             `;
                             scoringContainer.appendChild(div);
@@ -137,11 +149,14 @@
                             div.className = 'accordion';
                             div.innerHTML = `
                                 <div class="accordion-header">
-                                    ${item.title}
-                                    <i class="ph ph-caret-down"></i>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <i class="ph ph-question text-primary"></i>
+                                        <span>${item.title}</span>
+                                    </div>
+                                    <i class="ph ph-caret-down text-secondary"></i>
                                 </div>
                                 <div class="accordion-content">
-                                    ${item.body}
+                                    <p>${item.body}</p>
                                 </div>
                             `;
                             faqContainer.appendChild(div);
