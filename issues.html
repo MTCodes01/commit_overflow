@@ -22,25 +22,6 @@
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-            position: relative;
-        }
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-        .search-box input {
-            width: 100%;
-            padding-left: 2.75rem;
-        }
-        .filter-select {
-            min-width: 180px;
-        }
         .issue-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
@@ -129,24 +110,30 @@
                 <p class="text-secondary mt-1">Manage issues you raised or are assigned to resolve.</p>
             </div>
 
-            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
-                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <div class="flex gap-2">
-                        <button class="btn btn-secondary active" id="tab-open">Open</button>
-                        <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-closed">Closed</button>
-                        <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-assigned">Assigned</button>
-                    </div>
-                    
-                    <div class="search-box" style="flex: 1; min-width: 250px;">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" id="issues-search" class="form-control" placeholder="Search by title or description...">
-                    </div>
-                    
-                    <div style="min-width: 180px;">
-                        <select id="filter-label" class="form-control filter-select" style="width: 100%;">
-                            <option value="">All Labels</option>
-                        </select>
-                    </div>
+            <div class="search-control-bar">
+                <div style="flex: 1; position: relative; display: flex; align-items: center;">
+                    <i class="ph ph-magnifying-glass search-control-icon"></i>
+                    <input type="text" id="issues-search" class="search-control-input" placeholder="Search by title or description...">
+                </div>
+                
+                <div class="search-control-divider"></div>
+                
+                <div class="search-control-select-wrapper">
+                    <select id="filter-label" class="search-control-select">
+                        <option value="">All Labels</option>
+                    </select>
+                    <i class="ph ph-caret-down text-secondary"></i>
+                </div>
+                
+                <div class="search-control-divider"></div>
+                
+                <div class="search-control-select-wrapper">
+                    <select id="filter-type" class="search-control-select">
+                        <option value="open">Type: Open</option>
+                        <option value="closed">Type: Closed</option>
+                        <option value="assigned">Type: Assigned</option>
+                    </select>
+                    <i class="ph ph-caret-down text-secondary"></i>
                 </div>
             </div>
 
@@ -180,12 +167,8 @@
 
             const searchInput = document.getElementById('issues-search');
             const labelFilter = document.getElementById('filter-label');
+            const typeFilter = document.getElementById('filter-type');
             const issuesListContainer = document.getElementById('issues-list');
-
-            // Tabs
-            const tabOpen = document.getElementById('tab-open');
-            const tabClosed = document.getElementById('tab-closed');
-            const tabAssigned = document.getElementById('tab-assigned');
 
             const renderIssues = () => {
                 const searchQuery = searchInput.value.toLowerCase().trim();
@@ -313,29 +296,11 @@
                 });
             };
 
-            const setTab = (tab) => {
-                activeTab = tab;
-                [tabOpen, tabClosed, tabAssigned].forEach(t => {
-                    t.classList.remove('active');
-                    t.style.opacity = '0.7';
-                });
-                if (tab === 'open') {
-                    tabOpen.classList.add('active');
-                    tabOpen.style.opacity = '1';
-                } else if (tab === 'closed') {
-                    tabClosed.classList.add('active');
-                    tabClosed.style.opacity = '1';
-                } else if (tab === 'assigned') {
-                    tabAssigned.classList.add('active');
-                    tabAssigned.style.opacity = '1';
-                }
+            typeFilter.addEventListener('change', (e) => {
+                activeTab = e.target.value;
                 currentPage = 1;
                 loadIssues();
-            };
-
-            tabOpen.addEventListener('click', () => setTab('open'));
-            tabClosed.addEventListener('click', () => setTab('closed'));
-            tabAssigned.addEventListener('click', () => setTab('assigned'));
+            });
 
             searchInput.addEventListener('input', renderIssues);
             labelFilter.addEventListener('change', renderIssues);

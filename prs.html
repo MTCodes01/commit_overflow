@@ -22,25 +22,6 @@
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-            position: relative;
-        }
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-        .search-box input {
-            width: 100%;
-            padding-left: 2.75rem;
-        }
-        .filter-select {
-            min-width: 180px;
-        }
         .pr-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
@@ -115,23 +96,29 @@
                 <p class="text-secondary mt-1">Track code contributions, reviews, and point scores.</p>
             </div>
 
-            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
-                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <div class="flex gap-2">
-                        <button class="btn btn-secondary active" id="tab-pending">Pending Review</button>
-                        <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-merged">Merged</button>
-                    </div>
-                    
-                    <div class="search-box" style="flex: 1; min-width: 250px;">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" id="prs-search" class="form-control" placeholder="Search PR ID or associated issues...">
-                    </div>
-                    
-                    <div style="min-width: 180px;">
-                        <select id="filter-repo" class="form-control filter-select" style="width: 100%;">
-                            <option value="">All Repositories</option>
-                        </select>
-                    </div>
+            <div class="search-control-bar">
+                <div style="flex: 1; position: relative; display: flex; align-items: center;">
+                    <i class="ph ph-magnifying-glass search-control-icon"></i>
+                    <input type="text" id="prs-search" class="search-control-input" placeholder="Search PR ID or associated issues...">
+                </div>
+                
+                <div class="search-control-divider"></div>
+                
+                <div class="search-control-select-wrapper">
+                    <select id="filter-repo" class="search-control-select">
+                        <option value="">All Repositories</option>
+                    </select>
+                    <i class="ph ph-caret-down text-secondary"></i>
+                </div>
+                
+                <div class="search-control-divider"></div>
+                
+                <div class="search-control-select-wrapper">
+                    <select id="filter-status" class="search-control-select">
+                        <option value="pending">Status: Pending Review</option>
+                        <option value="merged">Status: Merged</option>
+                    </select>
+                    <i class="ph ph-caret-down text-secondary"></i>
                 </div>
             </div>
 
@@ -164,11 +151,8 @@
 
             const searchInput = document.getElementById('prs-search');
             const repoFilter = document.getElementById('filter-repo');
+            const statusFilter = document.getElementById('filter-status');
             const prsListContainer = document.getElementById('prs-list');
-
-            // Tabs
-            const tabPending = document.getElementById('tab-pending');
-            const tabMerged = document.getElementById('tab-merged');
 
             const renderPRs = () => {
                 const searchQuery = searchInput.value.toLowerCase().trim();
@@ -283,24 +267,10 @@
                 });
             };
 
-            const setTab = (tab) => {
-                activeTab = tab;
-                [tabPending, tabMerged].forEach(t => {
-                    t.classList.remove('active');
-                    t.style.opacity = '0.7';
-                });
-                if (tab === 'pending') {
-                    tabPending.classList.add('active');
-                    tabPending.style.opacity = '1';
-                } else if (tab === 'merged') {
-                    tabMerged.classList.add('active');
-                    tabMerged.style.opacity = '1';
-                }
+            statusFilter.addEventListener('change', (e) => {
+                activeTab = e.target.value;
                 renderPRs();
-            };
-
-            tabPending.addEventListener('click', () => setTab('pending'));
-            tabMerged.addEventListener('click', () => setTab('merged'));
+            });
 
             searchInput.addEventListener('input', renderPRs);
             repoFilter.addEventListener('change', renderPRs);
