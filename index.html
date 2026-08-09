@@ -308,13 +308,13 @@
 					if (navContainer) {
 						navContainer.innerHTML = `
 							<span style="margin-right: 1rem; color: var(--text-secondary);">Hello, <strong style="color: var(--text-primary);">${currentUser.name.split(' ')[0]}</strong></span>
-							<a href="dashboard.html" class="btn btn-primary">Dashboard</a>
+							<a href="profile.html" class="btn btn-primary">Dashboard</a>
 						`;
 					}
 					
 					const heroBtn = document.getElementById('hero-cta-btn');
 					if (heroBtn) {
-						heroBtn.href = "dashboard.html";
+						heroBtn.href = "profile.html";
 						heroBtn.textContent = "Go to Dashboard";
 					}
 				}

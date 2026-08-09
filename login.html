@@ -105,7 +105,7 @@
                         await API.login(username, password);
                         Components.showToast("Login successful!", "success");
                         setTimeout(() => {
-                            window.location.href = 'dashboard.html';
+                            window.location.href = 'profile.html';
                         }, 1000);
                     } catch (err) {
                         Components.showToast(err.message || "Login failed. Please check your credentials.", "error");

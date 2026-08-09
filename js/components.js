@@ -16,9 +16,6 @@ const Components = {
           </div>
         </div>
         <nav class="sidebar-nav">
-          <a href="dashboard.html" title="Dashboard" class="nav-item ${activePage === "dashboard" ? "active" : ""}">
-            <i class="ph ph-squares-four"></i> <span class="sidebar-text">Dashboard</span>
-          </a>
           <a href="profile.html" title="Profile" class="nav-item ${activePage === "profile" ? "active" : ""}">
             <i class="ph ph-user"></i> <span class="sidebar-text">Profile</span>
           </a>
