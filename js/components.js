@@ -195,7 +195,7 @@ const Components = {
   },
 
 
-  // Accordion setup
+    // Accordion setup
   setupAccordions() {
     document.querySelectorAll(".accordion-header").forEach((header) => {
       header.addEventListener("click", () => {
@@ -215,5 +215,87 @@ const Components = {
     });
   },
 
+  // Pagination Renderer
+  renderPagination(containerId, meta, onPageChange, onLimitChange) {
+    const container = document.getElementById(containerId);
+    if (!container || !meta) return;
+
+    const { page, limit, total_pages } = meta;
+
+    // Build Items per page dropdown
+    let html = `
+      <div class="pagination-wrapper" style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; color: #a1a1aa; font-size: 0.9rem; margin-top: 1.5rem;">
+        <span>Items per page:</span>
+        <select class="form-control pagination-select" style="width: auto; padding: 0.25rem 0.5rem; height: 32px;" id="pagination-limit-select">
+          <option value="10" ${limit === 10 ? 'selected' : ''}>10</option>
+          <option value="20" ${limit === 20 ? 'selected' : ''}>20</option>
+          <option value="50" ${limit === 50 ? 'selected' : ''}>50</option>
+        </select>
+        <span style="border-left: 1px solid var(--border-color); height: 1.5rem; margin: 0 0.5rem;"></span>
+        
+        <div style="display: flex; gap: 0.25rem;">
+    `;
+
+    // Prev Button
+    html += `<button class="pagination-btn" id="pagination-prev" ${page <= 1 ? 'disabled' : ''}><i class="ph ph-caret-left"></i></button>`;
+
+    // Page Buttons Logic
+    const makeBtn = (p, isActive = false) => `<button class="pagination-btn ${isActive ? 'active' : ''}" data-page="${p}">${p}</button>`;
+    const makeEllipsis = () => `<span style="padding: 0 0.5rem; display: flex; align-items: center;">...</span>`;
+
+    if (total_pages <= 7) {
+      for (let i = 1; i <= total_pages; i++) {
+        html += makeBtn(i, i === page);
+      }
+    } else {
+      if (page <= 4) {
+        for (let i = 1; i <= 5; i++) html += makeBtn(i, i === page);
+        html += makeEllipsis();
+        html += makeBtn(total_pages, false);
+      } else if (page >= total_pages - 3) {
+        html += makeBtn(1, false);
+        html += makeEllipsis();
+        for (let i = total_pages - 4; i <= total_pages; i++) html += makeBtn(i, i === page);
+      } else {
+        html += makeBtn(1, false);
+        html += makeEllipsis();
+        html += makeBtn(page - 1, false);
+        html += makeBtn(page, true);
+        html += makeBtn(page + 1, false);
+        html += makeEllipsis();
+        html += makeBtn(total_pages, false);
+      }
+    }
+
+    // Next Button
+    html += `<button class="pagination-btn" id="pagination-next" ${page >= total_pages ? 'disabled' : ''}><i class="ph ph-caret-right"></i></button>`;
+    html += `</div></div>`;
+
+    container.innerHTML = html;
+
+    // Attach events
+    document.getElementById('pagination-limit-select').addEventListener('change', (e) => {
+      if (onLimitChange) onLimitChange(parseInt(e.target.value));
+    });
+
+    if (page > 1) {
+      document.getElementById('pagination-prev').addEventListener('click', () => {
+        if (onPageChange) onPageChange(page - 1);
+      });
+    }
+
+    if (page < total_pages) {
+      document.getElementById('pagination-next').addEventListener('click', () => {
+        if (onPageChange) onPageChange(page + 1);
+      });
+    }
+
+    container.querySelectorAll('.pagination-btn[data-page]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const p = parseInt(e.currentTarget.getAttribute('data-page'));
+        if (p !== page && onPageChange) onPageChange(p);
+      });
+    });
+  }
 
 };

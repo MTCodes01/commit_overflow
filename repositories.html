@@ -154,6 +154,8 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="repos-pagination" class="mt-4"></div>
         </main>
     </div>
 
@@ -415,9 +417,13 @@
                 });
             };
 
+            let currentPage = 1;
+            let currentLimit = 10;
+
             const loadRepos = async () => {
                 try {
-                    allRepos = await API.fetchRepos();
+                    const res = await API.fetchRepos(currentPage, currentLimit);
+                    allRepos = res.data;
                     
                     // Populate language filter
                     const languageSet = new Set();
@@ -436,6 +442,15 @@
                     });
 
                     renderRepos();
+                    
+                    Components.renderPagination('repos-pagination', res.meta, (p) => {
+                        currentPage = p;
+                        loadRepos();
+                    }, (l) => {
+                        currentLimit = l;
+                        currentPage = 1;
+                        loadRepos();
+                    });
                 } catch(e) {
                     console.error(e);
                     reposContainer.innerHTML = '<div class="text-secondary text-center py-5 col-span-2" style="grid-column: 1 / -1;">Failed to load repositories. Please try again later.</div>';

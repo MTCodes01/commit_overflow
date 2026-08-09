@@ -95,6 +95,8 @@
                     <p class="text-secondary mt-2">Loading queries...</p>
                 </div>
             </div>
+            
+            <div id="queries-pagination" class="mt-4"></div>
         </main>
     </div>
 
@@ -299,10 +301,23 @@
                 }
             };
 
+            let currentPage = 1;
+            let currentLimit = 10;
+
             const loadQueries = async () => {
                 try {
-                    allQueries = await API.fetchQueries();
+                    const res = await API.fetchQueries(currentPage, currentLimit);
+                    allQueries = res.data || [];
                     renderQueries();
+                    
+                    Components.renderPagination('queries-pagination', res.meta, (p) => {
+                        currentPage = p;
+                        loadQueries();
+                    }, (l) => {
+                        currentLimit = l;
+                        currentPage = 1;
+                        loadQueries();
+                    });
                 } catch (err) {
                     console.error(err);
                     Components.showToast("Failed to fetch queries.", "error");

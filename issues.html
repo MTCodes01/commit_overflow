@@ -157,6 +157,8 @@
                     <p class="text-secondary mt-2">Loading issues...</p>
                 </div>
             </div>
+            
+            <div id="issues-pagination" class="mt-4"></div>
         </main>
     </div>
 
@@ -189,20 +191,8 @@
                 const searchQuery = searchInput.value.toLowerCase().trim();
                 const selectedLabel = labelFilter.value;
 
-                let filtered = allIssues.filter(issue => {
-                    // 1. Filter by Tab status
-                    if (activeTab === 'open') {
-                        // Open issues created by logged-in user
-                        return issue.user_id === user.id && issue.status !== 'closed';
-                    } else if (activeTab === 'closed') {
-                        // Closed issues created by logged-in user
-                        return issue.user_id === user.id && issue.status === 'closed';
-                    } else if (activeTab === 'assigned') {
-                        // Issues assigned to logged-in user
-                        return issue.assignee_id === user.id;
-                    }
-                    return false;
-                });
+                // The backend already filtered by activeTab, so we just do search and label here
+                let filtered = allIssues;
 
                 // 2. Filter by Search Query
                 if (searchQuery) {
@@ -339,7 +329,8 @@
                     tabAssigned.classList.add('active');
                     tabAssigned.style.opacity = '1';
                 }
-                renderIssues();
+                currentPage = 1;
+                loadIssues();
             };
 
             tabOpen.addEventListener('click', () => setTab('open'));
@@ -349,11 +340,14 @@
             searchInput.addEventListener('input', renderIssues);
             labelFilter.addEventListener('change', renderIssues);
 
+            let currentPage = 1;
+            let currentLimit = 10;
+
             const loadIssues = async () => {
                 try {
-                    const data = await API.fetchUserIssues();
-                    allIssues = data.issues || [];
-                    allLabels = data.labels || [];
+                    const res = await API.fetchUserIssues(currentPage, currentLimit, activeTab);
+                    allIssues = res.data.issues || [];
+                    allLabels = res.data.labels || [];
 
                     // Populate label filter
                     labelFilter.innerHTML = '<option value="">All Labels</option>';
@@ -365,6 +359,15 @@
                     });
 
                     renderIssues();
+                    
+                    Components.renderPagination('issues-pagination', res.meta, (p) => {
+                        currentPage = p;
+                        loadIssues();
+                    }, (l) => {
+                        currentLimit = l;
+                        currentPage = 1;
+                        loadIssues();
+                    });
                 } catch (e) {
                     console.error("Failed to load issues", e);
                     issuesListContainer.innerHTML = `

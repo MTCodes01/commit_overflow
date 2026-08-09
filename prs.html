@@ -142,6 +142,8 @@
                     <p class="text-secondary mt-2">Loading pull requests...</p>
                 </div>
             </div>
+            
+            <div id="prs-pagination" class="mt-4"></div>
         </main>
     </div>
 
@@ -174,7 +176,7 @@
 
                 let filtered = allPRs.filter(pr => {
                     if (activeTab === 'pending') {
-                        return pr.status === 'under_review' || pr.status === 'approved' || pr.status === 'needs_changes';
+                        return pr.status === 'under_review' || pr.status === 'approved' || pr.status === 'needs_changes' || pr.status === 'invalid_assignment';
                     } else if (activeTab === 'merged') {
                         return pr.status === 'merged';
                     }
@@ -303,10 +305,13 @@
             searchInput.addEventListener('input', renderPRs);
             repoFilter.addEventListener('change', renderPRs);
 
+            let currentPage = 1;
+            let currentLimit = 10;
+
             const loadPRs = async () => {
                 try {
-                    const data = await API.fetchUserPRs();
-                    allPRs = data || [];
+                    const res = await API.fetchUserPRs(currentPage, currentLimit);
+                    allPRs = res.data || [];
 
                     // Populate repositories filter option list
                     const repoNames = {};
@@ -323,12 +328,21 @@
                     });
 
                     renderPRs();
-                } catch (e) {
+                    
+                    Components.renderPagination('prs-pagination', res.meta, (p) => {
+                        currentPage = p;
+                        loadPRs();
+                    }, (l) => {
+                        currentLimit = l;
+                        currentPage = 1;
+                        loadPRs();
+                    });
+                } catch(e) {
                     console.error("Failed to load PRs", e);
                     prsListContainer.innerHTML = `
                         <div class="text-center py-4 text-secondary">
                             <i class="ph ph-warning-circle" style="font-size: 2.5rem; color: var(--danger-color);"></i>
-                            <p class="mt-1">Failed to fetch PRs from server: ${e.message}</p>
+                            <p class="mt-1">Failed to fetch pull requests from server.</p>
                         </div>
                     `;
                 }

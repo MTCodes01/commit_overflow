@@ -133,8 +133,8 @@ const API = {
     return this.request('/logs');
   },
 
-  async fetchQueries() {
-    return this.request('/queries');
+  async fetchQueries(page = 1, limit = 10) {
+    return this.request(`/queries?page=${page}&limit=${limit}`);
   },
 
   async createQuery(title, body, category) {
@@ -155,12 +155,12 @@ const API = {
     });
   },
 
-  async fetchUserIssues() {
-    return this.request('/users/me/issues');
+  async fetchUserIssues(page = 1, limit = 10, tab = 'open') {
+    return this.request(`/users/me/issues?page=${page}&limit=${limit}&tab=${tab}`);
   },
 
-  async fetchUserPRs() {
-    return this.request('/users/me/prs');
+  async fetchUserPRs(page = 1, limit = 10) {
+    return this.request(`/users/me/prs?page=${page}&limit=${limit}`);
   },
 
   async replyQuery(queryId, message) {
@@ -178,8 +178,8 @@ const API = {
     return fetch('config.json?t=' + Date.now()).then(res => res.json()).catch(() => ({}));
   },
 
-  async fetchRepos() {
-    return this.request('/repos');
+  async fetchRepos(page = 1, limit = 10) {
+    return this.request(`/repos?page=${page}&limit=${limit}`);
   },
 
   async fetchRepoDetail(id) {
