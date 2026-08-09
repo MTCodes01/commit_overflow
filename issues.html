@@ -42,18 +42,19 @@
             min-width: 180px;
         }
         .issue-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            padding: 1.5rem;
             margin-bottom: 1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border-left: 4px solid var(--border-color);
         }
         .issue-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px -10px rgba(35, 134, 54, 0.2);
         }
-        .issue-card.status-pending { border-left-color: var(--warning-color); }
-        .issue-card.status-approved { border-left-color: var(--accent-primary); }
-        .issue-card.status-in_progress { border-left-color: var(--accent-secondary); }
-        .issue-card.status-closed { border-left-color: var(--text-secondary); }
 
         .issue-header {
             display: flex;
@@ -87,14 +88,15 @@
         .issue-meta-info {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             gap: 1.25rem;
             font-size: 0.85rem;
             color: var(--text-secondary);
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
             border-top: 1px solid var(--border-color);
         }
-        .issue-meta-info span {
+        .issue-meta-info > span {
             display: flex;
             align-items: center;
             gap: 0.35rem;
@@ -280,30 +282,42 @@
                     // e.g. https://github.com/owner/repo/issues/12
                     const githubLink = `${issue.repo_url}/issues/${issue.github_issue_id}`;
 
+                    let metaHtml = `
+                        <div class="issue-meta-info">
+                            <span><i class="ph ph-user text-primary"></i> Creator: <strong>${issue.user_id === user.id ? 'You' : 'System'}</strong></span>
+                            <span><i class="ph ph-user-focus ${issue.assignee_id ? 'text-success' : 'text-secondary'}"></i> Assignee: <strong style="${issue.assignee_id ? '' : 'color: var(--text-secondary); font-weight: normal;'}">${issue.assignee_id ? (issue.assignee_id === user.id ? 'You' : 'Assigned') : 'Unassigned'}</strong></span>
+                    `;
+                    
+                    if (issue.deadline_at) metaHtml += `<span><i class="ph ph-calendar-blank text-warning"></i> Deadline: ${deadlineText}</span>`;
+                    
+                    if (issue.finished_at) {
+                        metaHtml += `<span><i class="ph ph-check-circle" style="color: #3fb950;"></i> Finished: ${finishedText}</span>`;
+                        if (durationText !== 'N/A') metaHtml += `<span><i class="ph ph-timer" style="color: #a371f7;"></i> Duration: <strong style="color: #a371f7;">${durationText}</strong></span>`;
+                    } else if (issue.started_at) {
+                        metaHtml += `<span><i class="ph ph-play-circle" style="color: #3fb950;"></i> Started: ${startedText}</span>`;
+                    } else if (issue.assigned_at) {
+                        metaHtml += `<span><i class="ph ph-clock text-primary"></i> Assigned: ${assignedText}</span>`;
+                    } else {
+                        metaHtml += `<span><i class="ph ph-calendar-blank text-secondary"></i> Created: ${createdText}</span>`;
+                    }
+                    metaHtml += `</div>`;
+
                     card.innerHTML = `
                         <div class="issue-header">
-                            <div class="issue-title-area">
-                                <a href="repositories.html?id=${issue.repo_id}" class="issue-repo">${issue.repo_name}</a>
-                                <h3>
+                            <div class="issue-title-area" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <a href="repositories.html?id=${issue.repo_id}" class="issue-repo" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <i class="ph ph-git-repository"></i> ${issue.repo_name}
+                                </a>
+                                <h3 style="margin: 0; font-size: 1.25rem;">
                                     <a href="${githubLink}" target="_blank">#${issue.github_issue_id} - ${issue.title}</a>
                                     <i class="ph ph-arrow-square-out" style="font-size: 0.85rem; color: var(--text-secondary);"></i>
                                 </h3>
                             </div>
-                            <span class="badge badge-${issue.status === 'closed' ? 'secondary' : (issue.status === 'approved' ? 'success' : 'warning')}">${issue.status}</span>
+                            <span class="badge badge-${issue.status === 'closed' ? 'secondary' : (issue.status === 'approved' ? 'success' : 'warning')}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${issue.status.toUpperCase()}</span>
                         </div>
-                        <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.5rem;">${issue.body ? (issue.body.length > 150 ? issue.body.substring(0, 150) + '...' : issue.body) : 'No description provided.'}</p>
+                        <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.75rem; margin-bottom: 0.5rem; line-height: 1.5;">${issue.body ? (issue.body.length > 150 ? issue.body.substring(0, 150) + '...' : issue.body) : 'No description provided.'}</p>
                         ${labelHtml}
-                        <div class="issue-meta-info">
-                            <span><i class="ph ph-sparkle"></i> Difficulty: <strong class="badge ${diffClass}" style="margin: 0;">${issue.difficulty}</strong></span>
-                            <span><i class="ph ph-calendar-blank"></i> Created: ${createdText}</span>
-                            <span><i class="ph ph-calendar-blank"></i> Deadline: ${deadlineText}</span>
-                            <span><i class="ph ph-user"></i> Creator: ${issue.user_id === user.id ? 'You' : 'Admin/System'}</span>
-                            <span><i class="ph ph-user-focus"></i> Assignee: ${issue.assignee_id ? (issue.assignee_id === user.id ? '<strong>You</strong>' : 'Someone else') : 'Unassigned'}</span>
-                            <span><i class="ph ph-clock"></i> Assigned: ${assignedText}</span>
-                            <span><i class="ph ph-play-circle"></i> Started: ${startedText}</span>
-                            <span><i class="ph ph-check-circle"></i> Finished: ${finishedText}</span>
-                            <span><i class="ph ph-timer"></i> Duration: ${durationText}</span>
-                        </div>
+                        ${metaHtml}
                     `;
                     issuesListContainer.appendChild(card);
                 });

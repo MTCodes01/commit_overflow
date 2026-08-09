@@ -42,20 +42,19 @@
             min-width: 180px;
         }
         .pr-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            padding: 1.5rem;
             margin-bottom: 1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border-left: 4px solid var(--border-color);
         }
         .pr-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px -10px rgba(35, 134, 54, 0.2);
         }
-        .pr-card.status-under_review { border-left-color: var(--accent-secondary); }
-        .pr-card.status-approved { border-left-color: #3fb950; }
-        .pr-card.status-needs_changes { border-left-color: #d29922; }
-        .pr-card.status-merged { border-left-color: var(--accent-primary); }
-        .pr-card.status-closed_unmerged { border-left-color: var(--danger-color); }
-        .pr-card.status-invalid_assignment { border-left-color: var(--danger-color); }
 
         .pr-header {
             display: flex;
@@ -89,14 +88,15 @@
         .pr-meta-info {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             gap: 1.25rem;
             font-size: 0.85rem;
             color: var(--text-secondary);
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
             border-top: 1px solid var(--border-color);
         }
-        .pr-meta-info span {
+        .pr-meta-info > span {
             display: flex;
             align-items: center;
             gap: 0.35rem;
@@ -254,24 +254,26 @@
 
                     card.innerHTML = `
                         <div class="pr-header">
-                            <div class="pr-title-area">
-                                <a href="repositories.html?id=${pr.repo_id}" class="pr-repo">${pr.repo_name}</a>
-                                <h3>
+                            <div class="pr-title-area" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <a href="repositories.html?id=${pr.repo_id}" class="pr-repo" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                    <i class="ph ph-git-repository"></i> ${pr.repo_name}
+                                </a>
+                                <h3 style="margin: 0; font-size: 1.25rem;">
                                     <a href="${prLink}" target="_blank">${pr.title || `PR #${pr.github_pr_id}`}</a>
                                     <i class="ph ph-arrow-square-out" style="font-size: 0.85rem; color: var(--text-secondary);"></i>
                                 </h3>
-                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">PR Number: #${pr.github_pr_id}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">PR Number: #${pr.github_pr_id}</div>
                             </div>
-                            <span class="badge ${badgeClass}">${statusLabel}</span>
+                            <span class="badge ${badgeClass}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${statusLabel}</span>
                         </div>
-                        <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.5rem; display: flex; align-items: center;">
+                        <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.75rem; margin-bottom: 0.5rem; line-height: 1.5; display: flex; align-items: center;">
                             ${pr.issue_title ? `Addresses issue: <strong>${pr.issue_title}</strong>` : 'General contribution (no linked issue).'}
                             ${difficultyBadge}
                         </p>
                         <div class="pr-meta-info">
-                            <span><i class="ph ph-clock"></i> ${dateText}</span>
-                            <span><i class="ph ph-user"></i> Contributed by: <strong>${pr.github_username || pr.user_id}</strong></span>
-                            <span><i class="ph ph-sparkle"></i> Points status: ${pointsText}</span>
+                            <span><i class="ph ph-clock text-secondary"></i> <span class="text-secondary">${dateText}</span></span>
+                            <span><i class="ph ph-user text-primary"></i> Contributed by: <strong class="text-primary">${pr.github_username || pr.user_id}</strong></span>
+                            <span><i class="ph ph-sparkle text-warning"></i> Points status: ${pointsText}</span>
                         </div>
                     `;
                     prsListContainer.appendChild(card);
