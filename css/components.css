@@ -99,6 +99,21 @@
   box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.3);
 }
 
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-box i {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+.search-box .form-control {
+  padding-left: 2.25rem;
+}
+
 .badge {
   display: inline-block;
   padding: 0.25em 0.6em;
@@ -261,7 +276,6 @@ tr:hover {
   width: 260px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
-  padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
   z-index: 100;
@@ -456,7 +470,6 @@ tr:hover {
   width: 260px;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
-  padding: 1.5rem 0;
   display: flex;
   flex-direction: column;
   z-index: 100;

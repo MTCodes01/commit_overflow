@@ -115,30 +115,31 @@
                 <p class="text-secondary mt-1">Track code contributions, reviews, and point scores.</p>
             </div>
 
-            <div class="card glass-card">
-                <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                     <div class="flex gap-2">
                         <button class="btn btn-secondary active" id="tab-pending">Pending Review</button>
                         <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-merged">Merged</button>
                     </div>
-                </div>
-
-                <div class="prs-controls">
-                    <div class="search-box">
+                    
+                    <div class="search-box" style="flex: 1; min-width: 250px;">
                         <i class="ph ph-magnifying-glass"></i>
                         <input type="text" id="prs-search" class="form-control" placeholder="Search PR ID or associated issues...">
                     </div>
-                    <select id="filter-repo" class="form-control filter-select">
-                        <option value="">All Repositories</option>
-                    </select>
-                </div>
-
-                <div id="prs-list" class="grid grid-dynamic gap-4">
-                    <!-- Loaded dynamically -->
-                    <div class="loading-container">
-                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
-                        <p class="text-secondary mt-2">Loading pull requests...</p>
+                    
+                    <div style="min-width: 180px;">
+                        <select id="filter-repo" class="form-control filter-select" style="width: 100%;">
+                            <option value="">All Repositories</option>
+                        </select>
                     </div>
+                </div>
+            </div>
+
+            <div id="prs-list" class="grid grid-dynamic gap-4">
+                <!-- Loaded dynamically -->
+                <div class="loading-container" style="grid-column: 1 / -1;">
+                    <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                    <p class="text-secondary mt-2">Loading pull requests...</p>
                 </div>
             </div>
         </main>
@@ -195,7 +196,7 @@
 
                 if (filtered.length === 0) {
                     prsListContainer.innerHTML = `
-                        <div class="text-center py-4 text-secondary">
+                        <div class="text-center py-4 text-secondary" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center;">
                             <i class="ph ph-git-pull-request" style="font-size: 2.5rem;"></i>
                             <p class="mt-1">No pull requests found.</p>
                         </div>

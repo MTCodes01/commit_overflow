@@ -48,7 +48,6 @@
             border-radius: 12px;
             background: var(--bg-secondary);
             padding: 1.5rem;
-            margin-bottom: 1rem;
         }
         .issue-card:hover {
             transform: translateY(-4px);
@@ -130,31 +129,32 @@
                 <p class="text-secondary mt-1">Manage issues you raised or are assigned to resolve.</p>
             </div>
 
-            <div class="card glass-card">
-                <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                     <div class="flex gap-2">
                         <button class="btn btn-secondary active" id="tab-open">Open</button>
                         <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-closed">Closed</button>
                         <button class="btn btn-secondary" style="opacity: 0.7;" id="tab-assigned">Assigned</button>
                     </div>
-                </div>
-
-                <div class="issues-controls">
-                    <div class="search-box">
+                    
+                    <div class="search-box" style="flex: 1; min-width: 250px;">
                         <i class="ph ph-magnifying-glass"></i>
                         <input type="text" id="issues-search" class="form-control" placeholder="Search by title or description...">
                     </div>
-                    <select id="filter-label" class="form-control filter-select">
-                        <option value="">All Labels</option>
-                    </select>
-                </div>
-
-                <div id="issues-list" class="grid grid-dynamic gap-4">
-                    <!-- Loaded dynamically -->
-                    <div class="loading-container">
-                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
-                        <p class="text-secondary mt-2">Loading issues...</p>
+                    
+                    <div style="min-width: 180px;">
+                        <select id="filter-label" class="form-control filter-select" style="width: 100%;">
+                            <option value="">All Labels</option>
+                        </select>
                     </div>
+                </div>
+            </div>
+
+            <div id="issues-list" class="grid grid-dynamic gap-4">
+                <!-- Loaded dynamically -->
+                <div class="loading-container" style="grid-column: 1 / -1;">
+                    <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                    <p class="text-secondary mt-2">Loading issues...</p>
                 </div>
             </div>
         </main>
@@ -221,7 +221,7 @@
 
                 if (filtered.length === 0) {
                     issuesListContainer.innerHTML = `
-                        <div class="text-center py-4 text-secondary">
+                        <div class="text-center py-4 text-secondary" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center;">
                             <i class="ph ph-tray" style="font-size: 2.5rem;"></i>
                             <p class="mt-1">No issues found.</p>
                         </div>

@@ -75,18 +75,24 @@
                 </button>
             </div>
 
-            <div class="card glass-card">
-                <div class="flex gap-2 mb-3">
-                    <button class="btn btn-secondary active" id="btn-filter-all">All Queries</button>
-                    <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-open">Open</button>
-                    <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-resolved">Resolved</button>
-                </div>
-
-                <div id="queries-list" class="grid grid-dynamic gap-4">
-                    <div class="loading-container">
-                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
-                        <p class="text-secondary mt-2">Loading queries...</p>
+            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary active" id="btn-filter-all">All Queries</button>
+                        <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-open">Open</button>
+                        <button class="btn btn-secondary" style="opacity: 0.7;" id="btn-filter-resolved">Resolved</button>
                     </div>
+                    <div class="search-box" style="flex: 1; min-width: 250px;">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="queries-search" class="form-control" placeholder="Search queries by title or description...">
+                    </div>
+                </div>
+            </div>
+
+            <div id="queries-list" class="grid grid-dynamic gap-4">
+                <div class="loading-container" style="grid-column: 1 / -1;">
+                    <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
+                    <p class="text-secondary mt-2">Loading queries...</p>
                 </div>
             </div>
         </main>
@@ -169,21 +175,29 @@
 
             let allQueries = [];
             let currentFilter = 'all';
+            const queriesSearchInput = document.getElementById('queries-search');
 
             const renderQueries = () => {
                 const listContainer = document.getElementById('queries-list');
                 if (!listContainer) return;
                 listContainer.innerHTML = '';
 
+                const searchQuery = queriesSearchInput ? queriesSearchInput.value.toLowerCase().trim() : '';
+
                 const filtered = allQueries.filter(q => {
-                    if (currentFilter === 'all') return true;
-                    if (currentFilter === 'open') return q.status === 'open' || q.status === 'answered';
-                    if (currentFilter === 'resolved') return q.status === 'resolved';
+                    if (currentFilter === 'open' && q.status !== 'open' && q.status !== 'answered') return false;
+                    if (currentFilter === 'resolved' && q.status !== 'resolved') return false;
+                    
+                    if (searchQuery) {
+                        const matchTitle = q.title && q.title.toLowerCase().includes(searchQuery);
+                        const matchBody = q.body && q.body.toLowerCase().includes(searchQuery);
+                        if (!matchTitle && !matchBody) return false;
+                    }
                     return true;
                 });
 
                 if (filtered.length === 0) {
-                    listContainer.innerHTML = `<div class="text-secondary text-center py-4">No ${currentFilter !== 'all' ? currentFilter : ''} queries found.</div>`;
+                    listContainer.innerHTML = `<div class="text-secondary text-center py-4" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center;">No ${currentFilter !== 'all' ? currentFilter : ''} queries found.</div>`;
                     return;
                 }
 
@@ -294,6 +308,10 @@
                     Components.showToast("Failed to fetch queries.", "error");
                 }
             };
+
+            if (queriesSearchInput) {
+                queriesSearchInput.addEventListener('input', renderQueries);
+            }
 
             await loadQueries();
 
