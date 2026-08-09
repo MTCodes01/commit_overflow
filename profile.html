@@ -195,9 +195,26 @@
             // Function to update the page UI with user profile & stats data
             const loadProfileDetails = async () => {
                 try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const queryUserId = urlParams.get('user_id');
+                    const isOtherUser = queryUserId && queryUserId !== 'me' && queryUserId !== currentUser.id;
+                    const fetchId = isOtherUser ? queryUserId : 'me';
+                    
+                    if (isOtherUser) {
+                        const editBtn = document.getElementById('edit-profile-btn');
+                        if (editBtn) editBtn.style.display = 'none';
+                    }
+
                     // Fetch live profile details
-                    const user = await API.fetchUserMe();
-                    const dashData = await API.fetchDashboardData(user.id);
+                    let user;
+                    let dashData;
+                    if (!isOtherUser) {
+                        user = await API.fetchUserMe();
+                        dashData = await API.fetchDashboardData(user.id);
+                    } else {
+                        dashData = await API.fetchDashboardData(fetchId);
+                        user = dashData.profile; // uses the profile block returned by the updated backend Dashboard route
+                    }
                     
                     // Display details
                     document.getElementById('ui-display-name').textContent = user.name;
