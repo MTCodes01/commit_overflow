@@ -121,12 +121,12 @@ const API = {
     return this.request(`/leaderboard?period=${period}`);
   },
 
-  async fetchDashboardData(userId) {
-    return this.request(`/users/me/dashboard`);
+  async fetchDashboardData(userId = 'me') {
+    return this.request(`/users/${userId}/dashboard`);
   },
 
-  async fetchProjectedScore(userId) {
-    return this.request(`/users/me/projected`);
+  async fetchProjectedScore(userId = 'me') {
+    return this.request(`/users/${userId}/projected`);
   },
 
   async fetchLogs() {
@@ -211,8 +211,8 @@ const API = {
     });
   },
 
-  async fetchTagStats(userId) {
-    return this.request(`/users/me/tag-stats`);
+  async fetchTagStats(userId = 'me') {
+    return this.request(`/users/${userId}/tag-stats`);
   },
 
   formatDateTime(dateInput) {
