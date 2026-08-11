@@ -119,35 +119,42 @@
                 </div>
             </div>
 
-            <div class="card glass-card" style="margin-bottom: 1.5rem; padding: 1rem 1.5rem;">
-                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <div class="search-box" style="flex: 1; min-width: 250px;">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" id="repos-search" class="form-control" placeholder="Search repositories by name or tech stack...">
-                    </div>
-                    <div style="min-width: 150px;">
-                        <select id="filter-language" class="form-control filter-select" style="width: 100%;">
-                            <option value="">All Languages</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center; min-width: 200px;">
-                        <select id="sort-repo" class="form-control filter-select" style="flex: 1;">
-                            <option value="name">Name</option>
-                            <option value="contributors">Contributors</option>
-                            <option value="open_issues">Open Issues</option>
-                            <option value="open_prs">Open PRs</option>
-                            <option value="merged_prs">Merged PRs</option>
-                        </select>
-                        <button id="sort-repo-dir" class="btn btn-secondary" style="padding: 0.5rem;" title="Toggle Sort Direction">
-                            <i id="sort-repo-icon" class="ph ph-sort-descending"></i>
-                        </button>
-                    </div>
+            <div class="search-control-bar">
+                <div style="flex: 1; position: relative; display: flex; align-items: center;">
+                    <i class="ph ph-magnifying-glass search-control-icon"></i>
+                    <input type="text" id="repos-search" class="search-control-input" placeholder="Search repositories by name or tech stack...">
                 </div>
+
+                <div class="search-control-divider"></div>
+                
+                <div class="search-control-select-wrapper">
+                    <select id="filter-language" class="search-control-select">
+                        <option value="">All Languages</option>
+                    </select>
+                    <i class="ph ph-caret-down text-secondary"></i>
+                </div>
+
+                <div class="search-control-divider"></div>
+
+                <div class="search-control-select-wrapper">
+                    <select id="sort-repo" class="search-control-select">
+                        <option value="name">Sort: Name</option>
+                        <option value="contributors">Sort: Contributors</option>
+                        <option value="open_issues">Sort: Open Issues</option>
+                        <option value="open_prs">Sort: Open PRs</option>
+                        <option value="merged_prs">Sort: Merged PRs</option>
+                    </select>
+                    <i class="ph ph-caret-down text-secondary"></i>
+                </div>
+                
+                <button id="sort-repo-dir" class="search-control-btn" title="Toggle Sort Direction">
+                    <i id="sort-repo-icon" class="ph ph-sort-descending" style="font-size: 1.1rem;"></i>
+                </button>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-1 gap-4" id="repos-container">
                 <!-- Repo cards injected here -->
-                <div class="col-span-2">
+                <div style="grid-column: 1 / -1;">
                     <div class="loading-container">
                         <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
                         <p class="text-secondary mt-2">Loading repositories...</p>
