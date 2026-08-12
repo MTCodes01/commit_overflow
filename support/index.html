@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Support Us | Commit Overflow</title>
+	<meta name="description" content="Support Commit Overflow open-source initiatives by FOSS CEAL. View funding goals, fund allocations, and contribute via UPI payments." />
+	<link rel="canonical" href="https://commitoverflow.ceal.in/support/" />
+	
+	<!-- Favicons -->
+	<link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+	<link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+	<meta name="apple-mobile-web-app-title" content="C-O" />
+	<link rel="manifest" href="/site.webmanifest?v=20260702" />
+	
+	<!-- Open Graph / Twitter -->
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Commit Overflow" />
+	<meta property="og:url" content="https://commitoverflow.ceal.in/support/" />
+	<meta property="og:title" content="Support Us | Commit Overflow" />
+	<meta property="og:description" content="Support Commit Overflow open-source community, contributor prizes, and infrastructure." />
+	<meta property="og:image" content="https://commitoverflow.ceal.in/logo/logo-dark-clr.svg" />
+	
+	<!-- Fonts & Icons -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	<script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+	
+	<style>
+		:root {
+			--bg: #0A0A0A;
+			--text-primary: #F9FAFB;
+			--text-secondary: #9CA3AF;
+			--text-muted: #6B7280;
+			--accent-emerald: #10B981;
+			--accent-emerald-hover: #059669;
+			--glass-bg: rgba(255, 255, 255, 0.025);
+			--glass-bg-hover: rgba(255, 255, 255, 0.04);
+			--glass-border: rgba(255, 255, 255, 0.08);
+			--glass-card-bg: rgba(18, 18, 18, 0.75);
+			--font-inter: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			background-color: var(--bg);
+			color: var(--text-primary);
+			font-family: var(--font-inter);
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: flex-start;
+			padding: 2.5rem 1rem 3rem;
+			line-height: 1.5;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.page-wrapper {
+			width: 100%;
+			max-width: 920px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		/* Public Navigation Header (Matching About page) */
+		.public-nav {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 2.5rem;
+			padding-bottom: 1.25rem;
+			border-bottom: 1px solid var(--glass-border);
+		}
+
+		.public-logo {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: var(--text-primary);
+			text-decoration: none;
+			transition: color 0.2s ease;
+		}
+
+		.public-logo:hover {
+			color: #FFFFFF;
+			text-decoration: none;
+		}
+
+		.public-logo img {
+			width: 36px;
+			height: 36px;
+			transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+			transform: rotateY(0deg);
+		}
+
+		.public-logo:hover img {
+			transform: rotateY(360deg);
+		}
+
+		/* Main Glass Container */
+		.glass-container {
+			background: var(--glass-card-bg);
+			backdrop-filter: blur(20px);
+			-webkit-backdrop-filter: blur(20px);
+			border: 1px solid var(--glass-border);
+			border-radius: 20px;
+			width: 100%;
+			padding: 3rem 2.5rem;
+			box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+		}
+
+		/* Header Section */
+		.page-header {
+			text-align: center;
+			margin-bottom: 2.5rem;
+		}
+
+		.page-header h1 {
+			font-size: 2.25rem;
+			font-weight: 700;
+			color: var(--text-primary);
+			letter-spacing: -0.025em;
+			margin-bottom: 0.75rem;
+		}
+
+		.page-header p {
+			font-size: 1rem;
+			color: var(--text-secondary);
+			max-width: 620px;
+			margin: 0 auto;
+			line-height: 1.6;
+		}
+
+		/* Two Column Grid */
+		.content-grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 2rem;
+			align-items: stretch;
+		}
+
+		/* Section Titles */
+		.column-title {
+			font-size: 0.875rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			color: var(--text-muted);
+			margin-bottom: 1rem;
+		}
+
+		/* Left Column: Fund Allocation */
+		.left-column {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.allocation-list {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			margin-bottom: 1.25rem;
+			flex-grow: 1;
+		}
+
+		.allocation-card {
+			background: var(--glass-bg);
+			border: 1px solid var(--glass-border);
+			border-radius: 12px;
+			padding: 1.25rem;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+			transition: background 0.2s ease, border-color 0.2s ease;
+		}
+
+		.allocation-card:hover {
+			background: var(--glass-bg-hover);
+			border-color: rgba(255, 255, 255, 0.12);
+		}
+
+		.allocation-info {
+			display: flex;
+			align-items: center;
+			gap: 0.875rem;
+		}
+
+		.allocation-icon {
+			width: 40px;
+			height: 40px;
+			border-radius: 10px;
+			background: rgba(255, 255, 255, 0.04);
+			border: 1px solid var(--glass-border);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--text-primary);
+			font-size: 1.25rem;
+			flex-shrink: 0;
+		}
+
+		.allocation-details h3 {
+			font-size: 0.95rem;
+			font-weight: 600;
+			color: var(--text-primary);
+			margin-bottom: 0.2rem;
+		}
+
+		.allocation-details p {
+			font-size: 0.8rem;
+			color: var(--text-muted);
+			line-height: 1.35;
+		}
+
+		.allocation-amount {
+			font-size: 1.05rem;
+			font-weight: 600;
+			color: var(--text-primary);
+			white-space: nowrap;
+		}
+
+		/* Total Funding Summary Card with Progress Bar */
+		.total-summary-card {
+			background: rgba(16, 185, 129, 0.04);
+			border: 1px solid rgba(16, 185, 129, 0.2);
+			border-radius: 14px;
+			padding: 1.25rem 1.5rem;
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.total-summary-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+		}
+
+		.total-summary-label {
+			display: flex;
+			flex-direction: column;
+			gap: 0.15rem;
+		}
+
+		.total-summary-label span:first-child {
+			font-size: 0.75rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			color: var(--accent-emerald);
+		}
+
+		.total-summary-label span:last-child {
+			font-size: 0.825rem;
+			color: var(--text-secondary);
+		}
+
+		.total-summary-amounts {
+			text-align: right;
+		}
+
+		.total-summary-raised {
+			font-size: 1.45rem;
+			font-weight: 700;
+			color: var(--accent-emerald);
+			letter-spacing: -0.02em;
+			line-height: 1.2;
+		}
+
+		.total-summary-target {
+			font-size: 0.775rem;
+			color: var(--text-muted);
+		}
+
+		/* Progress Bar Track & Fill */
+		.progress-track {
+			width: 100%;
+			height: 8px;
+			background: rgba(255, 255, 255, 0.08);
+			border-radius: 999px;
+			overflow: hidden;
+			position: relative;
+		}
+
+		.progress-fill {
+			height: 100%;
+			background: linear-gradient(90deg, #10B981, #34D399);
+			border-radius: 999px;
+			width: 0%;
+			transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+			box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+		}
+
+		.progress-meta {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 0.775rem;
+			color: var(--text-secondary);
+		}
+
+		.progress-percentage {
+			font-weight: 600;
+			color: var(--accent-emerald);
+		}
+
+		/* Right Column: Payment Details */
+		.right-column {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.payment-box {
+			background: var(--glass-bg);
+			border: 1px solid var(--glass-border);
+			border-radius: 16px;
+			padding: 1.75rem;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+			text-align: center;
+		}
+
+		/* Minimal QR Code Box */
+		.qr-wrapper {
+			background: #FFFFFF;
+			padding: 1rem;
+			border-radius: 12px;
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+			margin-bottom: 1.25rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 180px;
+			height: 180px;
+		}
+
+		.qr-wrapper img, .qr-wrapper svg {
+			width: 100%;
+			height: 100%;
+			display: block;
+		}
+
+		.qr-caption {
+			font-size: 0.8rem;
+			color: var(--text-secondary);
+			margin-bottom: 1.5rem;
+		}
+
+		/* UPI Field & Copy Button */
+		.upi-field-group {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			align-items: flex-start;
+		}
+
+		.upi-label {
+			font-size: 0.75rem;
+			font-weight: 600;
+			color: var(--text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+		}
+
+		.upi-input-wrapper {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			background: rgba(0, 0, 0, 0.4);
+			border: 1px solid var(--glass-border);
+			border-radius: 10px;
+			padding: 0.35rem 0.35rem 0.35rem 0.85rem;
+			transition: border-color 0.2s ease;
+		}
+
+		.upi-input-wrapper:focus-within {
+			border-color: rgba(16, 185, 129, 0.5);
+		}
+
+		.upi-id-text {
+			font-family: monospace;
+			font-size: 0.9rem;
+			color: var(--text-primary);
+			flex-grow: 1;
+			text-align: left;
+			user-select: all;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.copy-btn {
+			background: var(--accent-emerald);
+			color: #0A0A0A;
+			font-family: var(--font-inter);
+			font-size: 0.85rem;
+			font-weight: 600;
+			border: none;
+			border-radius: 8px;
+			padding: 0.55rem 1rem;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
+			transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+			white-space: nowrap;
+		}
+
+		.copy-btn:hover {
+			background: var(--accent-emerald-hover);
+			color: #FFFFFF;
+		}
+
+		.copy-btn:active {
+			transform: scale(0.97);
+		}
+
+		/* Footer Credits (Matching About page) */
+		.footer-credits {
+			text-align: center;
+			margin-top: 3.5rem;
+			color: var(--text-secondary);
+			font-size: 0.875rem;
+			width: 100%;
+		}
+
+		.footer-logo {
+			transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+		}
+		.footer-logo:hover {
+			transform: scale(1.05) rotate(1deg);
+		}
+
+		.footer-divider {
+			color: var(--text-secondary);
+			font-size: 0.9rem;
+		}
+
+		/* Responsive Breakdown */
+		@media (max-width: 800px) {
+			.glass-container {
+				padding: 2rem 1.5rem;
+			}
+			.content-grid {
+				grid-template-columns: 1fr;
+				gap: 1.75rem;
+			}
+			.page-header h1 {
+				font-size: 1.85rem;
+			}
+		}
+	</style>
+</head>
+<body>
+
+	<div class="page-wrapper">
+		<!-- Public Navigation Header -->
+		<header class="public-nav">
+			<a href="/" class="public-logo">
+				<img src="/logo/logo-light-clr.svg" alt="Commit Overflow Logo" width="36" height="36">
+				<span>Commit Overflow</span>
+			</a>
+		</header>
+
+		<!-- Main Glassmorphic Container -->
+		<main class="glass-container">
+			
+			<!-- Header -->
+			<header class="page-header">
+				<h1>Support Us</h1>
+				<p>Your contributions directly empower open-source developers, cover infrastructure costs, and support the community driving Commit Overflow.</p>
+			</header>
+
+			<!-- Two Column Content Grid -->
+			<div class="content-grid">
+				
+				<!-- Left Column: Fund Allocation & Summary -->
+				<div class="left-column">
+					<div class="column-title">Fund Allocation</div>
+					
+					<div class="allocation-list" id="allocationList">
+						<!-- Plan 1: Contributor Prize Money -->
+						<div class="allocation-card">
+							<div class="allocation-info">
+								<div class="allocation-icon">
+									<i class="ph ph-trophy"></i>
+								</div>
+								<div class="allocation-details">
+									<h3>Contributor Prize Money</h3>
+									<p>This will provide prize money to recognize and reward contributors who make meaningful contributions during Commit Overflow.</p>
+								</div>
+							</div>
+							<div class="allocation-amount">₹5,000</div>
+						</div>
+
+						<!-- Plan 2: Developer & Maintenance Support -->
+						<div class="allocation-card">
+							<div class="allocation-info">
+								<div class="allocation-icon">
+									<i class="ph ph-code"></i>
+								</div>
+								<div class="allocation-details">
+									<h3>Developer & Maintenance Support</h3>
+									<p>This will support development, maintenance, bug fixes, and improvements required to operate the Commit Overflow platform.</p>
+								</div>
+							</div>
+							<div class="allocation-amount">₹2,000</div>
+						</div>
+
+						<!-- Plan 3: Hosting & Infrastructure -->
+						<div class="allocation-card">
+							<div class="allocation-info">
+								<div class="allocation-icon">
+									<i class="ph ph-hard-drives"></i>
+								</div>
+								<div class="allocation-details">
+									<h3>Hosting & Infrastructure</h3>
+									<p>This will support electricity, connectivity, self-hosted infrastructure, database, storage, and deployment costs.</p>
+								</div>
+							</div>
+							<div class="allocation-amount">₹1,000</div>
+						</div>
+					</div>
+
+					<!-- Total Funding Summary Card with Progress Bar -->
+					<div class="total-summary-card" id="totalSummaryCard">
+						<div class="total-summary-header">
+							<div class="total-summary-label">
+								<span>Total Funding Goal</span>
+								<span>Community funding progress</span>
+							</div>
+							<div class="total-summary-amounts">
+								<div class="total-summary-raised">₹<span id="raisedValue">0</span></div>
+								<div class="total-summary-target">of ₹<span id="totalGoalValue">8,000</span> goal</div>
+							</div>
+						</div>
+
+						<!-- Progress Bar Track -->
+						<div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+							<div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+						</div>
+
+						<div class="progress-meta">
+							<span><strong class="progress-percentage" id="progressPercent">0%</strong> funded</span>
+							<span id="progressRemaining">₹8,000 remaining</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right Column: Payment Details -->
+				<div class="right-column">
+					<div class="column-title">UPI Payment</div>
+					
+					<div class="payment-box">
+						<!-- Minimal QR Code Box -->
+						<div class="qr-wrapper">
+							<img src="/support/qr.svg" alt="UPI QR Code for Commit Overflow" />
+						</div>
+						<div class="qr-caption">Scan with GPay, PhonePe, Paytm, or BHIM</div>
+
+						<!-- UPI ID Field with Copy Button -->
+						<div class="upi-field-group">
+							<span class="upi-label">UPI ID</span>
+							<div class="upi-input-wrapper">
+								<span class="upi-id-text" id="upiIdText">sreedevss05@oksbi</span>
+								<button class="copy-btn" id="copyBtn" aria-label="Copy UPI ID">
+									<i class="ph ph-copy" id="copyIcon"></i>
+									<span id="copyBtnText">Copy</span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</main>
+
+		<!-- Footer Credits -->
+		<footer class="footer-credits">
+			<div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-weight: 500;">
+				<a href="https://foss.ceal.in" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/FOSS-light.png" alt="FOSS CEAL Logo" class="footer-logo" style="height: 2.5rem; width: auto;"></a>
+				<span style="color: var(--text-secondary); font-size: 0.9rem;">x</span>
+				<a href="https://fossclub-lbsitw.github.io/FOSS-WEBSITE/" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/LBSITW.png" alt="FOSS LBSITW Logo" class="footer-logo" style="height: 3.5rem; width: auto;"></a>
+			</div>
+			<p>&copy; <span id="current-year"></span> Commit Overflow Community. All rights reserved.</p>
+		</footer>
+	</div>
+
+	<script>
+		// ==========================================
+		// MANUAL PROGRESS CONTROL
+		// To manually set raised funds (in INR), update `MANUAL_RAISED_AMOUNT` below
+		// or update `data-raised="..."` attribute on #totalSummaryCard.
+		// ==========================================
+		const MANUAL_RAISED_AMOUNT = 0; // e.g. set to 2500 for ₹2,500 raised
+
+		// Set current year in footer
+		const currentYearElement = document.getElementById('current-year');
+		if (currentYearElement) {
+			currentYearElement.textContent = new Date().getFullYear();
+		}
+
+		// Helper to update progress bar UI
+		function renderProgressBar(raisedAmount, targetGoal) {
+			const raisedEl = document.getElementById('raisedValue');
+			const goalEl = document.getElementById('totalGoalValue');
+			const fillEl = document.getElementById('progressFill');
+			const percentEl = document.getElementById('progressPercent');
+			const remainingEl = document.getElementById('progressRemaining');
+
+			const goal = targetGoal || 8000;
+			const raised = (raisedAmount !== undefined && raisedAmount !== null) ? raisedAmount : 0;
+			const percentage = Math.max(0, Math.round((raised / goal) * 100));
+			const barWidth = Math.min(100, percentage);
+			const remaining = goal - raised;
+
+			if (raisedEl) raisedEl.innerText = raised.toLocaleString('en-IN');
+			if (goalEl) goalEl.innerText = goal.toLocaleString('en-IN');
+			if (fillEl) fillEl.style.width = `${barWidth}%`;
+			if (percentEl) percentEl.innerText = `${percentage}%`;
+			if (remainingEl) {
+				if (remaining > 0) {
+					remainingEl.innerText = `₹${remaining.toLocaleString('en-IN')} remaining`;
+				} else if (remaining < 0) {
+					const surplus = Math.abs(remaining);
+					remainingEl.innerText = `Goal exceeded by ₹${surplus.toLocaleString('en-IN')}!`;
+				} else {
+					remainingEl.innerText = 'Goal achieved!';
+				}
+			}
+		}
+
+		// Initial progress setup from JS variable or HTML attribute
+		function getInitialRaisedAmount() {
+			if (typeof MANUAL_RAISED_AMOUNT === 'number' && !isNaN(MANUAL_RAISED_AMOUNT)) {
+				return MANUAL_RAISED_AMOUNT;
+			}
+			const summaryCard = document.getElementById('totalSummaryCard');
+			if (summaryCard && summaryCard.dataset.raised !== undefined) {
+				const val = parseFloat(summaryCard.dataset.raised);
+				if (!isNaN(val)) return val;
+			}
+			return 0;
+		}
+
+		// Render initial state
+		renderProgressBar(getInitialRaisedAmount(), 8000);
+
+		// Dynamic fetch from /funding.json to keep funding goals in sync automatically
+		async function syncFundingData() {
+			try {
+				const response = await fetch('/funding.json');
+				if (!response.ok) return;
+				const data = await response.json();
+				
+				if (data && data.funding) {
+					let totalGoal = 0;
+					if (Array.isArray(data.funding.plans)) {
+						const activePlans = data.funding.plans.filter(plan => plan.status === 'active');
+						activePlans.forEach(plan => {
+							totalGoal += (plan.amount || 0);
+						});
+					}
+
+					// Use raised amount from funding.json if provided, otherwise stick to manual raised amount
+					const jsonRaised = data.funding.raised !== undefined ? data.funding.raised : getInitialRaisedAmount();
+					renderProgressBar(jsonRaised, totalGoal || 8000);
+				}
+			} catch (err) {
+				// Fallback to initial render
+			}
+		}
+
+		syncFundingData();
+
+		// Copy UPI ID functionality
+		const copyBtn = document.getElementById('copyBtn');
+		const upiIdText = document.getElementById('upiIdText').innerText;
+		const copyIcon = document.getElementById('copyIcon');
+		const copyBtnText = document.getElementById('copyBtnText');
+
+		copyBtn.addEventListener('click', async () => {
+			try {
+				await navigator.clipboard.writeText(upiIdText);
+				copyIcon.className = 'ph ph-check';
+				copyBtnText.innerText = 'Copied!';
+				copyBtn.style.backgroundColor = '#10B981';
+				copyBtn.style.color = '#0A0A0A';
+
+				setTimeout(() => {
+					copyIcon.className = 'ph ph-copy';
+					copyBtnText.innerText = 'Copy';
+				}, 2000);
+			} catch (err) {
+				const tempInput = document.createElement('input');
+				tempInput.value = upiIdText;
+				document.body.appendChild(tempInput);
+				tempInput.select();
+				document.execCommand('copy');
+				document.body.removeChild(tempInput);
+
+				copyIcon.className = 'ph ph-check';
+				copyBtnText.innerText = 'Copied!';
+				setTimeout(() => {
+					copyIcon.className = 'ph ph-copy';
+					copyBtnText.innerText = 'Copy';
+				}, 2000);
+			}
+		});
+	</script>
+
+</body>
+</html>
