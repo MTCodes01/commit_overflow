@@ -11,44 +11,44 @@ const Components = {
       <aside class="${sidebarClass}" id="app-sidebar">
         <div class="sidebar-header">
           <div class="sidebar-logo" id="sidebar-logo-btn" title="Toggle Sidebar">
-            <img src="logo/logo-light-clr.svg" alt="Logo" style="height: 32px; width: auto;">
+            <img src="/logo/logo-light-clr.svg" alt="Logo" style="height: 32px; width: auto;">
             <span class="sidebar-text">Commit Overflow</span>
           </div>
         </div>
         <nav class="sidebar-nav">
-          <a href="profile.html" title="Profile" class="nav-item ${activePage === "profile" ? "active" : ""}">
+          <a href="/profile/" title="Profile" class="nav-item ${activePage === "profile" ? "active" : ""}">
             <i class="ph ph-user"></i> <span class="sidebar-text">Profile</span>
           </a>
-          <a href="leaderboard.html" title="Leaderboard" class="nav-item ${activePage === "leaderboard" ? "active" : ""}">
+          <a href="/leaderboard/" title="Leaderboard" class="nav-item ${activePage === "leaderboard" ? "active" : ""}">
             <i class="ph ph-trophy"></i> <span class="sidebar-text">Leaderboard</span>
           </a>
-          <a href="repositories.html" title="Repositories" class="nav-item ${activePage === "repositories" ? "active" : ""}">
+          <a href="/repositories/" title="Repositories" class="nav-item ${activePage === "repositories" ? "active" : ""}">
             <i class="ph ph-git-fork"></i> <span class="sidebar-text">Repositories</span>
           </a>
-          <a href="issues.html" title="Issues" class="nav-item ${activePage === "issues" ? "active" : ""}">
+          <a href="/issues/" title="Issues" class="nav-item ${activePage === "issues" ? "active" : ""}">
             <i class="ph ph-warning"></i> <span class="sidebar-text">Issues</span>
           </a>
-          <a href="prs.html" title="Pull Requests" class="nav-item ${activePage === "prs" ? "active" : ""}">
+          <a href="/prs/" title="Pull Requests" class="nav-item ${activePage === "prs" ? "active" : ""}">
             <i class="ph ph-git-pull-request"></i> <span class="sidebar-text">Pull Requests</span>
           </a>
-          <a href="queries.html" title="Queries" class="nav-item ${activePage === "queries" ? "active" : ""}">
+          <a href="/queries/" title="Queries" class="nav-item ${activePage === "queries" ? "active" : ""}">
             <i class="ph ph-question"></i> <span class="sidebar-text">Queries</span>
           </a>
-          <a href="rules.html" title="Rules & Scoring" class="nav-item ${activePage === "rules" ? "active" : ""}">
+          <a href="/rules/" title="Rules & Scoring" class="nav-item ${activePage === "rules" ? "active" : ""}">
             <i class="ph ph-book-open-text"></i> <span class="sidebar-text">Rules & Scoring</span>
           </a>
-          <a href="dashboard-about.html" title="About Us" class="nav-item ${activePage === "about" ? "active" : ""}">
+          <a href="/dashboard-about/" title="About Us" class="nav-item ${activePage === "about" ? "active" : ""}">
             <i class="ph ph-info"></i> <span class="sidebar-text">About Us</span>
           </a>
-          <a href="logs.html" title="Activity Logs" class="nav-item ${activePage === "logs" ? "active" : ""}">
+          <a href="/logs/" title="Activity Logs" class="nav-item ${activePage === "logs" ? "active" : ""}">
             <i class="ph ph-list-dashes"></i> <span class="sidebar-text">Activity Logs</span>
           </a>
-          <a href="community.html" title="Community" class="nav-item ${activePage === "community" ? "active" : ""}">
+          <a href="/community/" title="Community" class="nav-item ${activePage === "community" ? "active" : ""}">
             <i class="ph ph-users-three"></i> <span class="sidebar-text">Community</span>
           </a>
         </nav>
         <div class="sidebar-footer">
-          <a href="index.html" title="Logout" id="sidebar-logout-btn" class="nav-item" style="color: var(--danger-color);">
+          <a href="/" title="Logout" id="sidebar-logout-btn" class="nav-item" style="color: var(--danger-color);">
             <i class="ph ph-sign-out"></i> <span class="sidebar-text">Logout</span>
           </a>
         </div>
@@ -67,7 +67,7 @@ const Components = {
                     <i class="ph ph-list"></i>
                 </button>
                 <div class="mobile-logo">
-                    <img src="logo/logo-light-clr.svg" alt="Logo" width="36" height="36" style="height: 36px; width: auto;">
+                    <img src="/logo/logo-light-clr.svg" alt="Logo" width="36" height="36" style="height: 36px; width: auto;">
                 </div>
             </div>
         `,

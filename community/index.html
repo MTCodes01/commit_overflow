@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community | Commit Overflow</title>
     <meta name="description" content="Join the Commit Overflow community. Connect with other developers, share knowledge, and collaborate on open source projects, a collaboration between FOSS CEAL and FOSS Club LBSITW">
-    <link rel="canonical" href="https://commitoverflow.ceal.in/community.html" />
+    <link rel="canonical" href="https://commitoverflow.ceal.in/community/" />
     <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
     <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
@@ -14,7 +14,7 @@
     <link rel="manifest" href="/site.webmanifest?v=20260702" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Commit Overflow" />
-	<meta property="og:url" content="https://commitoverflow.ceal.in/community.html" />
+	<meta property="og:url" content="https://commitoverflow.ceal.in/community/" />
     <meta property="og:title" content="Community | Commit Overflow" />
     <meta property="og:description" content="Join the Commit Overflow community. Connect with other developers, share knowledge, and collaborate on open source projects, a collaboration between FOSS CEAL and FOSS Club LBSITW" />
     <meta property="og:image" content="https://commitoverflow.ceal.in/logo/logo-dark-clr.svg" />
@@ -23,8 +23,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
     <style>
         /* Asymmetrical Tech Grid Styles */
         .community-grid {
@@ -299,7 +299,7 @@
 
                 <div class="tech-card foss-card">
                     <div class="tech-icon-container" style="margin-bottom: 1.5rem; background: transparent; border: none; box-shadow: none;">
-                        <img src="logo/FOSS-light.png" alt="FOSS CEAL Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        <img src="/logo/FOSS-light.png" alt="FOSS CEAL Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                     </div>
                     <div class="tech-content">
                         <h2 class="tech-title" style="font-size: 1.5rem;">FOSS CEAL</h2>
@@ -314,7 +314,7 @@
 
                 <div class="tech-card lbs-card">
                     <div class="tech-icon-container" style="margin-bottom: 1.5rem; background: transparent; border: none; box-shadow: none;">
-                        <img src="logo/LBSITW.png" alt="FOSS LBSITW Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        <img src="/logo/LBSITW.png" alt="FOSS LBSITW Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                     </div>
                     <div class="tech-content">
                         <h2 class="tech-title" style="font-size: 1.5rem;">FOSS LBSITW</h2>
@@ -330,19 +330,19 @@
             </div>
             
             <div class="text-center mt-4">
-                <a href="profile.html" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
+                <a href="/profile/" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
                     Continue to Dashboard <i class="ph ph-arrow-right"></i>
                 </a>
             </div>
         </main>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/components.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/components.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             if (!API.isAuthenticated()) {
-                window.location.href = 'login.html';
+                window.location.href = '/login/';
                 return;
             }
 
