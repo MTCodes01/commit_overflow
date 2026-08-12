@@ -43,7 +43,7 @@
         "guid": "upi",
         "type": "payment-provider",
         "address": "sreedevss05@oksbi",
-        "description": "Personal UPI account of the maintainer for receiving the FOSS United grant and other community sponsorships on behalf of FOSS CEAL, as organisational bank account is currently unavailable."
+        "description": "UPI account used as the current receiving channel for FOSS CEAL, as an organisational bank account is currently unavailable."
       }
     ],
     "plans": [
@@ -63,7 +63,7 @@
         "guid": "developer-support",
         "status": "active",
         "name": "Developer & Maintenance Support",
-        "description": "This will support the development, maintenance, bug fixes and improvements required to operate and maintain the Commit Overflow platform during the initiative.",
+        "description": "This will support the development, maintenance, bug fixes and improvements required to operate the Commit Overflow platform during the initiative, including maintaining the platform, addressing issues identified during the program, and improving the contributor experience.",
         "amount": 2000,
         "currency": "INR",
         "frequency": "one-time",
@@ -75,7 +75,7 @@
         "guid": "platform-infrastructure",
         "status": "active",
         "name": "Hosting & Infrastructure",
-        "description": "This will support the electricity and internet connectivity required to operate the self-hosted infrastructure, along with database, storage, deployment, monitoring, and other infrastructure costs required to run and maintain the Commit Overflow platform during the initiative.",
+        "description": "This will support the electricity and internet connectivity required to operate the self-hosted infrastructure, along with database, storage, deployment, monitoring, and other infrastructure costs required to keep the Commit Overflow platform available throughout the initiative.",
         "amount": 1000,
         "currency": "INR",
         "frequency": "one-time",
