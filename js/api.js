@@ -8,7 +8,7 @@ const API = {
 
   async getBaseUrl() {
     if (!this.baseUrlPromise) {
-      this.baseUrlPromise = fetch('config.json?t=' + Date.now())
+      this.baseUrlPromise = fetch('/config.json?t=' + Date.now())
         .then(res => res.json())
         .then(config => config.API_BASE_URL)
         .catch(err => {
@@ -45,8 +45,8 @@ const API = {
       localStorage.removeItem('currentUser');
       // If we are not on public pages, redirect to login
       const currentPath = window.location.pathname;
-      if (!currentPath.endsWith('index.html') && !currentPath.endsWith('login.html') && !currentPath.endsWith('register.html') && currentPath !== '/') {
-        window.location.href = 'login.html';
+      if (!currentPath.includes('/login') && !currentPath.includes('/register') && !currentPath.includes('login.html') && currentPath !== '/') {
+        window.location.href = '/login/';
       }
       throw new Error("Session expired or user not found. Please log in again.");
     }
@@ -90,7 +90,7 @@ const API = {
   logout() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
+    window.location.href = '/';
   },
 
   isAuthenticated() {

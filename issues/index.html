@@ -13,8 +13,8 @@
     <title>My Issues | Commit Overflow</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
     <style>
         .issues-controls {
             display: flex;
@@ -149,12 +149,12 @@
         </main>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/components.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/components.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             if (!API.isAuthenticated()) {
-                window.location.href = 'login.html';
+                window.location.href = '/login/';
                 return;
             }
 
@@ -278,7 +278,7 @@
                     card.innerHTML = `
                         <div class="issue-header">
                             <div class="issue-title-area" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                                <a href="repositories.html?id=${issue.repo_id}" class="issue-repo" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 0.25rem;">
+                                <a href="/repositories/?id=${issue.repo_id}" class="issue-repo" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 0.25rem;">
                                     <i class="ph ph-git-repository"></i> ${issue.repo_name}
                                 </a>
                                 <h3 style="margin: 0; font-size: 1.25rem;">

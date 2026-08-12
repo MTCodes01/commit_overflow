@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rules & Scoring | Commit Overflow</title>
     <meta name="description" content="Read the rules and scoring system for Commit Overflow. Learn how to earn points and climb the leaderboard, a collaboration between FOSS CEAL and FOSS Club LBSITW">
-    <link rel="canonical" href="https://commitoverflow.ceal.in/rules.html" />
+    <link rel="canonical" href="https://commitoverflow.ceal.in/rules/" />
     <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
     <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
@@ -14,7 +14,7 @@
     <link rel="manifest" href="/site.webmanifest?v=20260702" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Commit Overflow" />
-	<meta property="og:url" content="https://commitoverflow.ceal.in/rules.html" />
+	<meta property="og:url" content="https://commitoverflow.ceal.in/rules/" />
     <meta property="og:title" content="Rules & Scoring | Commit Overflow" />
     <meta property="og:description" content="Read the rules and scoring system for Commit Overflow. Learn how to earn points and climb the leaderboard, a collaboration between FOSS CEAL and FOSS Club LBSITW" />
     <meta property="og:image" content="https://commitoverflow.ceal.in/logo/logo-dark-clr.svg" />
@@ -23,8 +23,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
     <style>
         /* Accordion styling */
         .accordion {
@@ -105,12 +105,12 @@
         </main>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/components.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/components.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             if (!API.isAuthenticated()) {
-                window.location.href = 'login.html';
+                window.location.href = '/login/';
                 return;
             }
 

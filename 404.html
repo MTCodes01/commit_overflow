@@ -6,17 +6,18 @@
     <title>404 - Page Not Found | Commit Overflow</title>
     <meta name="description" content="The page you are looking for does not exist on Commit Overflow.">
     <meta name="robots" content="noindex, follow">
-    <lin    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
     <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
     <meta name="apple-mobile-web-app-title" content="C-O" />
     <link rel="manifest" href="/site.webmanifest?v=20260702" />
- rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
     <style>
         body { 
             display: flex; 
@@ -30,36 +31,99 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 20px;
+            overflow: hidden;
+            position: relative;
         }
-        h1 { 
-            font-size: 6rem; 
+        
+        /* Grid background for tech feel */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(35, 134, 54, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(35, 134, 54, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+        }
+
+        .error-code { 
+            font-size: clamp(6rem, 15vw, 10rem); 
+            font-weight: 800;
             color: var(--accent-primary, #238636); 
-            margin: 0 0 1rem 0; 
+            margin: 0;
             line-height: 1;
+            letter-spacing: -2px;
+            position: relative;
+            display: inline-block;
         }
-        p { 
-            font-size: 1.25rem; 
-            color: var(--text-secondary, #8b949e); 
-            margin-bottom: 2rem; 
-            max-width: 500px; 
+        
+        /* Subtle glow */
+        .error-code::after {
+            content: "404";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent-primary);
+            filter: blur(20px);
+            opacity: 0.4;
+            z-index: -1;
         }
-        .btn-primary {
-            background-color: var(--accent-primary, #238636);
-            color: #ffffff;
-            padding: 10px 20px;
+
+        .message {
+            font-size: 1.25rem;
+            color: var(--text-secondary, #8b949e);
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .btn-home {
+            background-color: transparent;
+            color: var(--text-primary, #c9d1d9);
+            border: 1px solid var(--border-color, #30363d);
+            padding: 12px 24px;
             border-radius: 6px;
             text-decoration: none;
             font-weight: 500;
-            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
         }
-        .btn-primary:hover {
-            background-color: #ffffff;
+        
+        .btn-home:hover {
+            background-color: var(--border-color, #30363d);
+            border-color: var(--text-secondary, #8b949e);
+            transform: translateY(-2px);
+        }
+
+        .logo-mark {
+            margin-bottom: 0.5rem;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 </head>
 <body>
-    <h1>404</h1>
-    <p>Oops! The page you are looking for does not exist or has been moved.</p>
-    <a href="/" class="btn-primary">Return to Home</a>
+    
+    <div class="logo-mark">
+        <img src="/logo/logo-light-clr.svg" alt="Commit Overflow" width="64" height="64">
+    </div>
+
+    <h1 class="error-code">404</h1>
+    
+    <p class="message">
+        Oops! The page you are looking for does not exist or has been moved.
+    </p>
+    
+    <a href="/" class="btn-home">
+        <i class="ph ph-arrow-left"></i> Return to Main Branch
+    </a>
 </body>
 </html>

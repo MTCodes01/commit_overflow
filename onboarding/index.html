@@ -13,8 +13,8 @@
     <title>Onboarding | Commit Overflow</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
     <style>
         .onboarding-container {
             max-width: 800px;
@@ -67,23 +67,23 @@
             </div>
         </div>
 
-        <a href="community.html" class="btn btn-primary" id="continue-btn" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
+        <a href="/community/" class="btn btn-primary" id="continue-btn" style="padding: 0.75rem 2rem; font-size: 1rem; display: inline-block;">
             Continue to Community <i class="ph ph-arrow-right"></i>
         </a>
     </div>
 
-    <script src="js/api.js"></script>
-    <script src="js/components.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/components.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             if (!API.isAuthenticated()) {
-                window.location.href = 'login.html';
+                window.location.href = '/login/';
                 return;
             }
 
             const currentUser = API.getCurrentUser();
             if (!currentUser) {
-                window.location.href = 'login.html';
+                window.location.href = '/login/';
                 return;
             }
 
@@ -137,10 +137,10 @@
                         continueBtn.textContent = 'Saving...';
                         
                         await API.updateProfile(currentUser.name, currentUser.college || '', interests);
-                        window.location.href = 'community.html';
+                        window.location.href = '/community/';
                     } catch (err) {
                         console.error("Failed to save interests:", err);
-                        window.location.href = 'community.html';
+                        window.location.href = '/community/';
                     }
                 });
             }
