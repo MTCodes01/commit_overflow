@@ -1,0 +1,88 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.1.0",
+  "entity": {
+    "type": "organisation",
+    "role": "owner",
+    "name": "FOSS CEAL",
+    "email": "foss@ceattingal.ac.in",
+    "description": "A student-led Free and Open Source Software (FOSS) community at College of Engineering Attingal dedicated to promoting open-source technologies, collaborative software development, and community-driven learning through events, workshops, and contribution programs.",
+    "webpageUrl": {
+      "url": "https://foss.ceal.in"
+    }
+  },
+  "projects": [
+    {
+      "guid": "commit-overflow",
+      "name": "Commit Overflow",
+      "description": "Commit Overflow is a month-long, beginner-friendly Free and Open Source Software (FOSS) contribution program organized by the FOSS CEAL, in collaboration with LBSITW FOSS CLUB. The program equips students with the skills required to make meaningful contributions to real-world open-source projects through structured mentorship, hands-on learning, and guided collaboration.",
+      "webpageUrl": {
+        "url": "https://commitoverflow.ceal.in"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/MTCodes01/commit_overflow"
+      },
+      "licenses": [
+        "spdx:GPL-3.0-only"
+      ],
+      "tags": [
+        "foss",
+        "open-source",
+        "education",
+        "community",
+        "mentorship",
+        "github",
+        "students",
+        "contributions"
+      ]
+    }
+  ],
+"funding": {
+    "channels": [
+      {
+        "guid": "upi",
+        "type": "payment-provider",
+        "address": "sreedevss05@oksbi",
+        "description": "Personal UPI account of the maintainer for receiving the FOSS United grant and other community sponsorships on behalf of FOSS CEAL, as organisational bank account is currently unavailable."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "prize-money",
+        "status": "active",
+        "name": "Contributor Prize Money",
+        "description": "This will provide prize money to recognize and reward contributors who make meaningful contributions during Commit Overflow.",
+        "amount": 5000,
+        "currency": "INR",
+        "frequency": "one-time",
+        "channels": [
+          "upi"
+        ]
+      },
+      {
+        "guid": "developer-support",
+        "status": "active",
+        "name": "Developer & Maintenance Support",
+        "description": "This will support the development, maintenance, bug fixes and improvements required to operate and maintain the Commit Overflow platform during the initiative.",
+        "amount": 2000,
+        "currency": "INR",
+        "frequency": "one-time",
+        "channels": [
+          "upi"
+        ]
+      },
+      {
+        "guid": "platform-infrastructure",
+        "status": "active",
+        "name": "Hosting & Infrastructure",
+        "description": "This will support the electricity and internet connectivity required to operate the self-hosted infrastructure, along with database, storage, deployment, monitoring, and other infrastructure costs required to run and maintain the Commit Overflow platform during the initiative.",
+        "amount": 1000,
+        "currency": "INR",
+        "frequency": "one-time",
+        "channels": [
+          "upi"
+        ]
+      }
+    ]
+  }
+}
