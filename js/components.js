@@ -48,9 +48,14 @@ const Components = {
           </a>
         </nav>
         <div class="sidebar-footer">
-          <a href="/" title="Logout" id="sidebar-logout-btn" class="nav-item" style="color: var(--danger-color);">
-            <i class="ph ph-sign-out"></i> <span class="sidebar-text">Logout</span>
-          </a>
+          ${localStorage.getItem("authToken") 
+            ? `<a href="/" title="Logout" id="sidebar-logout-btn" class="nav-item" style="color: var(--danger-color);">
+                 <i class="ph ph-sign-out"></i> <span class="sidebar-text">Logout</span>
+               </a>`
+            : `<a href="/login/" title="Login" class="nav-item" style="color: var(--accent-primary);">
+                 <i class="ph ph-sign-in"></i> <span class="sidebar-text">Login</span>
+               </a>`
+          }
         </div>
       </aside>
     `;
