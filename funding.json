@@ -42,8 +42,8 @@
       {
         "guid": "upi",
         "type": "payment-provider",
-        "address": "sreedevss05@oksbi",
-        "description": "UPI account used as the current receiving channel for FOSS CEAL, as an organisational bank account is currently unavailable."
+        "address": "https://commitoverflow.ceal.in/support",
+        "description": "UPI payment page for supporting Commit Overflow."
       }
     ],
     "plans": [
