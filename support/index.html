@@ -434,6 +434,40 @@
 			transform: scale(0.97);
 		}
 
+		/* Direct UPI Launch Button */
+		.pay-upi-btn {
+			width: 100%;
+			background: linear-gradient(135deg, #10B981, #059669);
+			color: #0A0A0A;
+			font-family: var(--font-inter);
+			font-size: 0.9rem;
+			font-weight: 600;
+			border: none;
+			border-radius: 10px;
+			padding: 0.75rem 1rem;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			text-decoration: none;
+			transition: all 0.2s ease;
+			box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+			margin-top: 1rem;
+		}
+
+		.pay-upi-btn:hover {
+			background: linear-gradient(135deg, #34D399, #10B981);
+			color: #0A0A0A;
+			box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+			transform: translateY(-1px);
+			text-decoration: none;
+		}
+
+		.pay-upi-btn:active {
+			transform: translateY(0);
+		}
+
 		/* Footer Credits (Matching About page) */
 		.footer-credits {
 			text-align: center;
@@ -539,6 +573,20 @@
 							</div>
 							<div class="allocation-amount">₹1,000</div>
 						</div>
+
+						<!-- Plan 4: Custom Contribution -->
+						<div class="allocation-card">
+							<div class="allocation-info">
+								<div class="allocation-icon">
+									<i class="ph ph-heart"></i>
+								</div>
+								<div class="allocation-details">
+									<h3>Custom Contribution</h3>
+									<p>Support Commit Overflow with any custom amount of your choice.</p>
+								</div>
+							</div>
+							<div class="allocation-amount">Any Amount</div>
+						</div>
 					</div>
 
 					<!-- Total Funding Summary Card with Progress Bar -->
@@ -588,6 +636,11 @@
 								</button>
 							</div>
 						</div>
+
+						<!-- Direct UPI App Launch Button -->
+						<a href="upi://pay?pa=sreedevss05@oksbi&pn=FOSS%20CEAL&cu=INR" class="pay-upi-btn" id="payUpiBtn">
+							<i class="ph ph-device-mobile"></i> Open UPI App
+						</a>
 					</div>
 				</div>
 
@@ -679,6 +732,14 @@
 						activePlans.forEach(plan => {
 							totalGoal += (plan.amount || 0);
 						});
+					}
+
+					if (Array.isArray(data.funding.channels)) {
+						const directUpiChannel = data.funding.channels.find(ch => ch.guid === 'upi-direct');
+						const payUpiBtn = document.getElementById('payUpiBtn');
+						if (directUpiChannel && directUpiChannel.address && payUpiBtn) {
+							payUpiBtn.href = directUpiChannel.address;
+						}
 					}
 
 					// Use raised amount from funding.json if provided, otherwise stick to manual raised amount
