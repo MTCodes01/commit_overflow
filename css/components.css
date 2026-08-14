@@ -996,6 +996,10 @@ tr:hover {
   display: inline-block;
 }
 
+.w-full {
+  width: 100% !important;
+}
+
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -1170,4 +1174,36 @@ tr:hover {
     .search-control-icon {
         top: 1.1rem;
     }
+}
+
+/* Skeleton Loader */
+@keyframes skeleton-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 2s infinite linear;
+    border-radius: 4px;
+    color: transparent !important;
+    display: inline-block;
+    user-select: none;
+}
+
+.skeleton * {
+    visibility: hidden;
+}
+
+.skeleton-text {
+    height: 1em;
+    width: 100%;
+}
+
+.skeleton-stat {
+    height: 2.5rem;
+    width: 60px;
+    margin-top: 0.25rem;
+    border-radius: 6px;
 }

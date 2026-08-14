@@ -164,9 +164,11 @@
                     <div class="terminal-title">bash -- /var/log/commit_overflow.log</div>
                 </div>
                 <div class="terminal-body" id="terminal-body">
-                    <div class="loading-container">
-                        <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
-                        <p class="text-secondary mt-2">Loading logs...</p>
+                    <div class="loading-container w-full" style="display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem;">
+                        <div class="skeleton skeleton-text" style="height: 1rem; width: 60%; background: rgba(255,255,255,0.1);"></div>
+                        <div class="skeleton skeleton-text" style="height: 1rem; width: 80%; background: rgba(255,255,255,0.1);"></div>
+                        <div class="skeleton skeleton-text" style="height: 1rem; width: 70%; background: rgba(255,255,255,0.1);"></div>
+                        <div class="skeleton skeleton-text" style="height: 1rem; width: 90%; background: rgba(255,255,255,0.1);"></div>
                     </div>
                 </div>
             </div>

@@ -6,15 +6,42 @@
 const API = {
   baseUrlPromise: null,
 
+  async requestWithCache(path, ttl = 300000, options = {}) {
+    const cacheKey = 'cache_' + path;
+    const cachedStr = sessionStorage.getItem(cacheKey);
+    if (cachedStr) {
+      try {
+        const parsed = JSON.parse(cachedStr);
+        if (Date.now() - parsed.timestamp < ttl) {
+          return parsed.data;
+        }
+      } catch (e) {}
+    }
+    const data = await this.request(path, options);
+    sessionStorage.setItem(cacheKey, JSON.stringify({
+      data: data,
+      timestamp: Date.now()
+    }));
+    return data;
+  },
+
   async getBaseUrl() {
     if (!this.baseUrlPromise) {
-      this.baseUrlPromise = fetch('/config.json?t=' + Date.now())
-        .then(res => res.json())
-        .then(config => config.API_BASE_URL)
-        .catch(err => {
-          console.warn("Failed to load config.json", err);
-          return 0;
-        });
+      const cachedUrl = sessionStorage.getItem('api_base_url');
+      if (cachedUrl) {
+        this.baseUrlPromise = Promise.resolve(cachedUrl);
+      } else {
+        this.baseUrlPromise = fetch('/config.json?t=' + Date.now())
+          .then(res => res.json())
+          .then(config => {
+            sessionStorage.setItem('api_base_url', config.API_BASE_URL);
+            return config.API_BASE_URL;
+          })
+          .catch(err => {
+            console.warn("Failed to load config.json", err);
+            return 0;
+          });
+      }
     }
     return this.baseUrlPromise;
   },
@@ -103,7 +130,7 @@ const API = {
   },
 
   async fetchUserMe() {
-    const user = await this.request('/users/me');
+    const user = await this.requestWithCache('/users/me', 60000);
     localStorage.setItem('currentUser', JSON.stringify(user));
     return user;
   },
@@ -114,19 +141,20 @@ const API = {
       body: JSON.stringify({ name, college, technologies })
     });
     localStorage.setItem('currentUser', JSON.stringify(user));
+    sessionStorage.removeItem('cache_/users/me');
     return user;
   },
 
   async fetchLeaderboard(period = 'all') {
-    return this.request(`/leaderboard?period=${period}`);
+    return this.requestWithCache(`/leaderboard?period=${period}`, 60000);
   },
 
   async fetchDashboardData(userId = 'me') {
-    return this.request(`/users/${userId}/dashboard`);
+    return this.requestWithCache(`/users/${userId}/dashboard`, 60000);
   },
 
   async fetchProjectedScore(userId = 'me') {
-    return this.request(`/users/${userId}/projected`);
+    return this.requestWithCache(`/users/${userId}/projected`, 60000);
   },
 
   async fetchLogs() {
@@ -212,7 +240,7 @@ const API = {
   },
 
   async fetchTagStats(userId = 'me') {
-    return this.request(`/users/${userId}/tag-stats`);
+    return this.requestWithCache(`/users/${userId}/tag-stats`, 300000);
   },
 
   formatDateTime(dateInput) {
