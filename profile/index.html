@@ -308,7 +308,7 @@
                         <i class="ph ph-user"></i>
                     </div>
                     <div class="profile-info">
-                        <h1 id="ui-display-name">--</h1>
+                        <h1 id="ui-display-name"><span class="skeleton skeleton-text" style="width: 150px;"></span></h1>
                         <p class="text-primary" id="ui-display-github-username">@--</p>
                         <div class="profile-details">
                             <div id="ui-college"><i class="ph ph-graduation-cap"></i> --</div>
@@ -328,19 +328,19 @@
             <div class="bento-dashboard">
                     <div class="card stat-card bento-card bento-stat">
                         <span class="stat-label">Total Points</span>
-                        <span class="stat-value text-primary" id="stat-points">--</span>
+                        <span class="stat-value text-primary" id="stat-points"><span class="skeleton skeleton-stat"></span></span>
                     </div>
                     <div class="card stat-card bento-card bento-stat">
                         <span class="stat-label">Leaderboard Rank</span>
-                        <span class="stat-value" id="stat-rank">--</span>
+                        <span class="stat-value" id="stat-rank"><span class="skeleton skeleton-stat"></span></span>
                     </div>
                     <div class="card stat-card bento-card bento-stat">
                         <span class="stat-label">Projected Score</span>
-                        <span class="stat-value" style="color: #a371f7;" id="stat-projected">--</span>
+                        <span class="stat-value" style="color: #a371f7;" id="stat-projected"><span class="skeleton skeleton-stat"></span></span>
                     </div>
                     <div class="card stat-card bento-card bento-stat">
                         <span class="stat-label">Repos Contributed</span>
-                        <span class="stat-value" id="stat-repos">--</span>
+                        <span class="stat-value" id="stat-repos"><span class="skeleton skeleton-stat"></span></span>
                     </div>
 
                     <div class="card bento-card bento-heatmap">
@@ -375,9 +375,10 @@
                     <div class="card bento-card bento-feed">
                         <h2 class="mb-3">Recent Activity Feed</h2>
                         <div class="activity-feed" id="activity-feed-container" style="flex-grow: 1; overflow-y: auto; max-height: 400px; padding-right: 0.5rem;">
-                            <div class="loading-container">
-                                <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 2rem;"></i>
-                                <p class="text-secondary mt-2">Loading activity...</p>
+                            <div class="loading-container w-full" style="display: flex; flex-direction: column; gap: 0.5rem; padding: 0;">
+                                <div class="skeleton skeleton-text" style="height: 3rem; width: 100%; border-radius: 4px;"></div>
+                                <div class="skeleton skeleton-text" style="height: 3rem; width: 100%; border-radius: 4px;"></div>
+                                <div class="skeleton skeleton-text" style="height: 3rem; width: 100%; border-radius: 4px;"></div>
                             </div>
                         </div>
                     </div>
@@ -385,8 +386,9 @@
                     <div class="card glass-card bento-card bento-tags">
                         <h2 class="mb-2">Tag Statistics</h2>
                         <div id="tag-stats-container" style="flex-grow: 1; overflow-y: auto; max-height: 400px; padding-right: 0.5rem;">
-                            <div class="loading-container" style="padding: 1rem 0;">
-                                <i class="ph ph-spinner-gap loading-spinner text-primary" style="font-size: 1.5rem;"></i>
+                            <div class="loading-container w-full" style="padding: 1rem 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                                <div class="skeleton skeleton-text" style="height: 2rem; width: 100%; border-radius: 4px;"></div>
+                                <div class="skeleton skeleton-text" style="height: 2rem; width: 100%; border-radius: 4px;"></div>
                             </div>
                         </div>
                     </div>
@@ -403,31 +405,31 @@
                         <div class="flex" style="justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                             <div class="stat-card" style="flex: 1; min-width: 120px;">
                                 <span class="stat-label">PRs Opened</span>
-                                <span class="stat-value text-primary" id="stat-prs-opened" style="font-size: 2rem;">--</span>
+                                <span class="stat-value text-primary" id="stat-prs-opened" style="font-size: 2rem;"><span class="skeleton skeleton-stat"></span></span>
                             </div>
                             <div class="stat-card" style="flex: 1; min-width: 120px;">
                                 <span class="stat-label">PRs Merged</span>
-                                <span class="stat-value text-primary" id="stat-prs-merged" style="font-size: 2rem;">--</span>
+                                <span class="stat-value text-primary" id="stat-prs-merged" style="font-size: 2rem;"><span class="skeleton skeleton-stat"></span></span>
                             </div>
                             <div class="stat-card" style="flex: 1; min-width: 120px;">
                                 <span class="stat-label">Merge Conflicts</span>
-                                <span class="stat-value text-primary" id="stat-merge-conflicts" style="font-size: 2rem; color: #f85149 !important;">--</span>
+                                <span class="stat-value text-primary" id="stat-merge-conflicts" style="font-size: 2rem; color: #f85149 !important;"><span class="skeleton skeleton-stat"></span></span>
                             </div>
                             <div class="stat-card" style="flex: 1; min-width: 120px;">
                                 <span class="stat-label">Issues Assigned</span>
-                                <span class="stat-value text-primary" id="stat-issues-assigned" style="font-size: 2rem;">--</span>
+                                <span class="stat-value text-primary" id="stat-issues-assigned" style="font-size: 2rem;"><span class="skeleton skeleton-stat"></span></span>
                             </div>
                             <div class="stat-card" style="flex: 1; min-width: 120px;">
                                 <span class="stat-label">Issues Resolved</span>
-                                <span class="stat-value text-primary" id="stat-issues-resolved" style="font-size: 2rem;">--</span>
+                                <span class="stat-value text-primary" id="stat-issues-resolved" style="font-size: 2rem;"><span class="skeleton skeleton-stat"></span></span>
                             </div>
                             <div class="stat-card" style="flex: 1; min-width: 120px;">
                                 <span class="stat-label">Current Streak</span>
-                                <span class="stat-value text-primary" id="stat-current-streak" style="font-size: 2rem; color: #a371f7 !important;">--</span>
+                                <span class="stat-value text-primary" id="stat-current-streak" style="font-size: 2rem; color: #a371f7 !important;"><span class="skeleton skeleton-stat"></span></span>
                             </div>
                             <div class="stat-card" style="flex: 1; min-width: 120px;">
                                 <span class="stat-label">Longest Streak</span>
-                                <span class="stat-value text-primary" id="stat-longest-streak" style="font-size: 2rem;">--</span>
+                                <span class="stat-value text-primary" id="stat-longest-streak" style="font-size: 2rem;"><span class="skeleton skeleton-stat"></span></span>
                             </div>
                         </div>
                     </div>
@@ -536,11 +538,11 @@
                     let tagStats;
                     
                     if (!isOtherUser) {
-                        user = await API.fetchUserMe();
-                        [dashData, projectedData, tagStats] = await Promise.all([
-                            API.fetchDashboardData(user.id),
-                            API.fetchProjectedScore(user.id),
-                            API.fetchTagStats(user.id)
+                        [user, dashData, projectedData, tagStats] = await Promise.all([
+                            API.fetchUserMe(),
+                            API.fetchDashboardData(currentUser.id),
+                            API.fetchProjectedScore(currentUser.id),
+                            API.fetchTagStats(currentUser.id)
                         ]);
                     } else {
                         [dashData, projectedData, tagStats] = await Promise.all([
