@@ -61,16 +61,22 @@
             <h2 class="text-center mb-3">Create Account</h2>
             
             <form id="register-form">
-                <div class="grid grid-cols-2 md:grid-cols-1 gap-2">
-                    <div class="form-group">
-                        <label class="form-label">Display Name</label>
-                        <input type="text" id="display-name" class="form-control" placeholder="John Doe" required>
-                    </div>
+                <div class="form-group mb-2">
+                    <label class="form-label">Display Name <span class="text-error">*</span></label>
+                    <input type="text" id="display-name" class="form-control" placeholder="John Doe" required>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-1 gap-2 mb-2">
                     <div class="form-group">
                         <label class="form-label">GitHub Username</label>
-                        <input type="text" id="github-user" class="form-control" placeholder="octocat" required>
+                        <input type="text" id="github-user" class="form-control" placeholder="octocat">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GitLab Username</label>
+                        <input type="text" id="gitlab-user" class="form-control" placeholder="gitlab-user">
                     </div>
                 </div>
+                <div class="text-sm text-secondary mb-3 mt-n1">At least one username (GitHub or GitLab) is required.</div>
 
                 <div class="form-group">
                     <label class="form-label">College Name</label>
@@ -104,15 +110,21 @@
                     e.preventDefault();
                     const name = document.getElementById('display-name').value.trim();
                     const githubUser = document.getElementById('github-user').value.trim();
+                    const gitlabUser = document.getElementById('gitlab-user').value.trim();
                     const college = document.getElementById('college').value.trim();
                     const password = document.getElementById('password').value;
                     const registerBtn = document.getElementById('register-btn');
                     
+                    if (!githubUser && !gitlabUser) {
+                        Components.showToast("Please provide at least a GitHub or GitLab username.", "error");
+                        return;
+                    }
+
                     registerBtn.disabled = true;
                     registerBtn.textContent = "Registering...";
                     
                     try {
-                        await API.register(name, githubUser, password, college);
+                        await API.register(name, githubUser, gitlabUser, password, college);
                         Components.showToast("Registration successful!", "success");
                         setTimeout(() => {
                             window.location.href = '/onboarding/';

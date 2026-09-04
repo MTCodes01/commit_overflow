@@ -453,6 +453,17 @@
                     <label class="form-label">College Name</label>
                     <input type="text" id="input-college-name" class="form-control" value="" placeholder="College Name" required>
                 </div>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">GitHub Username</label>
+                        <input type="text" id="input-github-username" class="form-control" placeholder="octocat">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GitLab Username</label>
+                        <input type="text" id="input-gitlab-username" class="form-control" placeholder="gitlab-user">
+                    </div>
+                </div>
+                <div class="text-sm text-secondary mb-3 mt-n1">At least one username (GitHub or GitLab) is required.</div>
                 <div class="form-group">
                     <label class="form-label">Interests (Technologies)</label>
                     <div class="flex flex-wrap gap-2" id="input-technologies">
@@ -556,22 +567,37 @@
                     document.getElementById('ui-display-name').textContent = user.name;
                     document.getElementById('input-display-name').value = user.name;
                     
-                    // Display GitHub Username below user name
-                    document.getElementById('ui-display-github-username').textContent = '@' + user.github_username;
+                    // Display GitHub/GitLab Usernames below user name
+                    let primaryUsername = user.github_username || user.gitlab_username || '--';
+                    document.getElementById('ui-display-github-username').textContent = '@' + primaryUsername;
                     
                     const collegeText = user.college || 'Not Specified';
                     document.getElementById('ui-college').innerHTML = '<i class="ph ph-graduation-cap"></i> ' + collegeText;
                     document.getElementById('input-college-name').value = user.college || '';
+
+                    const gitHubInput = document.getElementById('input-github-username');
+                    if (gitHubInput) gitHubInput.value = user.github_username || '';
+                    const gitLabInput = document.getElementById('input-gitlab-username');
+                    if (gitLabInput) gitLabInput.value = user.gitlab_username || '';
                     
-                    // Render Profile details including GitHub and Discord verified status
+                    // Render Profile details including GitHub, GitLab, and Discord verified status
                     const githubDetails = document.querySelector('.profile-details');
                     if (githubDetails) {
                         const isDiscordVerified = user.discord_verified;
                         const discordText = isDiscordVerified ? `@${user.discord_username}` : 'Discord Not Connected';
                         const discordIconColor = isDiscordVerified ? 'var(--accent-secondary)' : 'var(--text-secondary)';
+                        
+                        let platformsHtml = '';
+                        if (user.github_username) {
+                            platformsHtml += `<div><i class="ph ph-github-logo"></i> ${user.github_username}</div>`;
+                        }
+                        if (user.gitlab_username) {
+                            platformsHtml += `<div><i class="ph ph-gitlab-logo-simple"></i> ${user.gitlab_username}</div>`;
+                        }
+
                         githubDetails.innerHTML = `
                             <div id="ui-college"><i class="ph ph-graduation-cap"></i> ${collegeText}</div>
-                            <div><i class="ph ph-github-logo"></i> ${user.github_username}</div>
+                            ${platformsHtml}
                             <div><i class="ph ph-discord-logo" style="color: ${discordIconColor};"></i> ${discordText}</div>
                         `;
                     }
@@ -946,17 +972,25 @@
                     e.preventDefault();
                     const name = document.getElementById('input-display-name').value.trim();
                     const college = document.getElementById('input-college-name').value.trim();
+                    const ghInput = document.getElementById('input-github-username');
+                    const glInput = document.getElementById('input-gitlab-username');
+                    const githubUsername = ghInput ? ghInput.value.trim() : '';
+                    const gitlabUsername = glInput ? glInput.value.trim() : '';
+
+                    if (!githubUsername && !gitlabUsername) {
+                        Components.showToast("At least one username (GitHub or GitLab) is required.", "error");
+                        return;
+                    }
+
+                    const selectedTech = Array.from(document.querySelectorAll('.tech-checkbox:checked')).map(cb => cb.value).join(',');
                     
                     const saveBtn = document.getElementById('save-profile-btn');
+                    const originalText = saveBtn.textContent;
+                    saveBtn.textContent = 'Saving...';
                     saveBtn.disabled = true;
-                    saveBtn.textContent = "Saving...";
                     
                     try {
-                        const selectedTech = Array.from(document.querySelectorAll('#input-technologies input:checked')).map(cb => cb.getAttribute('data-name')).join(',');
-                        
-                        // Call update profile PATCH endpoint
-                        await API.updateProfile(name, college, selectedTech);
-                        
+                        await API.updateProfile(name, college, selectedTech, githubUsername, gitlabUsername);
                         Components.showToast("Profile updated successfully!", "success");
                         document.getElementById('edit-modal').classList.remove('active');
                         

@@ -90,10 +90,10 @@ const API = {
     return res.json();
   },
 
-  async login(githubUsername, password) {
+  async login(username, password) {
     const data = await this.request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ github_username: githubUsername, password })
+      body: JSON.stringify({ username: username, password })
     });
     if (data && data.token) {
       localStorage.setItem('authToken', data.token);
@@ -102,10 +102,10 @@ const API = {
     return data;
   },
 
-  async register(name, githubUsername, password, college) {
+  async register(name, githubUsername, gitlabUsername, password, college) {
     const data = await this.request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ name, github_username: githubUsername, password, college })
+      body: JSON.stringify({ name, github_username: githubUsername, gitlab_username: gitlabUsername, password, college })
     });
     if (data && data.token) {
       localStorage.setItem('authToken', data.token);
@@ -135,10 +135,10 @@ const API = {
     return user;
   },
 
-  async updateProfile(name, college, technologies) {
+  async updateProfile(name, college, technologies, githubUsername, gitlabUsername) {
     const user = await this.request('/users/me', {
       method: 'PATCH',
-      body: JSON.stringify({ name, college, technologies })
+      body: JSON.stringify({ name, college, technologies, github_username: githubUsername, gitlab_username: gitlabUsername })
     });
     localStorage.setItem('currentUser', JSON.stringify(user));
     sessionStorage.removeItem('cache_/users/me');
