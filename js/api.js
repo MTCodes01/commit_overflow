@@ -66,7 +66,8 @@ const API = {
       headers,
     });
 
-    if (res.status === 401 || (res.status === 404 && (path.startsWith('/users/') || path === '/users/me'))) {
+    const isAuthEndpoint = path === '/auth/login' || path === '/auth/register';
+    if (!isAuthEndpoint && (res.status === 401 || (res.status === 404 && (path.startsWith('/users/') || path === '/users/me')))) {
       // Clear auth on token expiration or user not found
       localStorage.removeItem('authToken');
       localStorage.removeItem('currentUser');
