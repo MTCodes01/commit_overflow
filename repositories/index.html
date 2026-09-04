@@ -137,6 +137,17 @@
                 <div class="search-control-divider"></div>
 
                 <div class="search-control-select-wrapper">
+                    <select id="filter-platform" class="search-control-select">
+                        <option value="">All Platforms</option>
+                        <option value="github">GitHub</option>
+                        <option value="gitlab">GitLab</option>
+                    </select>
+                    <i class="ph ph-caret-down text-secondary"></i>
+                </div>
+
+                <div class="search-control-divider"></div>
+
+                <div class="search-control-select-wrapper">
                     <select id="sort-repo" class="search-control-select">
                         <option value="name">Sort: Name</option>
                         <option value="contributors">Sort: Contributors</option>
@@ -271,10 +282,9 @@
             </div>
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div>
-                    <span class="text-secondary text-sm">GitHub Repository URL</span>
-                    <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.25rem;">
-                        <input type="text" id="modal-repo-url" class="form-control" readonly>
-                        <a href="#" id="modal-github-btn" class="btn btn-primary" target="_blank" style="width: auto; white-space: nowrap;"><i class="ph ph-github-logo"></i> Visit GitHub</a>
+                    <span class="text-secondary text-sm">Repository Links</span>
+                    <div id="modal-repo-links-container" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+                        <!-- Dynamically populated links -->
                     </div>
                 </div>
 
@@ -316,8 +326,26 @@
                     const repo = detail.repository;
                     
                     document.getElementById('modal-repo-name').textContent = repo.name;
-                    document.getElementById('modal-repo-url').value = repo.github_url;
-                    document.getElementById('modal-github-btn').href = repo.github_url;
+                    
+                    const linksContainer = document.getElementById('modal-repo-links-container');
+                    linksContainer.innerHTML = '';
+                    
+                    if (repo.github_url) {
+                        linksContainer.innerHTML += `
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <input type="text" class="form-control" value="${repo.github_url}" readonly>
+                                <a href="${repo.github_url}" class="btn btn-primary" target="_blank" style="width: auto; white-space: nowrap;"><i class="ph ph-github-logo"></i> Visit GitHub</a>
+                            </div>
+                        `;
+                    }
+                    if (repo.gitlab_url) {
+                        linksContainer.innerHTML += `
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <input type="text" class="form-control" value="${repo.gitlab_url}" readonly>
+                                <a href="${repo.gitlab_url}" class="btn btn-primary" target="_blank" style="width: auto; white-space: nowrap;"><i class="ph ph-gitlab-logo-simple"></i> Visit GitLab</a>
+                            </div>
+                        `;
+                    }
                     
                     // Render Issues
                     const issuesList = document.getElementById('modal-issues-list');
@@ -387,6 +415,7 @@
             let allRepos = [];
             const reposSearchInput = document.getElementById('repos-search');
             const filterLanguage = document.getElementById('filter-language');
+            const filterPlatform = document.getElementById('filter-platform');
             const sortRepo = document.getElementById('sort-repo');
             const sortRepoDir = document.getElementById('sort-repo-dir');
             const sortRepoIcon = document.getElementById('sort-repo-icon');
@@ -419,6 +448,7 @@
                 
                 const query = reposSearchInput.value.toLowerCase().trim();
                 const selectedLanguage = filterLanguage.value;
+                const selectedPlatform = filterPlatform.value;
                 const sortBy = sortRepo.value;
 
                 let filteredRepos = allRepos.filter(repo => {
@@ -430,8 +460,14 @@
                     if (selectedLanguage) {
                         matchLang = repo.tech_stack && repo.tech_stack.includes(selectedLanguage);
                     }
+                    
+                    let matchPlatform = true;
+                    if (selectedPlatform) {
+                        if (selectedPlatform === 'github') matchPlatform = !!repo.github_url;
+                        if (selectedPlatform === 'gitlab') matchPlatform = !!repo.gitlab_url;
+                    }
 
-                    return matchQuery && matchLang;
+                    return matchQuery && matchLang && matchPlatform;
                 });
 
                 // Apply Sorting
@@ -486,10 +522,19 @@
                         hardPct = (diff.hard / totalIssues) * 100;
                     }
 
+                    let platformIcon = '<i class="ph ph-git-fork text-primary"></i>';
+                    if (repo.github_url && repo.gitlab_url) {
+                        platformIcon = '<i class="ph ph-github-logo text-primary" style="margin-right: 4px;"></i><i class="ph ph-gitlab-logo-simple text-primary"></i>';
+                    } else if (repo.github_url) {
+                        platformIcon = '<i class="ph ph-github-logo text-primary"></i>';
+                    } else if (repo.gitlab_url) {
+                        platformIcon = '<i class="ph ph-gitlab-logo-simple text-primary"></i>';
+                    }
+
                     card.innerHTML = `
                         <div class="repo-title">
                             <span>${repo.name}</span>
-                            <i class="ph ph-git-fork text-primary"></i>
+                            <div>${platformIcon}</div>
                         </div>
                         <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.25rem;">
                             ${techBadges}
@@ -565,6 +610,9 @@
             }
             if (filterLanguage) {
                 filterLanguage.addEventListener('change', renderRepos);
+            }
+            if (filterPlatform) {
+                filterPlatform.addEventListener('change', renderRepos);
             }
 
             const checkStatusAndRender = (status) => {
