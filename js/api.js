@@ -203,7 +203,7 @@ const API = {
   },
 
   async getConfig() {
-    return fetch('config.json?t=' + Date.now()).then(res => res.json()).catch(() => ({}));
+    return fetch('/config.json?t=' + Date.now()).then(res => res.json()).catch(() => ({}));
   },
 
   async fetchRepos(page = 1, limit = 10) {
