@@ -70,6 +70,7 @@ const API = {
       // Clear auth on token expiration or user not found
       localStorage.removeItem('authToken');
       localStorage.removeItem('currentUser');
+      sessionStorage.clear(); // Clear cached data
       // If we are not on public pages, redirect to login
       const currentPath = window.location.pathname;
       if (!currentPath.includes('/login') && !currentPath.includes('/register') && !currentPath.includes('login.html') && currentPath !== '/') {
@@ -98,6 +99,7 @@ const API = {
     if (data && data.token) {
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('currentUser', JSON.stringify(data.user));
+      sessionStorage.clear(); // Clear any stale cache from previous sessions
     }
     return data;
   },
@@ -110,6 +112,7 @@ const API = {
     if (data && data.token) {
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('currentUser', JSON.stringify(data.user));
+      sessionStorage.clear(); // Clear any stale cache from previous sessions
     }
     return data;
   },
@@ -117,6 +120,7 @@ const API = {
   logout() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
+    sessionStorage.clear(); // Clear cached data
     window.location.href = '/';
   },
 
@@ -177,10 +181,12 @@ const API = {
   },
 
   async verifyDiscordOAuth(code, state) {
-    return this.request('/auth/discord/verify', {
+    const res = await this.request('/auth/discord/verify', {
       method: 'POST',
       body: JSON.stringify({ code, state })
     });
+    sessionStorage.removeItem('cache_/users/me');
+    return res;
   },
 
   async fetchUserIssues(page = 1, limit = 10, tab = 'open') {
