@@ -631,45 +631,50 @@
                 // 1. Populate the top 3 podium places
                 const podiumContainer = document.getElementById('podium-container');
                 if (podiumContainer) {
-                    const first = leaderboard[0];
-                    const second = leaderboard[1];
-                    const third = leaderboard[2];
-                    
-                    podiumContainer.innerHTML = `
-                        <!-- Second Place -->
-                        <div class="podium-place">
-                            <div class="podium-avatar" style="border-color: #8b949e; overflow: hidden;">
-                                ${second && second.avatar_url ? `<img src="${second.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                    if (leaderboard.length === 0) {
+                        podiumContainer.style.display = 'none';
+                    } else {
+                        podiumContainer.style.display = 'flex';
+                        const first = leaderboard[0];
+                        const second = leaderboard[1];
+                        const third = leaderboard[2];
+                        
+                        podiumContainer.innerHTML = `
+                            <!-- Second Place -->
+                            <div class="podium-place">
+                                <div class="podium-avatar" style="border-color: #8b949e; overflow: hidden;">
+                                    ${second && second.avatar_url ? `<img src="${second.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                                </div>
+                                <div class="podium-bar second">
+                                    <div>2</div>
+                                    <div class="text-sm font-normal text-secondary mt-1">${second ? second.github_username : '---'}</div>
+                                    <div class="text-primary text-sm mt-1">${second ? second.total_points : 0} pts</div>
+                                </div>
                             </div>
-                            <div class="podium-bar second">
-                                <div>2</div>
-                                <div class="text-sm font-normal text-secondary mt-1">${second ? second.github_username : '---'}</div>
-                                <div class="text-primary text-sm mt-1">${second ? second.total_points : 0} pts</div>
+                            <!-- First Place -->
+                            <div class="podium-place">
+                                <div class="podium-avatar" style="border-color: #d29922; width: 80px; height: 80px; margin-bottom: -40px; overflow: hidden;">
+                                    ${first && first.avatar_url ? `<img src="${first.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-crown" style="color: #d29922;"></i>'}
+                                </div>
+                                <div class="podium-bar first">
+                                    <div style="font-size: 1.5rem;">1</div>
+                                    <div class="text-sm font-normal text-secondary mt-1">${first ? first.github_username : '---'}</div>
+                                    <div class="text-primary text-sm mt-1">${first ? first.total_points : 0} pts</div>
+                                </div>
                             </div>
-                        </div>
-                        <!-- First Place -->
-                        <div class="podium-place">
-                            <div class="podium-avatar" style="border-color: #d29922; width: 80px; height: 80px; margin-bottom: -40px; overflow: hidden;">
-                                ${first && first.avatar_url ? `<img src="${first.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-crown" style="color: #d29922;"></i>'}
+                            <!-- Third Place -->
+                            <div class="podium-place">
+                                <div class="podium-avatar" style="border-color: #a371f7; overflow: hidden;">
+                                    ${third && third.avatar_url ? `<img src="${third.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
+                                </div>
+                                <div class="podium-bar third">
+                                    <div>3</div>
+                                    <div class="text-sm font-normal text-secondary mt-1">${third ? third.github_username : '---'}</div>
+                                    <div class="text-primary text-sm mt-1">${third ? third.total_points : 0} pts</div>
+                                </div>
                             </div>
-                            <div class="podium-bar first">
-                                <div style="font-size: 1.5rem;">1</div>
-                                <div class="text-sm font-normal text-secondary mt-1">${first ? first.github_username : '---'}</div>
-                                <div class="text-primary text-sm mt-1">${first ? first.total_points : 0} pts</div>
-                            </div>
-                        </div>
-                        <!-- Third Place -->
-                        <div class="podium-place">
-                            <div class="podium-avatar" style="border-color: #a371f7; overflow: hidden;">
-                                ${third && third.avatar_url ? `<img src="${third.avatar_url}" width="64" height="64" style="width:100%;height:100%;object-fit:cover;" />` : '<i class="ph ph-user"></i>'}
-                            </div>
-                            <div class="podium-bar third">
-                                <div>3</div>
-                                <div class="text-sm font-normal text-secondary mt-1">${third ? third.github_username : '---'}</div>
-                                <div class="text-primary text-sm mt-1">${third ? third.total_points : 0} pts</div>
-                            </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
 
                 // 2. Populate college filter dropdown
