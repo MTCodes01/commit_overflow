@@ -626,7 +626,8 @@
             Components.renderSidebar('leaderboard');
             
             try {
-                const leaderboard = await API.fetchLeaderboard('all');
+                const leaderboardData = await API.fetchLeaderboard('all');
+                const leaderboard = Array.isArray(leaderboardData) ? leaderboardData : [];
                 
                 // 1. Populate the top 3 podium places
                 const podiumContainer = document.getElementById('podium-container');
