@@ -590,9 +590,13 @@
                         let platformsHtml = '';
                         if (user.github_username) {
                             platformsHtml += `<div><i class="ph ph-github-logo"></i> ${user.github_username}</div>`;
+                        } else {
+                            platformsHtml += `<div style="color: var(--text-secondary)"><i class="ph ph-github-logo"></i> Not connected</div>`;
                         }
                         if (user.gitlab_username) {
                             platformsHtml += `<div><i class="ph ph-gitlab-logo-simple"></i> ${user.gitlab_username}</div>`;
+                        } else {
+                            platformsHtml += `<div style="color: var(--text-secondary)"><i class="ph ph-gitlab-logo-simple"></i> Not connected</div>`;
                         }
 
                         githubDetails.innerHTML = `

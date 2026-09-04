@@ -270,7 +270,7 @@
 				</div>
 			</div>
 		</section>
-		<section class="mt-4 mb-4 text-center">
+		<section class="mt-4 mb-4 text-center" id="join-section">
 			<h2 class="section-title">Ready to Make an Impact?</h2>
 			<div class="glass-card" style="max-width: 600px; margin: 0 auto">
 				<p class="mb-3">
@@ -302,6 +302,13 @@
 			new Date().getFullYear();
 
 		document.addEventListener('DOMContentLoaded', async () => {
+			if (API.isAuthenticated()) {
+				const joinSection = document.getElementById('join-section');
+				if (joinSection) {
+					joinSection.style.display = 'none';
+				}
+			}
+
 			if (API.isAuthenticated && API.isAuthenticated()) {
 				const currentUser = API.getCurrentUser();
 				if (currentUser) {

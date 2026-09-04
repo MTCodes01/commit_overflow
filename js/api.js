@@ -158,7 +158,19 @@ const API = {
   },
 
   async fetchProjectedScore(userId = 'me') {
-    return this.requestWithCache(`/users/${userId}/projected`, 60000);
+    return this.requestWithCache(`/users/${userId}/projected`, 300000);
+  },
+
+  async resetData() {
+    return this.request('/admin/reset-data', {
+      method: 'POST'
+    });
+  },
+
+  async triggerBackup() {
+    return this.request('/admin/backup', {
+      method: 'POST'
+    });
   },
 
   async fetchLogs() {
