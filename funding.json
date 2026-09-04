@@ -40,16 +40,10 @@
   "funding": {
     "channels": [
       {
-        "guid": "upi",
+        "guid": "support",
         "type": "payment-provider",
         "address": "https://commitoverflow.ceal.in/support",
         "description": "UPI payment page for supporting Commit Overflow."
-      },
-      {
-        "guid": "upi-direct",
-        "type": "payment-provider",
-        "address": "upi://pay?pa=sreedevss05@oksbi&pn=FOSS%20CEAL&cu=INR",
-        "description": "Direct UPI payment deep link for mobile apps."
       }
     ],
     "plans": [
@@ -62,8 +56,7 @@
         "currency": "INR",
         "frequency": "one-time",
         "channels": [
-          "upi",
-          "upi-direct"
+          "support"
         ]
       },
       {
@@ -75,8 +68,7 @@
         "currency": "INR",
         "frequency": "one-time",
         "channels": [
-          "upi",
-          "upi-direct"
+          "support"
         ]
       },
       {
@@ -88,8 +80,7 @@
         "currency": "INR",
         "frequency": "one-time",
         "channels": [
-          "upi",
-          "upi-direct"
+          "support"
         ]
       },
       {
@@ -101,8 +92,7 @@
         "currency": "INR",
         "frequency": "one-time",
         "channels": [
-          "upi",
-          "upi-direct"
+          "support"
         ]
       }
     ]
