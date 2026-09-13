@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Support Us | Commit Overflow</title>
-	<meta name="description" content="Support Commit Overflow open-source initiatives by FOSS CEAL. View funding goals, fund allocations, and contribute via UPI payments." />
+	<meta name="description"
+		content="Support Commit Overflow open-source initiatives by FOSS CEAL. View funding goals, fund allocations, and contribute via UPI payments." />
 	<link rel="canonical" href="https://commitoverflow.ceal.in/support/" />
-	
+
 	<!-- Favicons -->
 	<link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
@@ -14,21 +16,22 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
 	<meta name="apple-mobile-web-app-title" content="C-O" />
 	<link rel="manifest" href="/site.webmanifest?v=20260702" />
-	
+
 	<!-- Open Graph / Twitter -->
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="Commit Overflow" />
 	<meta property="og:url" content="https://commitoverflow.ceal.in/support/" />
 	<meta property="og:title" content="Support Us | Commit Overflow" />
-	<meta property="og:description" content="Support Commit Overflow open-source community, contributor prizes, and infrastructure." />
+	<meta property="og:description"
+		content="Support Commit Overflow open-source community, contributor prizes, and infrastructure." />
 	<meta property="og:image" content="https://commitoverflow.ceal.in/logo/logo-dark-clr.svg" />
-	
+
 	<!-- Fonts & Icons -->
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 	<script src="https://unpkg.com/@phosphor-icons/web" defer></script>
-	
+
 	<style>
 		:root {
 			--bg: #0A0A0A;
@@ -162,6 +165,34 @@
 			margin-bottom: 1rem;
 		}
 
+		
+		/* Support Tabs */
+		.support-tabs {
+			display: flex;
+			background: rgba(255, 255, 255, 0.05);
+			border-radius: 12px;
+			padding: 0.35rem;
+			margin-bottom: 1.5rem;
+			border: 1px solid var(--glass-border);
+		}
+		.support-tab-btn {
+			flex: 1;
+			background: transparent;
+			border: none;
+			color: var(--text-muted);
+			font-size: 0.85rem;
+			font-weight: 600;
+			padding: 0.6rem;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+		.support-tab-btn.active {
+			background: rgba(255, 255, 255, 0.1);
+			color: var(--text-primary);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		}
+
 		/* Left Column: Fund Allocation */
 		.left-column {
 			display: flex;
@@ -242,6 +273,7 @@
 			display: flex;
 			flex-direction: column;
 			gap: 0.75rem;
+			margin-top: 1rem;
 		}
 
 		.total-summary-header {
@@ -334,7 +366,7 @@
 			flex-direction: column;
 			align-items: center;
 			justify-content: center;
-			height: 100%;
+			height: fit-content;
 			text-align: center;
 		}
 
@@ -352,7 +384,8 @@
 			height: 180px;
 		}
 
-		.qr-wrapper img, .qr-wrapper svg {
+		.qr-wrapper img,
+		.qr-wrapper svg {
 			width: 100%;
 			height: 100%;
 			display: block;
@@ -480,6 +513,7 @@
 		.footer-logo {
 			transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 		}
+
 		.footer-logo:hover {
 			transform: scale(1.05) rotate(1deg);
 		}
@@ -494,16 +528,19 @@
 			.glass-container {
 				padding: 2rem 1.5rem;
 			}
+
 			.content-grid {
 				grid-template-columns: 1fr;
 				gap: 1.75rem;
 			}
+
 			.page-header h1 {
 				font-size: 1.85rem;
 			}
 		}
 	</style>
 </head>
+
 <body>
 
 	<div class="page-wrapper">
@@ -517,21 +554,28 @@
 
 		<!-- Main Glassmorphic Container -->
 		<main class="glass-container">
-			
+
 			<!-- Header -->
 			<header class="page-header">
 				<h1>Support Us</h1>
-				<p>Your contributions directly empower open-source developers, cover infrastructure costs, and support the community driving Commit Overflow.</p>
+				<p>Your contributions directly empower open-source developers, cover infrastructure costs, and support
+					the community driving Commit Overflow.</p>
 			</header>
 
 			<!-- Two Column Content Grid -->
 			<div class="content-grid">
-				
+
 				<!-- Left Column: Fund Allocation & Summary -->
 				<div class="left-column">
-					<div class="column-title">Fund Allocation</div>
-					
-					<div class="allocation-list" id="allocationList">
+					<!-- <div class="column-title">Fund Allocation</div> -->
+
+					<div class="support-tabs">
+						<button class="support-tab-btn active" id="btnContributor" onclick="switchSupportTab('contributor')">Fund Allocation</button>
+						<button class="support-tab-btn" id="btnSponsor" onclick="switchSupportTab('sponsor')">Sponsorship Tiers</button>
+					</div>
+
+					<div id="contributorTabContent" class="tab-content">
+						<div class="allocation-list" id="allocationList">
 						<!-- Plan 1: Contributor Prize Money -->
 						<div class="allocation-card">
 							<div class="allocation-info">
@@ -540,7 +584,8 @@
 								</div>
 								<div class="allocation-details">
 									<h3>Contributor Prize Money</h3>
-									<p>This will provide prize money to recognize and reward contributors who make meaningful contributions during Commit Overflow.</p>
+									<p>This will provide prize money to recognize and reward contributors who make
+										meaningful contributions during Commit Overflow.</p>
 								</div>
 							</div>
 							<div class="allocation-amount">₹5,000</div>
@@ -554,7 +599,8 @@
 								</div>
 								<div class="allocation-details">
 									<h3>Developer & Maintenance Support</h3>
-									<p>This will support development, maintenance, bug fixes, and improvements required to operate the Commit Overflow platform.</p>
+									<p>This will support development, maintenance, bug fixes, and improvements required
+										to operate the Commit Overflow platform.</p>
 								</div>
 							</div>
 							<div class="allocation-amount">₹2,000</div>
@@ -568,7 +614,8 @@
 								</div>
 								<div class="allocation-details">
 									<h3>Hosting & Infrastructure</h3>
-									<p>This will support electricity, connectivity, self-hosted infrastructure, database, storage, and deployment costs.</p>
+									<p>This will support electricity, connectivity, self-hosted infrastructure,
+										database, storage, and deployment costs.</p>
 								</div>
 							</div>
 							<div class="allocation-amount">₹1,000</div>
@@ -587,97 +634,198 @@
 							</div>
 							<div class="allocation-amount">Any Amount</div>
 						</div>
-					</div>
 
-					<!-- Total Funding Summary Card with Progress Bar -->
-					<div class="total-summary-card" id="totalSummaryCard">
-						<div class="total-summary-header">
-							<div class="total-summary-label">
-								<span>Total Funding Goal</span>
-								<span>Community funding progress</span>
-							</div>
-							<div class="total-summary-amounts">
-								<div class="total-summary-raised">₹<span id="raisedValue">0</span></div>
-								<div class="total-summary-target">of ₹<span id="totalGoalValue">8,000</span> goal</div>
-							</div>
-						</div>
-
-						<!-- Progress Bar Track -->
-						<div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-							<div class="progress-fill" id="progressFill" style="width: 0%;"></div>
-						</div>
-
-						<div class="progress-meta">
-							<span><strong class="progress-percentage" id="progressPercent">0%</strong> funded</span>
-							<span id="progressRemaining">₹8,000 remaining</span>
-						</div>
 					</div>
 					</div>
 
-					<!-- Sponsorship & Contact Card -->
-					<div class="allocation-card" style="margin-top: 1.5rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);">
-						<div class="allocation-info" style="width: 100%;">
-							<div class="allocation-icon" style="background: rgba(88, 101, 242, 0.2); color: #5865f2;">
-								<i class="ph ph-handshake"></i>
+					<div id="sponsorTabContent" class="tab-content" style="display: none;">
+						<div class="allocation-list">
+							<!-- Title Sponsor -->
+							<div class="allocation-card" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+								<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+									<h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">Title Sponsor</h3>
+									<div class="allocation-amount">₹3,500</div>
+								</div>
+								<div style="width: 100%;">
+									<div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Recognition</div>
+									<ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.35rem; margin: 0;">
+										<li>"Title Sponsor" recognition across the event</li>
+										<li>Largest logo placement on the website</li>
+										<li>Featured logo on the participant dashboard</li>
+										<li>Largest logo on promotional posters</li>
+										<li>Dedicated sponsor page with company description and links</li>
+										<li>Dedicated social media appreciation post</li>
+										<li>Mention during orientation and winner announcement</li>
+										<li>Website backlink</li>
+									</ul>
+								</div>
 							</div>
-							<div class="allocation-details" style="width: 100%;">
-								<h3>Sponsorship & Contact</h3>
-								<p>For corporate sponsorships and external inquiries, please reach out to us:</p>
-								<div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
-									<a href="mailto:fossceal@gmail.com" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-primary); text-decoration: none;">
-										<i class="ph ph-envelope-simple" style="font-size: 1.25rem;"></i> fossceal@gmail.com
-									</a>
-									<a href="https://www.instagram.com/fossceal/" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-primary); text-decoration: none;">
-										<i class="ph ph-instagram-logo" style="font-size: 1.25rem;"></i> @fossceal
-									</a>
+
+							<!-- Gold Sponsor -->
+							<div class="allocation-card" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+								<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+									<h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">Gold Sponsor</h3>
+									<div class="allocation-amount">₹2,500</div>
+								</div>
+								<div style="width: 100%;">
+									<div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Recognition</div>
+									<ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.35rem; margin: 0;">
+										<li>Logo on website and sponsors page</li>
+										<li>Medium logo placement on promotional posters</li>
+										<li>Shared social media appreciation post</li>
+										<li>Mention during the closing ceremony</li>
+										<li>Website backlink</li>
+									</ul>
+								</div>
+							</div>
+
+							<!-- Silver Sponsor -->
+							<div class="allocation-card" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+								<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+									<h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">Silver Sponsor</h3>
+									<div class="allocation-amount">₹1,500</div>
+								</div>
+								<div style="width: 100%;">
+									<div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Recognition</div>
+									<ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.35rem; margin: 0;">
+										<li>Logo on sponsors page</li>
+										<li>Small logo on selected promotional materials</li>
+										<li>Website backlink</li>
+										<li>Mention during closing ceremony</li>
+									</ul>
+								</div>
+							</div>
+
+							<!-- Community Supporter -->
+							<div class="allocation-card" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+								<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+									<h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">Community Supporter</h3>
+									<div class="allocation-amount">₹500</div>
+								</div>
+								<div style="width: 100%;">
+									<div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Recognition</div>
+									<ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.35rem; margin: 0;">
+										<li>Name listed on the sponsors page</li>
+										<li>Community appreciation post</li>
+									</ul>
+								</div>
+							</div>
+
+							<!-- In-Kind Sponsor -->
+							<div class="allocation-card" style="flex-direction: column; align-items: flex-start; gap: 1rem;">
+								<div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+									<h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary);">In-Kind Sponsor</h3>
+									<div class="allocation-amount">Any Value</div>
+								</div>
+								<div style="width: 100%;">
+									<div style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Recognition</div>
+									<ul style="list-style-type: disc; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.35rem; margin: 0;">
+										<li>Recognition equivalent to the value of the contribution</li>
+										<li>Logo on the website</li>
+									</ul>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<!-- Right Column: Payment Details -->
-				<div class="right-column">
-					<div class="column-title">UPI Payment</div>
-					
-					<div class="payment-box">
-						<!-- Minimal QR Code Box -->
-						<div class="qr-wrapper">
-							<img src="/support/qr.svg" alt="UPI QR Code for Commit Overflow" />
-						</div>
-						<div class="qr-caption">Scan with GPay, PhonePe, Paytm, or BHIM</div>
+			<!-- Right Column: Payment Details -->
+			<div class="right-column">
+				<div class="column-title">UPI Payment</div>
 
-						<!-- UPI ID Field with Copy Button -->
-						<div class="upi-field-group">
-							<span class="upi-label">UPI ID</span>
-							<div class="upi-input-wrapper">
-								<span class="upi-id-text" id="upiIdText">sreedevss05@oksbi</span>
-								<button class="copy-btn" id="copyBtn" aria-label="Copy UPI ID">
-									<i class="ph ph-copy" id="copyIcon"></i>
-									<span id="copyBtnText">Copy</span>
-								</button>
-							</div>
-						</div>
+				<div class="payment-box">
+					<!-- Minimal QR Code Box -->
+					<div class="qr-wrapper">
+						<img src="/support/qr.svg" alt="UPI QR Code for Commit Overflow" />
+					</div>
+					<div class="qr-caption">Scan with GPay, PhonePe, Paytm, or BHIM</div>
 
-						<!-- Direct UPI App Launch Button -->
-						<a href="upi://pay?pa=sreedevss05@oksbi&pn=FOSS%20CEAL&cu=INR" class="pay-upi-btn" id="payUpiBtn">
-							<i class="ph ph-device-mobile"></i> Open UPI App
-						</a>
+					<!-- UPI ID Field with Copy Button -->
+					<div class="upi-field-group">
+						<span class="upi-label">UPI ID</span>
+						<div class="upi-input-wrapper">
+							<span class="upi-id-text" id="upiIdText">sreedevss05@oksbi</span>
+							<button class="copy-btn" id="copyBtn" aria-label="Copy UPI ID">
+								<i class="ph ph-copy" id="copyIcon"></i>
+								<span id="copyBtnText">Copy</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- Direct UPI App Launch Button -->
+					<a href="upi://pay?pa=sreedevss05@oksbi&pn=FOSS%20CEAL&cu=INR" class="pay-upi-btn" id="payUpiBtn">
+						<i class="ph ph-device-mobile"></i> Open UPI App
+					</a>
+
+					<!-- Sponsorship & Contact Section -->
+					<div
+						style="margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+						<div
+							style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+							Sponsorship & Contact
+						</div>
+						<p
+							style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.25rem; text-align: center;">
+							For corporate sponsorships and external inquiries:
+						</p>
+						<div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+							<a href="mailto:fossceal@gmail.com" class="contact-link"
+								style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); text-decoration: none; font-size: 0.85rem; transition: background 0.2s, border-color 0.2s;">
+								<i class="ph ph-envelope-simple" style="font-size: 1.1rem; color: #5865f2;"></i>
+								fossceal@gmail.com
+							</a>
+							<a href="https://www.instagram.com/fossceal/" target="_blank" class="contact-link"
+								style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text-primary); text-decoration: none; font-size: 0.85rem; transition: background 0.2s, border-color 0.2s;">
+								<i class="ph ph-instagram-logo" style="font-size: 1.1rem; color: #E1306C;"></i>
+								@fossceal
+							</a>
+						</div>
 					</div>
 				</div>
+				
 
-			</div>
-		</main>
+				<!-- Total Funding Summary Card with Progress Bar -->
+				<div class="total-summary-card" id="totalSummaryCard">
+					<div class="total-summary-header">
+						<div class="total-summary-label">
+							<span>Total Funding Goal</span>
+							<span>Community funding progress</span>
+						</div>
+						<div class="total-summary-amounts">
+							<div class="total-summary-raised">₹<span id="raisedValue">0</span></div>
+							<div class="total-summary-target">of ₹<span id="totalGoalValue">8,000</span> goal</div>
+						</div>
+					</div>
 
-		<!-- Footer Credits -->
-		<footer class="footer-credits">
-			<div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-weight: 500;">
-				<a href="https://foss.ceal.in" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/FOSS-light.png" alt="FOSS CEAL Logo" class="footer-logo" style="height: 2.5rem; width: auto;"></a>
-				<span style="color: var(--text-secondary); font-size: 0.9rem;">x</span>
-				<a href="https://fossclub-lbsitw.github.io/FOSS-WEBSITE/" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/LBSITW.png" alt="FOSS LBSITW Logo" class="footer-logo" style="height: 3.5rem; width: auto;"></a>
+					<!-- Progress Bar Track -->
+					<div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+						aria-valuemax="100">
+						<div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+					</div>
+
+					<div class="progress-meta">
+						<span><strong class="progress-percentage" id="progressPercent">0%</strong> funded</span>
+						<span id="progressRemaining">₹8,000 remaining</span>
+					</div>
+				</div>
 			</div>
-			<p>&copy; <span id="current-year"></span> Commit Overflow Community. All rights reserved.</p>
-		</footer>
+	</div>
+	</main>
+
+	<!-- Footer Credits -->
+	<footer class="footer-credits">
+		<div
+			style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-weight: 500;">
+			<a href="https://foss.ceal.in" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img
+					src="/logo/FOSS-light.png" alt="FOSS CEAL Logo" class="footer-logo"
+					style="height: 2.5rem; width: auto;"></a>
+			<span style="color: var(--text-secondary); font-size: 0.9rem;">x</span>
+			<a href="https://fossclub-lbsitw.github.io/FOSS-WEBSITE/" target="_blank"
+				style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/LBSITW.png"
+					alt="FOSS LBSITW Logo" class="footer-logo" style="height: 3.5rem; width: auto;"></a>
+		</div>
+		<p>&copy; <span id="current-year"></span> Commit Overflow Community. All rights reserved.</p>
+	</footer>
 	</div>
 
 	<script>
@@ -687,6 +835,21 @@
 		// or update `data-raised="..."` attribute on #totalSummaryCard.
 		// ==========================================
 		const MANUAL_RAISED_AMOUNT = 0; // e.g. set to 2500 for ₹2,500 raised
+
+		
+		// Tab Switching Logic
+		function switchSupportTab(tab) {
+			document.querySelectorAll('.support-tab-btn').forEach(btn => btn.classList.remove('active'));
+			document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+			
+			if (tab === 'contributor') {
+				document.getElementById('btnContributor').classList.add('active');
+				document.getElementById('contributorTabContent').style.display = 'block';
+			} else {
+				document.getElementById('btnSponsor').classList.add('active');
+				document.getElementById('sponsorTabContent').style.display = 'block';
+			}
+		}
 
 		// Set current year in footer
 		const currentYearElement = document.getElementById('current-year');
@@ -746,7 +909,7 @@
 				const response = await fetch('/funding.json');
 				if (!response.ok) return;
 				const data = await response.json();
-				
+
 				if (data && data.funding) {
 					let totalGoal = 0;
 					if (Array.isArray(data.funding.plans)) {
@@ -812,4 +975,5 @@
 	</script>
 
 </body>
+
 </html>
