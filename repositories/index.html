@@ -644,6 +644,11 @@
                     return checkStatusAndRender(status);
                 } catch (e) {
                     console.error("Failed to load event status:", e);
+                    const currentPath = window.location.pathname;
+                    if (currentPath !== '/' && currentPath !== '/index.html' && currentPath !== '') {
+                        window.location.href = '/';
+                        return true;
+                    }
                     return checkStatusAndRender('PASSIVE');
                 }
             };

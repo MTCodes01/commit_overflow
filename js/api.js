@@ -61,10 +61,29 @@ const API = {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const res = await fetch(url, {
-      ...options,
-      headers,
-    });
+    let res;
+    try {
+      res = await fetch(url, {
+        ...options,
+        headers,
+      });
+    } catch (networkErr) {
+      // Server is down / unreachable / network failure
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/' && currentPath !== '/index.html' && currentPath !== '') {
+        window.location.href = '/';
+      }
+      throw new Error("Server is currently unreachable. Please try again later.");
+    }
+
+    // Server gateway down errors (502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout)
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/' && currentPath !== '/index.html' && currentPath !== '') {
+        window.location.href = '/';
+      }
+      throw new Error(`Server is temporarily unavailable (${res.status}).`);
+    }
 
     const isAuthEndpoint = path === '/auth/login' || path === '/auth/register';
     if (!isAuthEndpoint && (res.status === 401 || (res.status === 404 && (path.startsWith('/users/') || path === '/users/me')))) {
