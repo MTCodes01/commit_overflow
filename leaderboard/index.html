@@ -1086,35 +1086,31 @@
                     if (!tagStats || Object.keys(tagStats).length === 0) {
                         tagStatsContainer.innerHTML = '<div class="text-secondary text-center py-3">No tag statistics available.</div>';
                     } else {
-                        const knownTagColors = {
-                            'easy':          '#3fb950',
-                            'medium':        '#d29922',
-                            'hard':          '#f85149',
-                            'documentation': '#58a6ff',
-                            'docs':          '#58a6ff',
-                            'bug':           '#f85149',
-                            'enhancement':   '#a371f7',
-                            'feature':       '#a371f7',
-                            'good first issue': '#3fb950',
-                            'duplicate': '#8b949e',
-                        };
-                        function labelToColor(label) {
-                            if (knownTagColors[label.toLowerCase()]) return knownTagColors[label.toLowerCase()];
-                            let hash = 0;
-                            for (let i = 0; i < label.length; i++) { hash = label.charCodeAt(i) + ((hash << 5) - hash); }
-                            return `hsl(${Math.abs(hash) % 360}, 55%, 55%)`;
-                        }
+                        const wrapperDiv = document.createElement('div');
+                        wrapperDiv.className = 'flex flex-wrap gap-2 mt-2';
+
                         const sorted = Object.entries(tagStats).sort((a, b) => b[1] - a[1]);
                         sorted.forEach(([tag, count]) => {
-                            const color = labelToColor(tag);
-                            const div = document.createElement('div');
-                            div.className = 'tag-stat-item';
-                            div.innerHTML = `
-                                <span class="text-secondary" style="text-transform: capitalize;">${tag.replace(/_/g, ' ')}</span>
-                                <span class="tag-badge" style="background-color: ${color};">${count}</span>
-                            `;
-                            tagStatsContainer.appendChild(div);
+                            const styles = Components.getTagStyles(tag);
+                            const capsule = document.createElement('span');
+                            capsule.style.backgroundColor = styles.bg;
+                            capsule.style.border = `1px solid ${styles.border}`;
+                            capsule.style.color = '#ffffff'; // Keep text white as per screenshot
+                            capsule.style.padding = '0.35rem 0.75rem';
+                            capsule.style.borderRadius = '9999px';
+                            capsule.style.fontSize = '0.85rem';
+                            capsule.style.fontWeight = '500';
+                            capsule.style.display = 'inline-flex';
+                            capsule.style.alignItems = 'center';
+                            capsule.style.gap = '0.4rem';
+                            capsule.style.textTransform = 'capitalize';
+                            capsule.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                            
+                            capsule.innerHTML = `${tag} <span style="background: rgba(0,0,0,0.25); padding: 0.15rem 0.4rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">x${count}</span>`;
+                            wrapperDiv.appendChild(capsule);
                         });
+                        
+                        tagStatsContainer.appendChild(wrapperDiv);
                     }
 
                     // Render Active Issues
@@ -1125,10 +1121,8 @@
                         activeIssuesContainer.innerHTML = '<div class="text-secondary py-2 text-sm">No active issues.</div>';
                     } else {
                         activeIssues.forEach(issue => {
-                            let difficultyColor = 'var(--text-secondary)';
-                            if (issue.difficulty === 'easy') difficultyColor = '#3fb950';
-                            else if (issue.difficulty === 'medium') difficultyColor = '#d29922';
-                            else if (issue.difficulty === 'hard') difficultyColor = '#f85149';
+                            const diffStyles = Components.getTagStyles(issue.difficulty || 'uncategorized');
+                            let difficultyColor = diffStyles.text;
                             
                             const div = document.createElement('div');
                             div.className = 'mb-3 pb-3 border-b border-color last:border-0 last:mb-0 last:pb-0';

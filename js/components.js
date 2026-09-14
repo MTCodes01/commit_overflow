@@ -199,8 +199,7 @@ const Components = {
     });
   },
 
-
-    // Accordion setup
+  // Accordion setup
   setupAccordions() {
     document.querySelectorAll(".accordion-header").forEach((header) => {
       header.addEventListener("click", () => {
@@ -229,8 +228,8 @@ const Components = {
 
     // Build Items per page dropdown
     let html = `
-      <div class="pagination-wrapper" style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; color: #a1a1aa; font-size: 0.9rem; margin-top: 1.5rem;">
-        <span>Items per page:</span>
+      <div class="pagination-wrapper floating-pagination-wrapper">
+        <span class="pagination-label">Items per page:</span>
         <select class="form-control pagination-select" style="width: auto; padding: 0.25rem 0.5rem; height: 32px;" id="pagination-limit-select">
           <option value="10" ${limit === 10 ? 'selected' : ''}>10</option>
           <option value="20" ${limit === 20 ? 'selected' : ''}>20</option>
@@ -253,54 +252,75 @@ const Components = {
         html += makeBtn(i, i === page);
       }
     } else {
-      if (page <= 4) {
-        for (let i = 1; i <= 5; i++) html += makeBtn(i, i === page);
-        html += makeEllipsis();
-        html += makeBtn(total_pages, false);
-      } else if (page >= total_pages - 3) {
-        html += makeBtn(1, false);
-        html += makeEllipsis();
-        for (let i = total_pages - 4; i <= total_pages; i++) html += makeBtn(i, i === page);
-      } else {
-        html += makeBtn(1, false);
-        html += makeEllipsis();
-        html += makeBtn(page - 1, false);
-        html += makeBtn(page, true);
-        html += makeBtn(page + 1, false);
-        html += makeEllipsis();
-        html += makeBtn(total_pages, false);
+      // Always show first page
+      html += makeBtn(1, page === 1);
+
+      if (page > 3) html += makeEllipsis();
+      
+      const start = Math.max(2, page - 1);
+      const end = Math.min(total_pages - 1, page + 1);
+      
+      for (let i = start; i <= end; i++) {
+        html += makeBtn(i, page === i);
       }
+      
+      if (page < total_pages - 2) html += makeEllipsis();
+      
+      html += makeBtn(total_pages, page === total_pages);
     }
 
     // Next Button
     html += `<button class="pagination-btn" id="pagination-next" ${page >= total_pages ? 'disabled' : ''}><i class="ph ph-caret-right"></i></button>`;
-    html += `</div></div>`;
 
+    html += `</div></div>`;
+    
     container.innerHTML = html;
 
-    // Attach events
-    document.getElementById('pagination-limit-select').addEventListener('change', (e) => {
-      if (onLimitChange) onLimitChange(parseInt(e.target.value));
+    // Attach listeners
+    container.querySelectorAll('button[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => onPageChange(parseInt(btn.getAttribute('data-page'))));
     });
 
-    if (page > 1) {
-      document.getElementById('pagination-prev').addEventListener('click', () => {
-        if (onPageChange) onPageChange(page - 1);
-      });
+    const prevBtn = container.querySelector('#pagination-prev');
+    if (prevBtn) prevBtn.addEventListener('click', () => onPageChange(page - 1));
+
+    const nextBtn = container.querySelector('#pagination-next');
+    if (nextBtn) nextBtn.addEventListener('click', () => onPageChange(page + 1));
+
+    const limitSelect = container.querySelector('#pagination-limit-select');
+    if (limitSelect) limitSelect.addEventListener('change', (e) => onLimitChange(parseInt(e.target.value)));
+  },
+
+  getTagStyles(labelInput, fallbackColor = null) {
+    const label = typeof labelInput === 'string' ? labelInput : (labelInput.name || '');
+    const serverColor = fallbackColor || (typeof labelInput === 'object' ? labelInput.color : null);
+
+    const known = {
+      'commitoverflow': { border: '#5AA468', bg: '#5AA4681a', text: '#5AA468' },
+      'documentation': { border: '#0075ca', bg: '#0075ca1a', text: '#0075ca' },
+      'docs':          { border: '#0075ca', bg: '#0075ca1a', text: '#0075ca' },
+      'easy':          { border: '#0e8a16', bg: '#0e8a161a', text: '#0e8a16' },
+      'good first issue': { border: '#7057ff', bg: '#7057ff1a', text: '#7057ff' },
+      'hard':          { border: '#ff0000', bg: '#ff00001a', text: '#ff0000' },
+      'medium':        { border: '#ff7300', bg: '#ff73001a', text: '#ff7300' },
+      'duplicate':     { border: '#cfd3d7', bg: '#cfd3d71a', text: '#cfd3d7' },
+      'invalid':       { border: '#bbff00', bg: '#bbff001a', text: '#bbff00' },
+      'rework':        { border: '#ff6e6b', bg: '#ff6e6b1a', text: '#ff6e6b' },
+      'bug':           { border: '#85000d', bg: '#85000d1a', text: '#85000d' }
+    };
+    
+    if (label && known[label.toLowerCase()]) {
+      return known[label.toLowerCase()];
     }
 
-    if (page < total_pages) {
-      document.getElementById('pagination-next').addEventListener('click', () => {
-        if (onPageChange) onPageChange(page + 1);
-      });
+    if (serverColor) {
+      let hex = serverColor.startsWith('#') ? serverColor : '#' + serverColor;
+      return { border: hex, bg: hex + '1a', text: hex };
     }
 
-    container.querySelectorAll('.pagination-btn[data-page]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const p = parseInt(e.currentTarget.getAttribute('data-page'));
-        if (p !== page && onPageChange) onPageChange(p);
-      });
-    });
+    let hash = 0;
+    for (let i = 0; i < label.length; i++) { hash = label.charCodeAt(i) + ((hash << 5) - hash); }
+    const h = Math.abs(hash) % 360;
+    return { border: `hsl(${h}, 55%, 55%)`, bg: `hsla(${h}, 55%, 55%, 0.1)`, text: `hsl(${h}, 55%, 65%)` };
   }
-
 };

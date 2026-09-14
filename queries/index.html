@@ -214,8 +214,8 @@
                     <input type="hidden" id="view-query-id">
                     <h4 id="view-query-title" style="color: white; font-size: 1.1rem; margin-bottom: 0.25rem; line-height: 1.4;"></h4>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <span id="view-query-cat" class="badge badge-info">Category</span>
-                        <span id="view-query-status" class="badge">Status</span>
+                        <span id="view-query-cat" class="badge" style="text-transform: capitalize;">Category</span>
+                        <span id="view-query-status" class="badge" style="text-transform: capitalize;">Status</span>
                     </div>
                 </div>
                 <div style="background-color: var(--bg-tertiary); border: 1px solid var(--border-color); padding: 1rem; border-radius: 6px;">
@@ -308,14 +308,13 @@
 
                 filtered.forEach(q => {
                     let priorityClass = 'priority-low';
-                    let badgeClass = 'badge-success';
                     if (q.status === 'open') {
                         priorityClass = 'priority-high';
-                        badgeClass = 'badge-warning';
                     } else if (q.status === 'answered') {
                         priorityClass = 'priority-medium';
-                        badgeClass = 'badge-info';
                     }
+                    const statStyles = Components.getTagStyles(q.status || 'unknown');
+                    const catStyles = Components.getTagStyles(q.category || 'unknown');
                     
                     // Format date
                     let dateStr = API.formatDateTime(q.created_at);
@@ -332,12 +331,12 @@
                     div.innerHTML = `
                         <div class="query-header">
                             <h3 class="query-title" style="margin: 0; font-size: 1.15rem;">${q.title}</h3>
-                            <span class="badge ${badgeClass}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${q.status.charAt(0).toUpperCase() + q.status.slice(1)}</span>
+                            <span class="badge" style="background-color: ${statStyles.bg}; color: ${statStyles.text}; border: 1px solid ${statStyles.border}; padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${q.status.charAt(0).toUpperCase() + q.status.slice(1)}</span>
                         </div>
                         <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.75rem; margin-bottom: 0.5rem; line-height: 1.5; white-space: pre-wrap;">${q.body}</p>
                         <div class="query-meta">
                             <span><i class="ph ph-calendar-blank text-secondary"></i> <span class="text-secondary">${dateStr}</span></span>
-                            <span><i class="ph ph-tag text-primary"></i> Category: <strong class="text-primary">${catLabel}</strong></span>
+                            <span><i class="ph ph-tag text-primary"></i> Category: <strong style="color: ${catStyles.text};">${catLabel}</strong></span>
                         </div>
                     `;
                     div.addEventListener('click', () => viewQueryDetail(q.id));
@@ -373,10 +372,15 @@
                     cat.textContent = catLabel;
 
                     status.textContent = q.status.toUpperCase();
-                    status.className = 'badge';
-                    if (q.status === 'open') status.classList.add('badge-warning');
-                    else if (q.status === 'answered') status.classList.add('badge-info');
-                    else status.classList.add('badge-success');
+                    const catS = Components.getTagStyles(q.category);
+                    cat.style.backgroundColor = catS.bg;
+                    cat.style.color = catS.text;
+                    cat.style.border = `1px solid ${catS.border}`;
+
+                    const statS = Components.getTagStyles(q.status);
+                    status.style.backgroundColor = statS.bg;
+                    status.style.color = statS.text;
+                    status.style.border = `1px solid ${statS.border}`;
 
                     repliesList.innerHTML = '';
                     if (replies && replies.length > 0) {

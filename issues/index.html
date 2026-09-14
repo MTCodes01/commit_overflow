@@ -305,10 +305,7 @@
                     const card = document.createElement('div');
                     card.className = `card issue-card status-${issue.status}`;
                     
-                    // Format difficulty badge
-                    let diffClass = 'badge-info';
-                    if (issue.difficulty === 'easy') diffClass = 'badge-success';
-                    if (issue.difficulty === 'hard') diffClass = 'badge-danger';
+                    const statStyles = Components.getTagStyles(issue.status || 'unknown');
 
                     // Format deadline
                     const deadlineText = issue.deadline_at 
@@ -345,7 +342,10 @@
                     let labelHtml = '';
                     if (issue.labels && issue.labels.length > 0) {
                         labelHtml = `<div class="label-tags">` + 
-                             issue.labels.map(lbl => `<span class="tag-badge">${lbl}</span>`).join('') +
+                             issue.labels.map(lbl => {
+                                 const styles = Components.getTagStyles(lbl);
+                                 return `<span class="tag-badge" style="background-color: ${styles.bg}; border-color: ${styles.border}; color: ${styles.text}; text-transform: capitalize;">${lbl.replace(/_/g, ' ')}</span>`;
+                             }).join('') +
                             `</div>`;
                     }
 
@@ -387,7 +387,7 @@
                                     <i class="ph ph-arrow-square-out" style="font-size: 0.85rem; color: var(--text-secondary);"></i>
                                 </h3>
                             </div>
-                            <span class="badge badge-${issue.status === 'closed' ? 'secondary' : (issue.status === 'approved' ? 'success' : 'warning')}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${issue.status.toUpperCase()}</span>
+                            <span class="badge" style="background-color: ${statStyles.bg}; color: ${statStyles.text}; border: 1px solid ${statStyles.border}; padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px; text-transform: uppercase;">${issue.status}</span>
                         </div>
                         <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.75rem; margin-bottom: 0.5rem; line-height: 1.5;">${issue.body ? (issue.body.length > 150 ? issue.body.substring(0, 150) + '...' : issue.body) : 'No description provided.'}</p>
                         ${labelHtml}

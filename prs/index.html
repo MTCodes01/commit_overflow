@@ -304,14 +304,13 @@
                         badgeClass = 'badge-danger';
                     } else if (pr.status === 'approved') {
                         statusLabel = 'Approved';
-                        badgeClass = 'badge-success';
                     } else if (pr.status === 'needs_changes') {
                         statusLabel = 'Needs Changes';
-                        badgeClass = 'badge-warning';
                     } else if (pr.status === 'invalid_assignment') {
                         statusLabel = 'Invalid Assignment';
-                        badgeClass = 'badge-danger';
                     }
+                    
+                    const statStyles = Components.getTagStyles(pr.status || 'unknown');
 
                     // Format date
                     const dateText = pr.status === 'merged' && pr.merged_at
@@ -333,9 +332,11 @@
                             ? '<span style="color: var(--danger-color); font-weight: 600;">0 Points</span>' 
                             : `<span style="color: var(--warning-color); font-weight: 600;">+${basePoints} Points Projected</span>`);
 
-                    const difficultyBadge = pr.difficulty
-                        ? `<span class="badge" style="background-color: ${pr.difficulty === 'easy' ? '#3fb950' : (pr.difficulty === 'medium' ? '#d29922' : (pr.difficulty === 'documentation' ? '#58a6ff' : '#f85149'))}; text-transform: capitalize; font-size: 0.75rem; padding: 0.2rem 0.5rem; margin-left: 0.5rem;">${pr.difficulty}</span>`
-                        : '';
+                    let difficultyBadge = '';
+                    if (pr.difficulty) {
+                        const diffStyles = Components.getTagStyles(pr.difficulty);
+                        difficultyBadge = `<span class="badge" style="background-color: ${diffStyles.bg}; color: ${diffStyles.text}; border: 1px solid ${diffStyles.border}; text-transform: capitalize; font-size: 0.75rem; padding: 0.2rem 0.5rem; margin-left: 0.5rem;">${pr.difficulty}</span>`;
+                    }
 
                     card.innerHTML = `
                         <div class="pr-header">
@@ -349,7 +350,7 @@
                                 </h3>
                                 <div style="font-size: 0.75rem; color: var(--text-secondary);">PR Number: #${pr.github_pr_id}</div>
                             </div>
-                            <span class="badge ${badgeClass}" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${statusLabel}</span>
+                            <span class="badge" style="background-color: ${statStyles.bg}; color: ${statStyles.text}; border: 1px solid ${statStyles.border}; padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">${statusLabel}</span>
                         </div>
                         <p class="text-secondary" style="font-size: 0.95rem; margin-top: 0.75rem; margin-bottom: 0.5rem; line-height: 1.5; display: flex; align-items: center;">
                             ${pr.issue_title ? `Addresses issue: <strong>${pr.issue_title}</strong>` : 'General contribution (no linked issue).'}
