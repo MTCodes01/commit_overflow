@@ -135,8 +135,62 @@
 			margin-top: auto;
 		}
 
+		.countdown-container {
+			display: flex;
+			gap: 1.5rem;
+			justify-content: center;
+			margin-top: 3rem;
+			flex-wrap: wrap;
+		}
+		
+		.countdown-item {
+			border-radius: 12px;
+			padding: 1.25rem 1rem;
+			min-width: 100px;
+			text-align: center;
+			backdrop-filter: blur(4px);
+			transition: transform 0.3s ease;
+		}
+		
+		.countdown-item:hover {
+			transform: translateY(-2px);
+		}
+		
+		.countdown-item span {
+			font-size: 2.5rem;
+			font-weight: 700;
+			color: #ffffff;
+			line-height: 1;
+			display: block;
+			font-family: 'Inter', sans-serif;
+		}
+		
+		.countdown-item .label {
+			font-size: 0.75rem;
+			color: var(--text-secondary);
+			text-transform: uppercase;
+			margin-top: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.1em;
+		}
+
 		/* Mobile Responsiveness */
 		@media (max-width: 768px) {
+			.countdown-container {
+				gap: 0.75rem;
+				margin-top: 2rem;
+			}
+			.countdown-item {
+				min-width: 70px;
+				padding: 1rem 0.5rem;
+			}
+			.countdown-item span {
+				font-size: 1.75rem;
+			}
+			.countdown-item .label {
+				font-size: 0.65rem;
+				margin-top: 0.5rem;
+			}
 			.nav-header {
 				flex-direction: column;
 				gap: 1rem;
@@ -209,6 +263,27 @@
 				<a href="/register/" id="hero-cta-btn" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem">Start
 					Contributing</a>
 				<a href="/about/" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 1rem">About Us</a>
+			</div>
+			
+			<div id="countdown-wrapper">
+				<div class="countdown-container" id="countdown-timer">
+					<div class="countdown-item">
+						<span id="cd-days">00</span>
+						<div class="label">Days</div>
+					</div>
+					<div class="countdown-item">
+						<span id="cd-hours">00</span>
+						<div class="label">Hours</div>
+					</div>
+					<div class="countdown-item">
+						<span id="cd-minutes">00</span>
+						<div class="label">Minutes</div>
+					</div>
+					<div class="countdown-item">
+						<span id="cd-seconds">00</span>
+						<div class="label">Seconds</div>
+					</div>
+				</div>
 			</div>
 		</section>
 		<section id="how-it-works" class="mt-4 mb-4">
@@ -363,6 +438,47 @@
 			} catch (err) {
 				console.error("Error loading preview leaderboard", err);
 			}
+
+			// Countdown Timer
+			function updateCountdown() {
+				// Set date to October 4 of the current year (or next year if already passed)
+				const now = new Date().getTime();
+				let targetYear = new Date().getFullYear();
+				let targetDate = new Date(`October 4, ${targetYear} 00:00:00`).getTime();
+				
+				if (now > targetDate) {
+					// If October 4th has passed this year, maybe point to next year, or just show "Started"
+					// We will just show that it has started or ended if it's past October 4th.
+				}
+
+				const distance = targetDate - now;
+
+				if (distance < 0) {
+					const wrapper = document.getElementById("countdown-wrapper");
+					if (wrapper) {
+						wrapper.innerHTML = "<h3 style='color: var(--accent-primary); margin-top: 3rem; font-size: 1.5rem; font-weight: 600;'>The Challenge Has Begun!</h3>";
+					}
+					return;
+				}
+
+				const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+				const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+				const elDays = document.getElementById("cd-days");
+				const elHours = document.getElementById("cd-hours");
+				const elMinutes = document.getElementById("cd-minutes");
+				const elSeconds = document.getElementById("cd-seconds");
+				
+				if (elDays) elDays.innerText = String(days).padStart(2, '0');
+				if (elHours) elHours.innerText = String(hours).padStart(2, '0');
+				if (elMinutes) elMinutes.innerText = String(minutes).padStart(2, '0');
+				if (elSeconds) elSeconds.innerText = String(seconds).padStart(2, '0');
+			}
+			
+			setInterval(updateCountdown, 1000);
+			updateCountdown();
 		});
 	</script>
 </body>
