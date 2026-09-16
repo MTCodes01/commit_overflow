@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+  <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+  <meta name="apple-mobile-web-app-title" content="C-O" />
+  <link rel="manifest" href="/site.webmanifest?v=20260702" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications | Commit Overflow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <style>
+    .page-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .search-bar {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+      max-width: 360px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.45rem 0.75rem 0.45rem 2.2rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-family: var(--font-main);
+      transition: border-color 0.15s;
+    }
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--accent-secondary);
+      box-shadow: 0 0 0 3px rgba(88,101,242,0.2);
+    }
+    .search-bar i {
+      position: absolute;
+      left: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+    .bulk-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .type-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .stats-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+    }
+    .stats-row strong { color: var(--text-primary); }
+    #notif-list-empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-secondary);
+    }
+    #notif-list-empty i { font-size: 3rem; display: block; margin-bottom: 0.75rem; opacity: 0.3; }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <div class="main-content" id="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="flex items-center gap-2">
+        <i class="ph ph-bell" style="font-size:1.5rem; color:var(--accent-secondary)"></i>
+        <div>
+          <h1 style="margin:0; font-size:1.4rem;">Notifications</h1>
+          <p class="text-secondary" style="font-size:0.82rem; margin:0;" id="notif-subtitle">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="page-toolbar">
+      <!-- Search -->
+      <div class="search-bar">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="text" id="notif-search" placeholder="Search notifications…" autocomplete="off">
+      </div>
+
+      <!-- Bulk Actions -->
+      <div class="bulk-actions">
+        <button class="btn btn-secondary" id="btn-mark-all-read" style="font-size:0.8rem; padding:0.4rem 0.875rem;">
+          <i class="ph ph-checks"></i> Mark all read
+        </button>
+        <button class="btn btn-secondary" id="btn-delete-selected" style="font-size:0.8rem; padding:0.4rem 0.875rem; color:var(--danger-color); display:none;">
+          <i class="ph ph-trash"></i> Delete selected
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex gap-1 flex-wrap mb-2" id="read-filters">
+      <button class="notif-filter-btn active" data-read-filter="all">All</button>
+      <button class="notif-filter-btn" data-read-filter="false">Unread</button>
+      <button class="notif-filter-btn" data-read-filter="true">Read</button>
+    </div>
+
+    <div class="type-filters" id="type-filters">
+      <button class="notif-filter-btn active" data-type-filter="">All Types</button>
+      <button class="notif-filter-btn" data-type-filter="system"><i class="ph ph-info"></i> System</button>
+      <button class="notif-filter-btn" data-type-filter="broadcast"><i class="ph ph-megaphone"></i> Broadcast</button>
+      <button class="notif-filter-btn" data-type-filter="event"><i class="ph ph-calendar-check"></i> Event</button>
+      <button class="notif-filter-btn" data-type-filter="repository"><i class="ph ph-git-repository"></i> Repository</button>
+      <button class="notif-filter-btn" data-type-filter="achievement"><i class="ph ph-trophy"></i> Achievement</button>
+      <button class="notif-filter-btn" data-type-filter="success"><i class="ph ph-check-circle"></i> Success</button>
+      <button class="notif-filter-btn" data-type-filter="warning"><i class="ph ph-warning"></i> Warning</button>
+      <button class="notif-filter-btn" data-type-filter="error"><i class="ph ph-x-circle"></i> Error</button>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row" id="notif-stats"></div>
+
+    <!-- Notification List -->
+    <div class="notif-page-list" id="notif-page-list">
+      <div style="padding:2rem; text-align:center; color:var(--text-secondary);">
+        <i class="ph ph-spinner ph-spin" style="font-size:1.5rem;"></i>
+        <p style="margin-top:0.5rem;">Loading notifications…</p>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="notif-list-empty" style="display:none">
+      <i class="ph ph-bell-slash"></i>
+      <p style="font-size:1rem; font-weight:500;">No notifications found</p>
+      <p style="font-size:0.82rem; margin-top:0.25rem;">Try adjusting your filters or check back later.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div id="notif-pagination" style="margin-top:1.5rem;"></div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/components.js"></script>
+<script src="/js/notifications.js"></script>
+<script>
+  // ── Auth Guard ──────────────────────────────────────────────────────────────
+  if (!API.isAuthenticated()) {
+    window.location.href = '/login/';
+  }
+
+  Components.renderSidebar('notifications');
+
+  // ── State ───────────────────────────────────────────────────────────────────
+  let _page = 1;
+  let _limit = 20;
+  let _typeFilter = '';
+  let _readFilter = null;  // null = all, true = read, false = unread
+  let _search = '';
+  let _selectedIds = new Set();
+  let _searchTimer = null;
+
+  const TYPE_CONFIG = {
+    system:      { color: '#58a6ff', bg: 'rgba(88,166,255,0.12)', icon: 'ph-info'           },
+    broadcast:   { color: '#58a6ff', bg: 'rgba(88,166,255,0.12)', icon: 'ph-megaphone'       },
+    event:       { color: '#3fb950', bg: 'rgba(63,185,80,0.12)',  icon: 'ph-calendar-check'  },
+    repository:  { color: '#a371f7', bg: 'rgba(163,113,247,0.12)',icon: 'ph-git-repository'  },
+    achievement: { color: '#f0883e', bg: 'rgba(240,136,62,0.12)', icon: 'ph-trophy'          },
+    warning:     { color: '#d29922', bg: 'rgba(210,153,34,0.12)', icon: 'ph-warning'         },
+    success:     { color: '#3fb950', bg: 'rgba(63,185,80,0.12)',  icon: 'ph-check-circle'    },
+    error:       { color: '#f85149', bg: 'rgba(248,81,73,0.12)',  icon: 'ph-x-circle'        },
+  };
+  const PRIORITY_COLORS = { low: '#8b949e', normal: '#58a6ff', high: '#f0883e', critical: '#f85149' };
+
+  // ── Load & Render ───────────────────────────────────────────────────────────
+  async function loadNotifications() {
+    const list = document.getElementById('notif-page-list');
+    const empty = document.getElementById('notif-list-empty');
+    list.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text-secondary)"><i class="ph ph-spinner ph-spin" style="font-size:1.5rem"></i><p style="margin-top:.5rem">Loading…</p></div>`;
+    empty.style.display = 'none';
+
+    try {
+      const data = await API.fetchNotifications(_page, _limit, _typeFilter, _readFilter, _search);
+      const notifications = data.data || [];
+      const meta = data.meta || {};
+
+      // Update subtitle & stats
+      document.getElementById('notif-subtitle').textContent =
+        `${meta.total || 0} notification${meta.total !== 1 ? 's' : ''} total`;
+      renderStats(meta, notifications);
+      renderList(notifications);
+      renderPagination(meta);
+    } catch (err) {
+      list.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--danger-color)"><i class="ph ph-warning-circle"></i> Failed to load notifications.</div>`;
+      Components.showToast('Failed to load notifications', 'error');
+    }
+  }
+
+  function renderStats(meta, notifications) {
+    const unread = notifications.filter(n => !n.is_read).length;
+    const statsEl = document.getElementById('notif-stats');
+    statsEl.innerHTML = `
+      Showing <strong>${notifications.length}</strong> of <strong>${meta.total || 0}</strong> &nbsp;·&nbsp;
+      <span style="color:var(--accent-secondary)"><strong>${unread}</strong> unread on this page</span>
+      ${_selectedIds.size > 0 ? `&nbsp;·&nbsp; <strong>${_selectedIds.size}</strong> selected` : ''}
+    `;
+  }
+
+  function renderList(notifications) {
+    const list = document.getElementById('notif-page-list');
+    const empty = document.getElementById('notif-list-empty');
+
+    if (!notifications.length) {
+      list.innerHTML = '';
+      list.style.border = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    list.style.border = '';
+    empty.style.display = 'none';
+    list.innerHTML = notifications.map(n => buildPageItem(n)).join('');
+
+    // Attach listeners
+    list.querySelectorAll('[data-page-read]').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-page-read');
+        const item = document.getElementById(`notif-page-${id}`);
+        if (item) item.classList.remove('unread');
+        btn.remove();
+        try { await API.markNotificationRead(id); } catch (_) {}
+      });
+    });
+    list.querySelectorAll('[data-page-dismiss]').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-page-dismiss');
+        const item = document.getElementById(`notif-page-${id}`);
+        if (item) {
+          item.style.transition = 'opacity 0.2s, max-height 0.3s, padding 0.3s';
+          item.style.opacity = '0';
+          item.style.maxHeight = '0';
+          item.style.padding = '0';
+          item.style.overflow = 'hidden';
+          setTimeout(() => item.remove(), 300);
+        }
+        try { await API.dismissNotification(id); } catch (_) {}
+      });
+    });
+    list.querySelectorAll('.notif-checkbox').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const id = cb.dataset.id;
+        if (cb.checked) { _selectedIds.add(id); }
+        else { _selectedIds.delete(id); }
+        updateBulkDeleteBtn();
+      });
+    });
+  }
+
+  function buildPageItem(n) {
+    const cfg = TYPE_CONFIG[n.type] || TYPE_CONFIG.system;
+    const priorityColor = PRIORITY_COLORS[n.priority] || PRIORITY_COLORS.normal;
+    const timeStr = relativeTime(n.created_at);
+    const unreadClass = n.is_read ? '' : 'unread';
+    const actionHref = n.action_url || '';
+
+    let meta = {};
+    try { meta = JSON.parse(n.metadata || '{}'); } catch (_) {}
+    const btnText = meta.button_text || '';
+    const btnUrl = meta.button_url || '';
+
+    const priorityBadge = (n.priority === 'high' || n.priority === 'critical')
+      ? `<span class="notif-priority-badge ${n.priority}">${n.priority}</span>` : '';
+
+    return `
+      <div class="notif-page-item ${unreadClass}" id="notif-page-${n.id}"
+           style="--notif-type-color:${cfg.color};--notif-type-bg:${cfg.bg}">
+        <input type="checkbox" class="notif-checkbox" data-id="${n.id}" title="Select">
+        <div class="notif-page-icon">
+          <i class="ph ${n.icon || cfg.icon}"></i>
+        </div>
+        <div class="notif-page-body">
+          <div class="notif-page-title">${escHtml(n.title)}</div>
+          <p class="notif-page-message">${escHtml(n.message)}</p>
+          <div class="notif-page-footer">
+            <span class="notif-page-time"><i class="ph ph-clock"></i> ${timeStr}</span>
+            <span class="notif-type-tag">${n.type}</span>
+            ${priorityBadge}
+            ${actionHref ? `<a href="${actionHref}" class="notif-action-link" style="font-size:0.78rem">View <i class="ph ph-arrow-right"></i></a>` : ''}
+            ${btnText && btnUrl ? `<a href="${escHtml(btnUrl)}" class="notif-action-link" style="font-size:0.78rem">${escHtml(btnText)} <i class="ph ph-arrow-square-out"></i></a>` : ''}
+            ${!n.is_read ? `<button class="notif-action-link notif-mark-read-btn" data-page-read="${n.id}" style="font-size:0.78rem"><i class="ph ph-check"></i> Mark read</button>` : ''}
+            <button class="notif-action-link notif-dismiss-btn" data-page-dismiss="${n.id}" style="font-size:0.78rem"><i class="ph ph-trash"></i> Dismiss</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderPagination(meta) {
+    Components.renderPagination(
+      'notif-pagination', meta,
+      (p) => { _page = p; loadNotifications(); },
+      (l) => { _limit = l; _page = 1; loadNotifications(); }
+    );
+  }
+
+  // ── Filter Logic ────────────────────────────────────────────────────────────
+  document.querySelectorAll('[data-type-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-type-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      _typeFilter = btn.dataset.typeFilter;
+      _page = 1;
+      loadNotifications();
+    });
+  });
+
+  document.querySelectorAll('[data-read-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-read-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const v = btn.dataset.readFilter;
+      _readFilter = v === 'all' ? null : v === 'true';
+      _page = 1;
+      loadNotifications();
+    });
+  });
+
+  document.getElementById('notif-search').addEventListener('input', e => {
+    clearTimeout(_searchTimer);
+    _searchTimer = setTimeout(() => {
+      _search = e.target.value.trim();
+      _page = 1;
+      loadNotifications();
+    }, 400);
+  });
+
+  // ── Bulk Actions ────────────────────────────────────────────────────────────
+  document.getElementById('btn-mark-all-read').addEventListener('click', async () => {
+    document.querySelectorAll('.notif-page-item.unread').forEach(el => el.classList.remove('unread'));
+    document.querySelectorAll('[data-page-read]').forEach(btn => btn.remove());
+    try {
+      await API.markAllNotificationsRead();
+      Components.showToast('All notifications marked as read');
+    } catch (err) {
+      Components.showToast('Failed to mark all read', 'error');
+    }
+  });
+
+  document.getElementById('btn-delete-selected').addEventListener('click', async () => {
+    if (!_selectedIds.size) return;
+    const ids = [..._selectedIds];
+    ids.forEach(id => {
+      const item = document.getElementById(`notif-page-${id}`);
+      if (item) item.remove();
+    });
+    _selectedIds.clear();
+    updateBulkDeleteBtn();
+    try {
+      await Promise.all(ids.map(id => API.dismissNotification(id)));
+      Components.showToast(`${ids.length} notification${ids.length > 1 ? 's' : ''} deleted`);
+    } catch (err) {
+      Components.showToast('Failed to delete some notifications', 'error');
+    }
+  });
+
+  function updateBulkDeleteBtn() {
+    const btn = document.getElementById('btn-delete-selected');
+    if (_selectedIds.size > 0) {
+      btn.style.display = 'flex';
+      btn.innerHTML = `<i class="ph ph-trash"></i> Delete (${_selectedIds.size})`;
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  // ── Utilities ───────────────────────────────────────────────────────────────
+  function relativeTime(dateStr) {
+    if (!dateStr) return '';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const s = Math.floor(diff / 1000);
+    if (s < 60) return 'just now';
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    if (d < 30) return `${d}d ago`;
+    return new Date(dateStr).toLocaleDateString();
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────────────
+  loadNotifications();
+</script>
+</body>
+</html>

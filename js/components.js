@@ -46,6 +46,20 @@ const Components = {
           <a href="/community/" title="Community" class="nav-item ${activePage === "community" ? "active" : ""}">
             <i class="ph ph-users-three"></i> <span class="sidebar-text">Community</span>
           </a>
+          <a href="/notifications/" title="Notifications" class="nav-item ${activePage === "notifications" ? "active" : ""}">
+            <i class="ph ph-bell"></i> <span class="sidebar-text">Notifications</span>
+          </a>
+          ${(() => {
+            try {
+              const u = JSON.parse(localStorage.getItem('currentUser') || '{}');
+              if (u && u.is_admin) {
+                return `<a href="/admin/broadcasts/" title="Broadcasts" class="nav-item ${activePage === "broadcasts" ? "active" : ""}">
+                  <i class="ph ph-megaphone"></i> <span class="sidebar-text">Broadcasts</span>
+                </a>`;
+              }
+            } catch(_) {}
+            return '';
+          })()}
         </nav>
         <div class="sidebar-footer">
           ${localStorage.getItem("authToken") 
@@ -133,6 +147,11 @@ const Components = {
         console.error("Failed to load event status:", err);
       }
     })();
+
+    // Initialize notification bell (only for authenticated users)
+    if (typeof NotificationService !== 'undefined') {
+      NotificationService.init();
+    }
   },
 
   // Toast Notification System

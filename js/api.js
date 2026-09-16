@@ -308,5 +308,78 @@ const API = {
     } catch (e) {
       return date.toLocaleString();
     }
+  },
+
+  // ── Notification API ───────────────────────────────────────────────────────
+
+  /**
+   * Fetch paginated notifications with optional filters.
+   * @param {number} page - Page number (1-indexed)
+   * @param {number} limit - Items per page
+   * @param {string} [type] - Filter by notification type
+   * @param {boolean|null} [is_read] - Filter by read status (null = all)
+   * @param {string} [search] - Search in title/message
+   */
+  async fetchNotifications(page = 1, limit = 10, type = '', is_read = null, search = '') {
+    let path = `/notifications?page=${page}&limit=${limit}`;
+    if (type) path += `&type=${encodeURIComponent(type)}`;
+    if (is_read !== null) path += `&is_read=${is_read}`;
+    if (search) path += `&search=${encodeURIComponent(search)}`;
+    return this.request(path);
+  },
+
+  /**
+   * Get the count of unread notifications. Lightweight — polled every 30s.
+   */
+  async fetchUnreadCount() {
+    return this.request('/notifications/unread-count');
+  },
+
+  /**
+   * Mark a single notification as read by ID.
+   */
+  async markNotificationRead(id) {
+    return this.request(`/notifications/${id}/read`, { method: 'PATCH' });
+  },
+
+  /**
+   * Mark all notifications as read for the current user.
+   */
+  async markAllNotificationsRead() {
+    return this.request('/notifications/read-all', { method: 'PATCH' });
+  },
+
+  /**
+   * Dismiss (delete) a notification by ID.
+   */
+  async dismissNotification(id) {
+    return this.request(`/notifications/${id}`, { method: 'DELETE' });
+  },
+
+  // ── Admin Broadcast API ────────────────────────────────────────────────────
+
+  /**
+   * Send a broadcast to a target audience (admin only).
+   * @param {Object} data - CreateBroadcastRequest fields
+   */
+  async createBroadcast(data) {
+    return this.request('/admin/broadcasts', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  /**
+   * List past broadcasts (admin only).
+   */
+  async listBroadcasts(page = 1, limit = 20) {
+    return this.request(`/admin/broadcasts?page=${page}&limit=${limit}`);
+  },
+
+  /**
+   * Delete a broadcast by ID (admin only).
+   */
+  async deleteBroadcast(id) {
+    return this.request(`/admin/broadcasts/${id}`, { method: 'DELETE' });
   }
 };

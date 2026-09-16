@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+  <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+  <meta name="apple-mobile-web-app-title" content="C-O" />
+  <link rel="manifest" href="/site.webmanifest?v=20260702" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Broadcasts | Commit Overflow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <style>
+    .broadcast-form-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    .broadcast-form-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-primary);
+    }
+    .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .form-row .form-group { flex: 1; min-width: 200px; }
+
+    .preview-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+    .preview-card.visible { display: block; }
+    .preview-notif-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .preview-icon {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(88,101,242,0.15);
+      color: var(--accent-secondary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .preview-body { flex: 1; min-width: 0; }
+    .preview-title { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem; }
+    .preview-message { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+    .preview-meta { font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.3rem; }
+
+    .audience-tag {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: 20px;
+      font-size: 0.75rem; font-weight: 500;
+      background: rgba(88,101,242,0.12);
+      color: var(--accent-secondary);
+    }
+
+    /* Priority badges */
+    .badge-priority-low      { background: rgba(139,148,158,0.15); color: #8b949e; }
+    .badge-priority-normal   { background: rgba(88,166,255,0.15);  color: #58a6ff; }
+    .badge-priority-high     { background: rgba(240,136,62,0.15);  color: #f0883e; }
+    .badge-priority-critical { background: rgba(248,81,73,0.15);   color: #f85149; }
+
+    .broadcasts-table { width: 100%; border-collapse: collapse; }
+    .broadcasts-table th, .broadcasts-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.82rem;
+    }
+    .broadcasts-table th { color: var(--text-secondary); font-weight: 600; }
+    .broadcasts-table tr:last-child td { border-bottom: none; }
+    .broadcasts-table tr:hover td { background: var(--bg-tertiary); }
+
+    .specific-users-section { display: none; }
+    .specific-users-section.visible { display: block; }
+
+    .critical-note {
+      background: rgba(248,81,73,0.1);
+      border: 1px solid rgba(248,81,73,0.3);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: #f85149;
+      display: none;
+      gap: 0.5rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .critical-note.visible { display: flex; }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <div class="main-content" id="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="flex items-center gap-2">
+        <i class="ph ph-megaphone" style="font-size:1.5rem; color:var(--warning-color)"></i>
+        <div>
+          <h1 style="margin:0; font-size:1.4rem;">Broadcasts</h1>
+          <p class="text-secondary" style="font-size:0.82rem; margin:0;">
+            Send notifications to users. Critical broadcasts appear as a site-wide banner.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Broadcast Form ──────────────────────────────────── -->
+    <div class="broadcast-form-card">
+      <div class="broadcast-form-title">
+        <i class="ph ph-paper-plane-tilt" style="color:var(--accent-secondary)"></i>
+        New Broadcast
+      </div>
+
+      <!-- Critical Banner Warning -->
+      <div class="critical-note" id="critical-note">
+        <i class="ph ph-warning-octagon" style="font-size:1.2rem; flex-shrink:0;"></i>
+        <span><strong>Critical broadcasts</strong> will appear as a full-width red banner across the website until each user dismisses it. Use sparingly.</span>
+      </div>
+
+      <form id="broadcast-form" novalidate>
+        <!-- Title & Priority -->
+        <div class="form-row">
+          <div class="form-group" style="flex:2">
+            <label class="form-label" for="bc-title">Title <span style="color:var(--danger-color)">*</span></label>
+            <input type="text" class="form-control" id="bc-title" placeholder="e.g. Server Maintenance Scheduled" maxlength="120" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bc-priority">Priority <span style="color:var(--danger-color)">*</span></label>
+            <select class="form-control" id="bc-priority">
+              <option value="low">🔵 Low</option>
+              <option value="normal" selected>⚪ Normal</option>
+              <option value="high">🟠 High</option>
+              <option value="critical">🔴 Critical</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div class="form-group">
+          <label class="form-label" for="bc-message">Message <span style="color:var(--danger-color)">*</span></label>
+          <textarea class="form-control" id="bc-message" rows="3" placeholder="Write a clear and concise message for the notification…" maxlength="500" required></textarea>
+          <small class="text-secondary"><span id="bc-msg-count">0</span>/500</small>
+        </div>
+
+        <!-- Audience -->
+        <div class="form-group">
+          <label class="form-label" for="bc-audience">Target Audience <span style="color:var(--danger-color)">*</span></label>
+          <select class="form-control" id="bc-audience">
+            <option value="everyone">🌍 Everyone</option>
+            <option value="participants">🧑‍💻 Participants (have issues/PRs)</option>
+            <option value="mentors">🎓 Mentors</option>
+            <option value="maintainers">🔧 Repository Maintainers</option>
+            <option value="organizers">👑 Organizers (admins)</option>
+            <option value="specific">🎯 Specific User(s)</option>
+          </select>
+        </div>
+
+        <!-- Specific User IDs (shown only for "specific" audience) -->
+        <div class="form-group specific-users-section" id="specific-users-section">
+          <label class="form-label" for="bc-user-ids">User IDs <span style="color:var(--danger-color)">*</span></label>
+          <input type="text" class="form-control" id="bc-user-ids" placeholder="Comma-separated user IDs…">
+          <small class="text-secondary">Enter comma-separated user IDs (e.g. abc-123, def-456)</small>
+        </div>
+
+        <!-- Optional Button -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bc-btn-text">Button Text <span class="text-secondary">(optional)</span></label>
+            <input type="text" class="form-control" id="bc-btn-text" placeholder="e.g. View Details" maxlength="50">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bc-btn-url">Button URL <span class="text-secondary">(optional)</span></label>
+            <input type="text" class="form-control" id="bc-btn-url" placeholder="e.g. /repositories/">
+          </div>
+        </div>
+
+        <!-- Expiry -->
+        <div class="form-group">
+          <label class="form-label" for="bc-expires">Expiry Date <span class="text-secondary">(optional)</span></label>
+          <input type="datetime-local" class="form-control" id="bc-expires" style="max-width:280px;">
+          <small class="text-secondary">If set, notification disappears from users' feeds after this date.</small>
+        </div>
+
+        <!-- Preview -->
+        <div class="form-group">
+          <label class="form-label">Preview</label>
+          <div class="preview-card" id="preview-card">
+            <div class="preview-notif-item">
+              <div class="preview-icon"><i class="ph ph-megaphone" id="preview-icon-el"></i></div>
+              <div class="preview-body">
+                <div class="preview-title" id="preview-title">—</div>
+                <div class="preview-message" id="preview-msg">—</div>
+                <div class="preview-meta" id="preview-meta"></div>
+              </div>
+            </div>
+          </div>
+          <small class="text-secondary" id="preview-hint">Fill in the title and message to see a preview.</small>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex gap-2" style="justify-content:flex-end">
+          <button type="button" class="btn btn-secondary" id="bc-preview-btn">
+            <i class="ph ph-eye"></i> Preview
+          </button>
+          <button type="submit" class="btn btn-primary" id="bc-submit-btn">
+            <i class="ph ph-paper-plane-tilt"></i> Send Broadcast
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── Past Broadcasts ─────────────────────────────────── -->
+    <div class="card" style="overflow:hidden; padding:0;">
+      <div style="padding:1rem 1.25rem; border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between;">
+        <h3 style="margin:0; font-size:0.95rem; display:flex; align-items:center; gap:0.5rem;">
+          <i class="ph ph-clock-counter-clockwise" style="color:var(--text-secondary)"></i>
+          Past Broadcasts
+        </h3>
+        <span id="broadcasts-count" class="text-secondary" style="font-size:0.82rem;"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="broadcasts-table" id="broadcasts-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Audience</th>
+              <th>Priority</th>
+              <th>Sent</th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="broadcasts-tbody">
+            <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-secondary);">
+              <i class="ph ph-spinner ph-spin"></i> Loading…
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="broadcasts-pagination" style="padding:1rem;"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/components.js"></script>
+<script src="/js/notifications.js"></script>
+<script>
+  // ── Auth Guard ──────────────────────────────────────────────────────────────
+  if (!API.isAuthenticated()) { window.location.href = '/login/'; }
+  const user = API.getCurrentUser();
+  if (!user || !user.is_admin) { window.location.href = '/'; }
+
+  Components.renderSidebar('broadcasts');
+
+  // ── State ───────────────────────────────────────────────────────────────────
+  let _bcPage = 1; let _bcLimit = 20;
+
+  // ── Live preview update ─────────────────────────────────────────────────────
+  function updatePreview() {
+    const title = document.getElementById('bc-title').value.trim();
+    const msg = document.getElementById('bc-message').value.trim();
+    const preview = document.getElementById('preview-card');
+    const hint = document.getElementById('preview-hint');
+
+    if (!title && !msg) { preview.classList.remove('visible'); hint.style.display = ''; return; }
+    preview.classList.add('visible');
+    hint.style.display = 'none';
+    document.getElementById('preview-title').textContent = title || '—';
+    document.getElementById('preview-msg').textContent = msg || '—';
+
+    const audience = document.getElementById('bc-audience').value;
+    const priority = document.getElementById('bc-priority').value;
+    const btnText = document.getElementById('bc-btn-text').value.trim();
+    const btnUrl = document.getElementById('bc-btn-url').value.trim();
+    const expires = document.getElementById('bc-expires').value;
+
+    const audienceLabels = {
+      everyone: 'Everyone', participants: 'Participants', mentors: 'Mentors',
+      maintainers: 'Maintainers', organizers: 'Organizers', specific: 'Specific users'
+    };
+    const priorityEmoji = { low: '🔵', normal: '⚪', high: '🟠', critical: '🔴' };
+
+    let meta = `Audience: ${audienceLabels[audience] || audience} · Priority: ${priorityEmoji[priority] || ''} ${priority}`;
+    if (btnText && btnUrl) meta += ` · Button: "${btnText}" → ${btnUrl}`;
+    if (expires) meta += ` · Expires: ${new Date(expires).toLocaleString()}`;
+    document.getElementById('preview-meta').textContent = meta;
+  }
+
+  // ── Form Listeners ──────────────────────────────────────────────────────────
+  ['bc-title','bc-message','bc-priority','bc-audience','bc-btn-text','bc-btn-url'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updatePreview);
+  });
+
+  document.getElementById('bc-message').addEventListener('input', () => {
+    document.getElementById('bc-msg-count').textContent =
+      document.getElementById('bc-message').value.length;
+  });
+
+  document.getElementById('bc-priority').addEventListener('change', function() {
+    const note = document.getElementById('critical-note');
+    note.classList.toggle('visible', this.value === 'critical');
+  });
+
+  document.getElementById('bc-audience').addEventListener('change', function() {
+    const section = document.getElementById('specific-users-section');
+    section.classList.toggle('visible', this.value === 'specific');
+    updatePreview();
+  });
+
+  document.getElementById('bc-preview-btn').addEventListener('click', updatePreview);
+
+  // ── Form Submit ─────────────────────────────────────────────────────────────
+  document.getElementById('broadcast-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('bc-submit-btn');
+    const title = document.getElementById('bc-title').value.trim();
+    const message = document.getElementById('bc-message').value.trim();
+    const audience = document.getElementById('bc-audience').value;
+    const priority = document.getElementById('bc-priority').value;
+    const btnText = document.getElementById('bc-btn-text').value.trim();
+    const btnUrl = document.getElementById('bc-btn-url').value.trim();
+    const expiresStr = document.getElementById('bc-expires').value;
+
+    if (!title) { Components.showToast('Title is required', 'error'); return; }
+    if (!message) { Components.showToast('Message is required', 'error'); return; }
+
+    const payload = { title, message, target_audience: audience, priority };
+    if (btnText) payload.button_text = btnText;
+    if (btnUrl) payload.button_url = btnUrl;
+    if (expiresStr) payload.expires_at = new Date(expiresStr).toISOString();
+
+    if (audience === 'specific') {
+      const ids = document.getElementById('bc-user-ids').value
+        .split(',').map(s => s.trim()).filter(Boolean);
+      if (!ids.length) { Components.showToast('Enter at least one User ID', 'error'); return; }
+      payload.target_user_ids = ids;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Sending…';
+    try {
+      await API.createBroadcast(payload);
+      Components.showToast(`Broadcast sent to ${audience}!`);
+      document.getElementById('broadcast-form').reset();
+      document.getElementById('preview-card').classList.remove('visible');
+      document.getElementById('bc-msg-count').textContent = '0';
+      document.getElementById('critical-note').classList.remove('visible');
+      document.getElementById('specific-users-section').classList.remove('visible');
+      _bcPage = 1;
+      loadBroadcasts();
+    } catch (err) {
+      Components.showToast(err.message || 'Failed to send broadcast', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Send Broadcast';
+    }
+  });
+
+  // ── Past Broadcasts ─────────────────────────────────────────────────────────
+  const PRIORITY_BADGE = {
+    low:      '<span class="badge-priority-low"    style="padding:.15rem .5rem;border-radius:10px;font-size:.72rem;font-weight:600">Low</span>',
+    normal:   '<span class="badge-priority-normal"  style="padding:.15rem .5rem;border-radius:10px;font-size:.72rem;font-weight:600">Normal</span>',
+    high:     '<span class="badge-priority-high"    style="padding:.15rem .5rem;border-radius:10px;font-size:.72rem;font-weight:600">High</span>',
+    critical: '<span class="badge-priority-critical" style="padding:.15rem .5rem;border-radius:10px;font-size:.72rem;font-weight:600">Critical</span>',
+  };
+
+  async function loadBroadcasts() {
+    const tbody = document.getElementById('broadcasts-tbody');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--text-secondary)"><i class="ph ph-spinner ph-spin"></i> Loading…</td></tr>';
+    try {
+      const data = await API.listBroadcasts(_bcPage, _bcLimit);
+      const list = data.data || [];
+      const meta = data.meta || {};
+      document.getElementById('broadcasts-count').textContent = `${meta.total || 0} total`;
+
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-secondary)">No broadcasts sent yet.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map(b => `
+        <tr id="bc-row-${b.id}">
+          <td>
+            <div style="font-weight:600;color:var(--text-primary);font-size:0.85rem;">${escHtml(b.title)}</div>
+            <div style="color:var(--text-secondary);font-size:0.75rem;max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(b.message)}</div>
+          </td>
+          <td><span class="audience-tag"><i class="ph ph-users"></i> ${b.target_audience}</span></td>
+          <td>${PRIORITY_BADGE[b.priority] || b.priority}</td>
+          <td style="white-space:nowrap;color:var(--text-secondary);">${relativeTime(b.created_at)}</td>
+          <td style="text-align:right;">
+            <button class="btn btn-secondary" style="font-size:.75rem;padding:.25rem .625rem;color:var(--danger-color);"
+              data-delete-id="${b.id}" title="Delete broadcast record">
+              <i class="ph ph-trash"></i>
+            </button>
+          </td>
+        </tr>`).join('');
+
+      tbody.querySelectorAll('[data-delete-id]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Delete this broadcast record? This will not remove notifications already sent.')) return;
+          const id = btn.dataset.deleteId;
+          try {
+            await API.deleteBroadcast(id);
+            document.getElementById(`bc-row-${id}`)?.remove();
+            Components.showToast('Broadcast record deleted');
+          } catch (err) {
+            Components.showToast('Failed to delete broadcast', 'error');
+          }
+        });
+      });
+
+      Components.renderPagination('broadcasts-pagination', meta,
+        p => { _bcPage = p; loadBroadcasts(); },
+        l => { _bcLimit = l; _bcPage = 1; loadBroadcasts(); }
+      );
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--danger-color)">Failed to load broadcasts.</td></tr>`;
+    }
+  }
+
+  function relativeTime(dateStr) {
+    if (!dateStr) return '';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const s = Math.floor(diff / 1000);
+    if (s < 60) return 'just now';
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return new Date(dateStr).toLocaleDateString();
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  loadBroadcasts();
+</script>
+</body>
+</html>
