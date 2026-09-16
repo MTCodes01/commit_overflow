@@ -391,6 +391,12 @@
                         Components.showToast('Discord linked & verified successfully!', 'success');
                         currentUser = await API.fetchUserMe();
                         updateDiscordUI(currentUser);
+                        
+                        // Open Discord server in a new tab
+                        const config = await API.getConfig();
+                        if (config && config.DISCORD_INVITE_URL) {
+                            window.open(config.DISCORD_INVITE_URL, '_blank');
+                        }
                     } catch (e) {
                         Components.showToast('Verification failed: ' + e.message, 'error');
                     } finally {
