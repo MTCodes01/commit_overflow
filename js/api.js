@@ -46,7 +46,7 @@ const API = {
     return this.baseUrlPromise;
   },
 
-  async request(path, options = {}) {
+  async request(path, options = {}, retries = 3, backoff = 1000) {
     const baseUrl = await this.getBaseUrl();
     const url = `${baseUrl}${path}`;
 
@@ -74,6 +74,15 @@ const API = {
         window.location.href = '/';
       }
       throw new Error("Server is currently unreachable. Please try again later.");
+    }
+    
+    // Handle Rate Limiting (429) automatically with exponential backoff and jitter
+    if (res.status === 429 && retries > 0) {
+      const retryAfter = res.headers.get('Retry-After');
+      let waitTime = retryAfter ? parseInt(retryAfter) * 1000 : backoff;
+      waitTime += Math.random() * 500; // Add jitter to avoid thundering herd
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+      return this.request(path, options, retries - 1, backoff * 1.5);
     }
 
     // Server gateway down errors (502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout)
