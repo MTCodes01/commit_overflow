@@ -1059,7 +1059,7 @@ tr:hover {
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  z-index: 100;
+  z-index: 90;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -1733,7 +1733,7 @@ tr:hover {
     border-color: var(--accent-primary, #10b981);
     box-shadow: 0 0 0 1px var(--accent-primary, #10b981), 0 10px 30px rgba(0, 0, 0, 0.5);
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .unified-search-bar {
         flex-wrap: nowrap;
         align-items: stretch;
@@ -1747,7 +1747,7 @@ tr:hover {
     padding: 0.75rem 1rem;
     min-width: 0;
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .unified-search-input-section {
         flex: 1;
     }
@@ -1805,7 +1805,17 @@ tr:hover {
     background: rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
 }
-@media (min-width: 768px) {
+@media (min-width: 640px) and (max-width: 1023px) {
+    .unified-search-filter + .unified-search-divider {
+        width: 1px;
+        height: auto;
+    }
+    .unified-search-divider:has(+ .unified-search-actions-group) {
+        width: 100%;
+        height: 1px;
+    }
+}
+@media (min-width: 1024px) {
     .unified-search-divider {
         height: auto;
         width: 1px;
@@ -1815,13 +1825,16 @@ tr:hover {
     position: relative;
     display: flex;
     align-items: center;
-    flex: 1 1 auto;
+    flex: 1 1 100%;
     min-width: 120px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-@media (min-width: 768px) {
+@media (min-width: 640px) and (max-width: 1023px) {
     .unified-search-filter {
-        border-top: none;
+        flex: 1 1 0;
+    }
+}
+@media (min-width: 1024px) {
+    .unified-search-filter {
         flex: 0 0 auto;
     }
 }
@@ -1834,7 +1847,7 @@ tr:hover {
 }
 .unified-search-select {
     width: 100%;
-    max-width: 200px;
+    max-width: 100%;
     height: 100%;
     background: transparent;
     color: var(--text-secondary);
@@ -1851,9 +1864,10 @@ tr:hover {
     background-position: right 1rem center;
     color-scheme: dark;
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .unified-search-select {
         width: auto;
+        max-width: 200px;
     }
 }
 .unified-search-select:hover, .unified-search-select:focus {
