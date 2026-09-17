@@ -61,7 +61,7 @@ const NotificationService = (() => {
   // connect() — start polling. Swap this method for SSE/WebSocket later.
   function connect() {
     _poll(); // immediate first poll
-    _pollInterval = setInterval(_poll, POLL_MS);
+    // _pollInterval = setInterval(_poll, POLL_MS);
   }
 
   // disconnect() — stop polling (called on logout or page unload)
