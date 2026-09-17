@@ -78,7 +78,7 @@ const Components = {
 
     // Inject trial mode banner at the absolute top of the body
     const trialBannerHtml = `
-      <div id="trial-mode-banner" style="position: absolute; top: 0; left: 0; width: 100%; overflow: hidden; background: rgba(255, 166, 0, 0.15); border-bottom: 1px solid rgba(255, 166, 0, 0.3); color: #ffb84d; padding: 0.75rem 0; font-weight: 500; font-size: 0.95rem; z-index: 10;">
+      <div id="trial-mode-banner" style="position: relative; top: 0; left: 0; width: 100%; overflow: hidden; background: rgba(255, 166, 0, 0.15); border-bottom: 1px solid rgba(255, 166, 0, 0.3); color: #ffb84d; padding: 0.75rem 0; font-weight: 500; font-size: 0.95rem; z-index: 10;">
         <div class="marquee-text">
             🚧 <strong>Trial Mode Active:</strong> The platform is currently in trial mode. The official event and leaderboard scoring begins on <strong>October 4th</strong>.
         </div>
@@ -88,11 +88,9 @@ const Components = {
     if (!document.getElementById("trial-mode-banner")) {
         document.body.insertAdjacentHTML("afterbegin", trialBannerHtml);
         
-        // Add top padding to the app-wrapper so it isn't covered by the absolute banner
         const wrapper = document.querySelector(".app-wrapper") || document.body;
         const banner = document.getElementById("trial-mode-banner");
         if (wrapper && banner) {
-            wrapper.style.paddingTop = banner.offsetHeight + 'px';
             // Force enough height so even short pages can scroll past the banner
             wrapper.style.minHeight = `calc(100vh + ${banner.offsetHeight}px)`;
         }
