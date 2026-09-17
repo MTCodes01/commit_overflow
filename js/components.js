@@ -78,8 +78,10 @@ const Components = {
 
     // Inject trial mode banner at the absolute top of the body
     const trialBannerHtml = `
-      <div id="trial-mode-banner" style="position: absolute; top: 0; left: 0; width: 100%; background: rgba(255, 166, 0, 0.15); border-bottom: 1px solid rgba(255, 166, 0, 0.3); color: #ffb84d; text-align: center; padding: 0.75rem 1rem; font-weight: 500; font-size: 0.95rem; z-index: 10;">
-        🚧 <strong>Trial Mode Active:</strong> The platform is currently in testing mode. The official event and leaderboard scoring begin on <strong>October 4th</strong>.
+      <div id="trial-mode-banner" style="position: absolute; top: 0; left: 0; width: 100%; overflow: hidden; background: rgba(255, 166, 0, 0.15); border-bottom: 1px solid rgba(255, 166, 0, 0.3); color: #ffb84d; padding: 0.75rem 0; font-weight: 500; font-size: 0.95rem; z-index: 10;">
+        <div class="marquee-text">
+            🚧 <strong>Trial Mode Active:</strong> The platform is currently in trial mode. The official event and leaderboard scoring begins on <strong>October 4th</strong>.
+        </div>
       </div>
     `;
     

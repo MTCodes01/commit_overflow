@@ -209,3 +209,14 @@ h1, h2, h3, h4, h5, h6 {
 .footer-logo:hover {
   transform: scale(1.05) rotate(1deg);
 }
+
+@keyframes marquee {
+  0% { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+  padding-right: 50px;
+}
