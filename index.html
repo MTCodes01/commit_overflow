@@ -241,12 +241,30 @@
 
 <body>
 <script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
+	<div id="trial-mode-banner" style="position: absolute; top: 0; left: 0; width: 100%; background: rgba(255, 166, 0, 0.15); border-bottom: 1px solid rgba(255, 166, 0, 0.3); color: #ffb84d; text-align: center; padding: 0.75rem 1rem; font-weight: 500; font-size: 0.95rem; z-index: 10;">
+		🚧 <strong>Trial Mode Active:</strong> The platform is currently in testing mode. The official event and leaderboard scoring begin on <strong>October 4th</strong>.
+	</div>
 	<div class="container">
+		<script>
+			(function() {
+				const banner = document.getElementById('trial-mode-banner');
+				const container = document.querySelector('.container');
+				if (banner && container) {
+					container.style.paddingTop = banner.offsetHeight + 'px';
+					document.body.style.minHeight = 'calc(100vh + ' + banner.offsetHeight + 'px)';
+					setTimeout(() => {
+						if (window.scrollY === 0) {
+							window.scrollTo({ top: banner.offsetHeight, behavior: 'instant' });
+						}
+					}, 10);
+				}
+			})();
+		</script>
 		<header class="nav-header">
-			<div class="logo">
+			<a href="/" class="logo" style="text-decoration: none;">
 				<img src="/logo/logo-light-clr.svg" alt="Logo" width="36" height="36" style="height: 36px; width: auto;">
 				Commit Overflow
-			</div>
+			</a>
 			<div class="nav-links" id="nav-links-container">
 				<a href="/login/" class="btn btn-secondary">Login</a>
 				<a href="/register/" class="btn btn-primary">Register</a>
