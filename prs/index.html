@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="robots" content="noindex, nofollow">
@@ -26,7 +26,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 8px;
             background: var(--bg-secondary);
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -96,31 +96,7 @@
                 <p class="text-secondary mt-1">Track code contributions, reviews, and point scores.</p>
             </div>
 
-            <div class="search-control-bar">
-                <div style="flex: 1; position: relative; display: flex; align-items: center;">
-                    <i class="ph ph-magnifying-glass search-control-icon"></i>
-                    <input type="text" id="prs-search" class="search-control-input" placeholder="Search PR ID or associated issues...">
-                </div>
-                
-                <div class="search-control-divider"></div>
-                
-                <div class="search-control-select-wrapper">
-                    <select id="filter-repo" class="search-control-select">
-                        <option value="">All Repositories</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-                
-                <div class="search-control-divider"></div>
-                
-                <div class="search-control-select-wrapper">
-                    <select id="filter-status" class="search-control-select">
-                        <option value="pending">Status: Pending Review</option>
-                        <option value="merged">Status: Merged</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-            </div>
+            <div id="search-filter-container"></div>
 
             <div id="prs-list" class="grid grid-dynamic gap-4">
                 <!-- Loaded dynamically -->
@@ -247,6 +223,29 @@
             let allPRs = [];
             let activeTab = 'pending'; // 'pending', 'merged'
             const user = API.getCurrentUser();
+
+            Components.renderSearchFilterBar({
+                containerId: 'search-filter-container',
+                search: {
+                    id: 'prs-search',
+                    placeholder: 'Search PR ID or associated issues...'
+                },
+                filters: [
+                    {
+                        id: 'filter-repo',
+                        icon: 'ph-git-repository',
+                        optionsHtml: '<option value="">All Repositories</option>'
+                    },
+                    {
+                        id: 'filter-status',
+                        icon: 'ph-git-pull-request',
+                        optionsHtml: `
+                            <option value="pending">Status: Pending Review</option>
+                            <option value="merged">Status: Merged</option>
+                        `
+                    }
+                ]
+            });
 
             const searchInput = document.getElementById('prs-search');
             const repoFilter = document.getElementById('filter-repo');

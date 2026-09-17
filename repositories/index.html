@@ -20,7 +20,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 8px;
             background: var(--bg-secondary);
             padding: 1.5rem;
             position: relative;
@@ -119,49 +119,7 @@
                 </div>
             </div>
 
-            <div class="search-control-bar">
-                <div style="flex: 1; position: relative; display: flex; align-items: center;">
-                    <i class="ph ph-magnifying-glass search-control-icon"></i>
-                    <input type="text" id="repos-search" class="search-control-input" placeholder="Search repositories by name or tech stack...">
-                </div>
-
-                <div class="search-control-divider"></div>
-                
-                <div class="search-control-select-wrapper">
-                    <select id="filter-language" class="search-control-select">
-                        <option value="">All Languages</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-
-                <div class="search-control-divider"></div>
-
-                <div class="search-control-select-wrapper">
-                    <select id="filter-platform" class="search-control-select">
-                        <option value="">All Platforms</option>
-                        <option value="github">GitHub</option>
-                        <option value="gitlab">GitLab</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-
-                <div class="search-control-divider"></div>
-
-                <div class="search-control-select-wrapper">
-                    <select id="sort-repo" class="search-control-select">
-                        <option value="name">Sort: Name</option>
-                        <option value="contributors">Sort: Contributors</option>
-                        <option value="open_issues">Sort: Open Issues</option>
-                        <option value="open_prs">Sort: Open PRs</option>
-                        <option value="merged_prs">Sort: Merged PRs</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-                
-                <button id="sort-repo-dir" class="search-control-btn" title="Toggle Sort Direction">
-                    <i id="sort-repo-icon" class="ph ph-sort-descending" style="font-size: 1.1rem;"></i>
-                </button>
-            </div>
+            <div id="search-filter-container"></div>
 
             <div class="grid grid-cols-2 md:grid-cols-1 gap-4" id="repos-container">
                 <!-- Repo cards injected here -->
@@ -406,6 +364,44 @@
             };
 
             let allRepos = [];
+            Components.renderSearchFilterBar({
+                containerId: 'search-filter-container',
+                search: {
+                    id: 'repos-search',
+                    placeholder: 'Search repositories by name or tech stack...'
+                },
+                filters: [
+                    {
+                        id: 'filter-language',
+                        icon: 'ph-code',
+                        optionsHtml: '<option value="">All Languages</option>'
+                    },
+                    {
+                        id: 'filter-platform',
+                        icon: 'ph-globe',
+                        optionsHtml: `
+                            <option value="">All Platforms</option>
+                            <option value="github">GitHub</option>
+                            <option value="gitlab">GitLab</option>
+                        `
+                    }
+                ],
+                sort: {
+                    id: 'sort-repo',
+                    icon: 'ph-sort-ascending',
+                    optionsHtml: `
+                        <option value="name">Sort: Name</option>
+                        <option value="contributors">Sort: Contributors</option>
+                        <option value="open_issues">Sort: Open Issues</option>
+                        <option value="open_prs">Sort: Open PRs</option>
+                        <option value="merged_prs">Sort: Merged PRs</option>
+                    `,
+                    dirBtnId: 'sort-repo-dir',
+                    dirIconId: 'sort-repo-icon',
+                    dirIcon: 'ph-sort-descending'
+                }
+            });
+
             const reposSearchInput = document.getElementById('repos-search');
             const filterLanguage = document.getElementById('filter-language');
             const filterPlatform = document.getElementById('filter-platform');

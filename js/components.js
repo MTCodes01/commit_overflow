@@ -338,6 +338,89 @@ const Components = {
     if (limitSelect) limitSelect.addEventListener('change', (e) => onLimitChange(parseInt(e.target.value)));
   },
 
+  renderSearchFilterBar(config) {
+    const container = document.getElementById(config.containerId);
+    if (!container) return;
+
+    let html = `<div class="unified-search-bar" ${config.style ? `style="${config.style}"` : ''}>`;
+    
+    // Search input
+    if (config.search) {
+      html += `
+        <div class="unified-search-input-section">
+            <i class="ph ph-magnifying-glass unified-search-icon"></i>
+            <input type="text" id="${config.search.id}" class="unified-search-input" placeholder="${config.search.placeholder}" autocomplete="off">
+            <div class="unified-search-actions">
+                <button type="button" class="unified-search-clear" title="Clear search" onclick="document.getElementById('${config.search.id}').value=''; document.getElementById('${config.search.id}').dispatchEvent(new Event('input')); document.getElementById('${config.search.id}').focus();">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+        </div>
+      `;
+    }
+
+    // Filters
+    if (config.filters && config.filters.length > 0) {
+      config.filters.forEach(filter => {
+        if (config.search || config.filters[0] !== filter) {
+          html += `<div class="unified-search-divider"></div>`;
+        }
+        html += `
+          <div class="unified-search-filter">
+              <i class="ph ${filter.icon} unified-search-filter-icon"></i>
+              <select id="${filter.id}" class="unified-search-select">
+                  ${filter.optionsHtml}
+              </select>
+          </div>
+        `;
+      });
+    }
+
+    // Sort
+    if (config.sort) {
+      if (config.search || (config.filters && config.filters.length > 0)) {
+        html += `<div class="unified-search-divider"></div>`;
+      }
+      let sortHtml = `
+        <div class="unified-search-filter" style="display: flex; align-items: stretch; flex: 0 0 auto;">
+            <div style="position: relative; flex: 1; display: flex; align-items: center;">
+                <i class="ph ${config.sort.icon} unified-search-filter-icon"></i>
+                <select id="${config.sort.id}" class="unified-search-select" style="width: 100%;">
+                    ${config.sort.optionsHtml}
+                </select>
+            </div>
+      `;
+      if (config.sort.dirBtnId) {
+        sortHtml += `
+            <button id="${config.sort.dirBtnId}" title="Toggle Sort Direction" style="background: transparent; border: none; padding: 0 1rem; color: var(--text-secondary); cursor: pointer; border-left: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s;" onmouseover="this.style.color='var(--text-primary)'; this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.color='var(--text-secondary)'; this.style.background='transparent';">
+                <i id="${config.sort.dirIconId}" class="ph ${config.sort.dirIcon}" style="font-size: 1.2rem;"></i>
+            </button>
+        `;
+      }
+      sortHtml += `</div>`;
+      html += sortHtml;
+    }
+
+    // Actions
+    if (config.actions && config.actions.length > 0) {
+        if (config.search || (config.filters && config.filters.length > 0) || config.sort) {
+            html += `<div class="unified-search-divider"></div>`;
+        }
+        html += `<div class="unified-search-actions-group" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;">`;
+        config.actions.forEach(action => {
+            html += `
+                <button id="${action.id}" class="btn ${action.class || 'btn-secondary'}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; height: 32px; flex-shrink: 0;">
+                    ${action.icon ? `<i class="ph ${action.icon}"></i>` : ''} ${action.label}
+                </button>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    html += `</div>`;
+    container.innerHTML = html;
+  },
+
   getTagStyles(labelInput, fallbackColor = null) {
     const label = typeof labelInput === 'string' ? labelInput : (labelInput.name || '');
     const serverColor = fallbackColor || (typeof labelInput === 'object' ? labelInput.color : null);

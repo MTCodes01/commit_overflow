@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="robots" content="noindex, nofollow">
@@ -26,7 +26,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 8px;
             background: var(--bg-secondary);
             padding: 1.5rem;
         }
@@ -110,32 +110,7 @@
                 <p class="text-secondary mt-1">Manage issues you raised or are assigned to resolve.</p>
             </div>
 
-            <div class="search-control-bar">
-                <div style="flex: 1; position: relative; display: flex; align-items: center;">
-                    <i class="ph ph-magnifying-glass search-control-icon"></i>
-                    <input type="text" id="issues-search" class="search-control-input" placeholder="Search by title or description...">
-                </div>
-                
-                <div class="search-control-divider"></div>
-                
-                <div class="search-control-select-wrapper">
-                    <select id="filter-label" class="search-control-select">
-                        <option value="">All Labels</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-                
-                <div class="search-control-divider"></div>
-                
-                <div class="search-control-select-wrapper">
-                    <select id="filter-type" class="search-control-select">
-                        <option value="open">Type: Open</option>
-                        <option value="closed">Type: Closed</option>
-                        <option value="assigned">Type: Assigned</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-            </div>
+            <div id="search-filter-container"></div>
 
             <div id="issues-list" class="grid grid-dynamic gap-4">
                 <!-- Loaded dynamically -->
@@ -263,6 +238,30 @@
             let allLabels = [];
             let activeTab = 'open'; // 'open', 'closed', 'assigned'
             const user = API.getCurrentUser();
+
+            Components.renderSearchFilterBar({
+                containerId: 'search-filter-container',
+                search: {
+                    id: 'issues-search',
+                    placeholder: 'Search by title or description...'
+                },
+                filters: [
+                    {
+                        id: 'filter-label',
+                        icon: 'ph-tag',
+                        optionsHtml: '<option value="">All Labels</option>'
+                    },
+                    {
+                        id: 'filter-type',
+                        icon: 'ph-git-merge',
+                        optionsHtml: `
+                            <option value="open">Type: Open</option>
+                            <option value="closed">Type: Closed</option>
+                            <option value="assigned">Type: Assigned</option>
+                        `
+                    }
+                ]
+            });
 
             const searchInput = document.getElementById('issues-search');
             const labelFilter = document.getElementById('filter-label');

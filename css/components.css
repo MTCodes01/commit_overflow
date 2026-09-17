@@ -67,7 +67,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 2rem;
 }
 
@@ -1708,8 +1708,159 @@ tr:hover {
 
 /* ── Responsive ──────────────────────────────── */
 @media (max-width: 768px) {
-  .notif-bell { top: 4.5rem; right: 0.75rem; width: 36px; height: 36px; }
+  .notif-bell { top: 5.5rem; right: 0.75rem; width: 36px; height: 36px; }
   .notif-dropdown { top: 7.5rem; right: 0.5rem; width: calc(100vw - 1rem); }
   .notif-critical-inner { padding: 0.6rem 1rem; }
+}
+
+
+/* Unified Search Component */
+.unified-search-bar {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    background: rgba(18, 24, 32, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+.unified-search-bar:focus-within {
+    border-color: var(--accent-primary, #10b981);
+    box-shadow: 0 0 0 1px var(--accent-primary, #10b981), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+@media (min-width: 768px) {
+    .unified-search-bar {
+        flex-wrap: nowrap;
+        align-items: stretch;
+    }
+}
+.unified-search-input-section {
+    position: relative;
+    flex: 1 1 100%;
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    min-width: 0;
+}
+@media (min-width: 768px) {
+    .unified-search-input-section {
+        flex: 1;
+    }
+}
+.unified-search-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary, #94a3b8);
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+.unified-search-bar:focus-within .unified-search-icon {
+    color: var(--accent-primary, #10b981);
+}
+.unified-search-input {
+    flex: 1;
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-primary, #f1f5f9);
+    font-size: 0.95rem;
+    outline: none;
+    padding: 0;
+}
+.unified-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+.unified-search-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.5rem;
+}
+.unified-search-clear {
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+.unified-search-clear:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+.unified-search-divider {
+    height: 1px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+@media (min-width: 768px) {
+    .unified-search-divider {
+        height: auto;
+        width: 1px;
+    }
+}
+.unified-search-filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 120px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+@media (min-width: 768px) {
+    .unified-search-filter {
+        border-top: none;
+        flex: 0 0 auto;
+    }
+}
+.unified-search-filter-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-secondary, #94a3b8);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+.unified-search-select {
+    width: 100%;
+    max-width: 200px;
+    height: 100%;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: none;
+    padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    color-scheme: dark;
+}
+@media (min-width: 768px) {
+    .unified-search-select {
+        width: auto;
+    }
+}
+.unified-search-select:hover, .unified-search-select:focus {
+    color: var(--text-primary);
+}
+.unified-search-select option {
+    background: #121820;
+    color: var(--text-primary);
 }
 

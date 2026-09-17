@@ -180,7 +180,7 @@
         .bento-card {
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
@@ -435,17 +435,32 @@
             </div>
 
             <div class="card glass-card">
-                <div class="controls-bar">
-                    <div class="search-wrapper">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="text" class="form-control" id="search-input" placeholder="Search user...">
+                <div class="unified-search-bar" style="margin-bottom: 1.5rem;">
+                    <div class="unified-search-input-section">
+                        <i class="ph ph-magnifying-glass unified-search-icon"></i>
+                        <input type="text" id="search-input" class="unified-search-input" placeholder="Search user..." autocomplete="off">
+                        <div class="unified-search-actions">
+                            <button type="button" class="unified-search-clear" title="Clear search" onclick="document.getElementById('search-input').value=''; document.getElementById('search-input').dispatchEvent(new Event('input')); document.getElementById('search-input').focus();">
+                                <i class="ph ph-x"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex gap-2">
-                        <select id="sort-select" class="form-control" style="width: auto;">
+
+                    <div class="unified-search-divider"></div>
+
+                    <div class="unified-search-filter">
+                        <i class="ph ph-sort-ascending unified-search-filter-icon"></i>
+                        <select id="sort-select" class="unified-search-select">
                             <option value="highest">Sort: Score (Highest)</option>
                             <option value="lowest">Sort: Score (Lowest)</option>
                         </select>
-                        <select id="college-select" class="form-control" style="width: auto;">
+                    </div>
+
+                    <div class="unified-search-divider"></div>
+
+                    <div class="unified-search-filter">
+                        <i class="ph ph-graduation-cap unified-search-filter-icon"></i>
+                        <select id="college-select" class="unified-search-select">
                             <option value="all">Filter: All Colleges</option>
                         </select>
                     </div>

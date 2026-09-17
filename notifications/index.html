@@ -99,43 +99,19 @@
       </div>
     </div>
 
-    <!-- Toolbar -->
-    <div class="page-toolbar">
-      <!-- Search -->
-      <div class="search-bar">
-        <i class="ph ph-magnifying-glass"></i>
-        <input type="text" id="notif-search" placeholder="Search notifications…" autocomplete="off">
+      <div class="page-toolbar flex justify-between items-center mb-4">
+        <!-- Bulk Actions -->
+        <div class="bulk-actions flex gap-2">
+          <button class="btn btn-secondary" id="btn-mark-all-read" style="font-size:0.8rem; padding:0.4rem 0.875rem;">
+            <i class="ph ph-checks"></i> Mark all read
+          </button>
+          <button class="btn btn-secondary" id="btn-delete-selected" style="font-size:0.8rem; padding:0.4rem 0.875rem; color:var(--danger-color); display:none;">
+            <i class="ph ph-trash"></i> Delete selected
+          </button>
+        </div>
       </div>
 
-      <!-- Bulk Actions -->
-      <div class="bulk-actions">
-        <button class="btn btn-secondary" id="btn-mark-all-read" style="font-size:0.8rem; padding:0.4rem 0.875rem;">
-          <i class="ph ph-checks"></i> Mark all read
-        </button>
-        <button class="btn btn-secondary" id="btn-delete-selected" style="font-size:0.8rem; padding:0.4rem 0.875rem; color:var(--danger-color); display:none;">
-          <i class="ph ph-trash"></i> Delete selected
-        </button>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="flex gap-1 flex-wrap mb-2" id="read-filters">
-      <button class="notif-filter-btn active" data-read-filter="all">All</button>
-      <button class="notif-filter-btn" data-read-filter="false">Unread</button>
-      <button class="notif-filter-btn" data-read-filter="true">Read</button>
-    </div>
-
-    <div class="type-filters" id="type-filters">
-      <button class="notif-filter-btn active" data-type-filter="">All Types</button>
-      <button class="notif-filter-btn" data-type-filter="system"><i class="ph ph-info"></i> System</button>
-      <button class="notif-filter-btn" data-type-filter="broadcast"><i class="ph ph-megaphone"></i> Broadcast</button>
-      <button class="notif-filter-btn" data-type-filter="event"><i class="ph ph-calendar-check"></i> Event</button>
-      <button class="notif-filter-btn" data-type-filter="repository"><i class="ph ph-git-repository"></i> Repository</button>
-      <button class="notif-filter-btn" data-type-filter="achievement"><i class="ph ph-trophy"></i> Achievement</button>
-      <button class="notif-filter-btn" data-type-filter="success"><i class="ph ph-check-circle"></i> Success</button>
-      <button class="notif-filter-btn" data-type-filter="warning"><i class="ph ph-warning"></i> Warning</button>
-      <button class="notif-filter-btn" data-type-filter="error"><i class="ph ph-x-circle"></i> Error</button>
-    </div>
+      <div id="search-filter-container"></div>
 
     <!-- Stats row -->
     <div class="stats-row" id="notif-stats"></div>
@@ -179,6 +155,40 @@
   let _search = '';
   let _selectedIds = new Set();
   let _searchTimer = null;
+
+  Components.renderSearchFilterBar({
+      containerId: 'search-filter-container',
+      search: {
+          id: 'notif-search',
+          placeholder: 'Search notifications…'
+      },
+      filters: [
+          {
+              id: 'filter-notif-read',
+              icon: 'ph-envelope-open',
+              optionsHtml: `
+                  <option value="all">All Statuses</option>
+                  <option value="false">Unread</option>
+                  <option value="true">Read</option>
+              `
+          },
+          {
+              id: 'filter-notif-type',
+              icon: 'ph-bell-ringing',
+              optionsHtml: `
+                  <option value="">All Types</option>
+                  <option value="system">System</option>
+                  <option value="broadcast">Broadcast</option>
+                  <option value="event">Event</option>
+                  <option value="repository">Repository</option>
+                  <option value="achievement">Achievement</option>
+                  <option value="success">Success</option>
+                  <option value="warning">Warning</option>
+                  <option value="error">Error</option>
+              `
+          }
+      ]
+  });
 
   const TYPE_CONFIG = {
     system:      { color: '#58a6ff', bg: 'rgba(88,166,255,0.12)', icon: 'ph-info'           },
@@ -324,25 +334,17 @@
   }
 
   // ── Filter Logic ────────────────────────────────────────────────────────────
-  document.querySelectorAll('[data-type-filter]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-type-filter]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      _typeFilter = btn.dataset.typeFilter;
-      _page = 1;
-      loadNotifications();
-    });
+  document.getElementById('filter-notif-type').addEventListener('change', (e) => {
+    _typeFilter = e.target.value;
+    _page = 1;
+    loadNotifications();
   });
 
-  document.querySelectorAll('[data-read-filter]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-read-filter]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const v = btn.dataset.readFilter;
-      _readFilter = v === 'all' ? null : v === 'true';
-      _page = 1;
-      loadNotifications();
-    });
+  document.getElementById('filter-notif-read').addEventListener('change', (e) => {
+    const v = e.target.value;
+    _readFilter = v === 'all' ? null : v === 'true';
+    _page = 1;
+    loadNotifications();
   });
 
   document.getElementById('notif-search').addEventListener('input', e => {

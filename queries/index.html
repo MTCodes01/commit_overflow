@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="robots" content="noindex, nofollow">
@@ -20,7 +20,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 8px;
             background: var(--bg-secondary);
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -75,23 +75,7 @@
                 </button>
             </div>
 
-            <div class="search-control-bar">
-                <div style="flex: 1; position: relative; display: flex; align-items: center;">
-                    <i class="ph ph-magnifying-glass search-control-icon"></i>
-                    <input type="text" id="queries-search" class="search-control-input" placeholder="Search queries by title or description...">
-                </div>
-                
-                <div class="search-control-divider"></div>
-                
-                <div class="search-control-select-wrapper">
-                    <select id="filter-queries-status" class="search-control-select">
-                        <option value="all">All Queries</option>
-                        <option value="open">Status: Open</option>
-                        <option value="resolved">Status: Resolved</option>
-                    </select>
-                    <i class="ph ph-caret-down text-secondary"></i>
-                </div>
-            </div>
+            <div id="search-filter-container"></div>
 
             <div id="queries-list" class="grid grid-dynamic gap-4">
                 <div class="card w-full" style="padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
@@ -280,6 +264,26 @@
 
             let allQueries = [];
             let currentFilter = 'all';
+
+            Components.renderSearchFilterBar({
+                containerId: 'search-filter-container',
+                search: {
+                    id: 'queries-search',
+                    placeholder: 'Search queries by title or description...'
+                },
+                filters: [
+                    {
+                        id: 'filter-queries-status',
+                        icon: 'ph-funnel',
+                        optionsHtml: `
+                            <option value="all">All Queries</option>
+                            <option value="open">Status: Open</option>
+                            <option value="resolved">Status: Resolved</option>
+                        `
+                    }
+                ]
+            });
+
             const queriesSearchInput = document.getElementById('queries-search');
             const queriesStatusFilter = document.getElementById('filter-queries-status');
 
