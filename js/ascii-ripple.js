@@ -25,6 +25,7 @@ const createASCIIShift2D = (container, opts = {}) => {
     chars: '.,·-─~+:;=*π""┐┌┘┴┬╗╔╝╚╬╠╣╩╦║░▒▓█▄▀▌▐■!?&#$@0123456789*',
     preserveSpaces: true,
     spread: 1,
+    maxChars: Infinity,
     ...opts
   };
 
@@ -61,7 +62,22 @@ const createASCIIShift2D = (container, opts = {}) => {
 
   // Setup: wrap every character in a span to track its 2D position
   const setupChars = () => {
-      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, {
+          acceptNode: function(node) {
+              let parent = node.parentNode;
+              
+              while(parent && parent.id !== 'about-text-container' && parent.id !== 'content-container') {
+                  const tag = parent.tagName.toLowerCase();
+                  if (tag === 'pre' || tag === 'code' || tag === 'table' || tag === 'a' || tag === 'img' || tag === 'svg') {
+                      return NodeFilter.FILTER_REJECT;
+                  }
+                  parent = parent.parentNode;
+              }
+              
+              return NodeFilter.FILTER_ACCEPT;
+          }
+      }, false);
+      
       const textNodes = [];
       let node;
       while(node = walker.nextNode()) {
@@ -70,7 +86,10 @@ const createASCIIShift2D = (container, opts = {}) => {
           }
       }
       
+      let charCount = 0;
       textNodes.forEach(node => {
+          if (charCount >= cfg.maxChars) return; // Stop if we've processed too many chars
+          
           const text = node.textContent;
           const words = text.split(/(\s+)/); // split by whitespace but keep it
           const frag = document.createDocumentFragment();
@@ -80,18 +99,27 @@ const createASCIIShift2D = (container, opts = {}) => {
               if (/^\s+$/.test(word)) {
                   frag.appendChild(document.createTextNode(word));
               } else {
+                  if (charCount >= cfg.maxChars) {
+                      frag.appendChild(document.createTextNode(word));
+                      return;
+                  }
                   const wordSpan = document.createElement('span');
                   wordSpan.className = 'ascii-word';
                   wordSpan.style.display = 'inline-block';
                   wordSpan.style.whiteSpace = 'nowrap';
                   
                   for (let i = 0; i < word.length; i++) {
+                      if (charCount >= cfg.maxChars) {
+                          wordSpan.appendChild(document.createTextNode(word.substring(i)));
+                          break;
+                      }
                       const span = document.createElement('span');
                       span.className = 'ascii-char';
                       span.textContent = word[i];
                       span.style.display = 'inline-block';
                       span.style.textAlign = 'center';
                       wordSpan.appendChild(span);
+                      charCount++;
                   }
                   frag.appendChild(wordSpan);
               }
@@ -99,8 +127,14 @@ const createASCIIShift2D = (container, opts = {}) => {
           node.parentNode.replaceChild(frag, node);
       });
       
-      // Lock the width of each word to prevent layout shifting when chars scramble
+      // Lock the width of each word and character to prevent layout thrashing when chars scramble
       setTimeout(() => {
+          container.querySelectorAll('.ascii-char').forEach(span => {
+              const rect = span.getBoundingClientRect();
+              span.style.width = `${rect.width}px`;
+              // height lock too just in case
+              span.style.height = `${rect.height}px`;
+          });
           container.querySelectorAll('.ascii-word').forEach(word => {
               const rect = word.getBoundingClientRect();
               word.style.width = `${rect.width}px`;
@@ -230,12 +264,31 @@ const createASCIIShift2D = (container, opts = {}) => {
         stop();
         return;
       }
+      
+      // Calculate active wave bounds for fast culling
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (const w of waves) {
+         if (w.startX - 300 < minX) minX = w.startX - 300;
+         if (w.startX + 300 > maxX) maxX = w.startX + 300;
+         if (w.startY - 300 < minY) minY = w.startY - 300;
+         if (w.startY + 300 > maxY) maxY = w.startY + 300;
+      }
+      
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
 
       // Generate scrambled text in DOM
       charsData.forEach((c) => {
           // Dynamically compute current viewport position based on scroll
-          c.x = c.docX - window.scrollX;
-          c.y = c.docY - window.scrollY;
+          c.x = c.docX - scrollX;
+          c.y = c.docY - scrollY;
+          
+          // Fast culling
+          if (c.x < minX || c.x > maxX || c.y < minY || c.y > maxY) {
+             if (c.el.textContent !== c.origChar) c.el.textContent = c.origChar;
+             if (c.el.style.color !== '') c.el.style.color = '';
+             return;
+          }
           
           const res = calcWaveEffect(c, t);
           const targetChar = res.shouldAnim ? res.char : c.origChar;
@@ -279,6 +332,11 @@ const createASCIIShift2D = (container, opts = {}) => {
           ctx.textBaseline = 'middle';
           
           grid.forEach((c) => {
+              // Fast culling for canvas grid
+              if (c.x < minX || c.x > maxX || c.y < minY || c.y > maxY) {
+                  return;
+              }
+              
               const res = calcWaveEffect(c, t);
               if (res.shouldAnim && res.intens > 0) {
                  const fadePx = 150;
@@ -392,11 +450,8 @@ const createASCIIShift2D = (container, opts = {}) => {
   return { destroy };
 };
 
-/**
- * Initialize animation for the about container
- */
-const initASCIIShift = () => {
-  const container = document.getElementById('about-text-container');
+window.initASCIIShift = () => {
+  const container = document.getElementById('about-text-container') || document.getElementById('content-container');
   if (!container) return;
   
   createASCIIShift2D(container, { dur: 1000, spread: 1 });
@@ -404,5 +459,5 @@ const initASCIIShift = () => {
 
 // Start when DOM is fully loaded and text is injected
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initASCIIShift, 150);
+    if (window.initASCIIShift) setTimeout(window.initASCIIShift, 150);
 });

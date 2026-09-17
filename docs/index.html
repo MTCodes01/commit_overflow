@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation | Commit Overflow</title>
+    <meta name="description" content="Guides and documentation for participating in Commit Overflow.">
+    <link rel="canonical" href="https://commitoverflow.ceal.in/docs/" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+    <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+    <meta name="apple-mobile-web-app-title" content="C-O" />
+    <link rel="manifest" href="/site.webmanifest?v=20260702" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Commit Overflow" />
+    <meta property="og:url" content="https://commitoverflow.ceal.in/docs/" />
+    <meta property="og:title" content="Documentation | Commit Overflow" />
+    <meta property="og:description" content="Guides and documentation for participating in Commit Overflow." />
+    <meta property="og:image" content="https://commitoverflow.ceal.in/logo/logo-dark-clr.svg" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <link rel="preload" href="/css/style.css" as="style">
+    <link rel="preload" href="/css/components.css" as="style">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <style>
+        .public-wrapper {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+        .public-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .public-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .public-logo:hover {
+            color: white;
+            text-decoration: none;
+        }
+        .public-logo img {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: rotateY(0deg);
+        }
+        .public-logo:hover img {
+            transform: rotateY(360deg);
+        }
+        .public-logo i {
+            color: var(--accent-primary);
+            font-size: 1.75rem;
+        }
+        .docs-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .doc-link-card {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .doc-link-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        .doc-link-card i {
+            font-size: 2rem;
+            color: var(--accent-primary);
+            margin-right: 1.5rem;
+        }
+        .doc-link-content h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+        .doc-link-content p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .footer-credits {
+            text-align: center;
+            margin-top: 5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
+
+    <canvas id="bg-ascii-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;"></canvas>
+
+    <div class="public-wrapper" style="position: relative; z-index: 10;">
+        <header class="public-nav">
+            <a href="/" class="public-logo">
+                <img src="/logo/logo-light-clr.svg" alt="Logo" width="36" height="36" style="height: 36px; width: auto;">
+                <span>Commit Overflow</span>
+            </a>
+        </header>
+
+        <main class="card glass-card">
+            <h1 style="margin-bottom: 0.5rem;"><i class="ph ph-book-open-text" style="color: var(--accent-primary); vertical-align: middle;"></i> Documentation</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem;">Choose a guide below to learn how to contribute and navigate your role.</p>
+            
+            <div class="docs-list">
+                <a href="/docs/contribution_guide.html" class="doc-link-card">
+                    <i class="ph ph-git-pull-request"></i>
+                    <div class="doc-link-content">
+                        <h3>Contribution Guide</h3>
+                        <p>Learn the standard workflow for finding issues and submitting pull requests.</p>
+                    </div>
+                </a>
+                <a href="/docs/foss_introduction.html" class="doc-link-card">
+                    <i class="ph ph-globe-hemisphere-west"></i>
+                    <div class="doc-link-content">
+                        <h3>FOSS Introduction</h3>
+                        <p>An overview of Free and Open Source Software principles.</p>
+                    </div>
+                </a>
+                <a href="/docs/git_guide.html" class="doc-link-card">
+                    <i class="ph ph-git-branch"></i>
+                    <div class="doc-link-content">
+                        <h3>Git Guide</h3>
+                        <p>Master version control basics with Git commands and workflows.</p>
+                    </div>
+                </a>
+                <a href="/docs/github_guide.html" class="doc-link-card">
+                    <i class="ph ph-github-logo"></i>
+                    <div class="doc-link-content">
+                        <h3>GitHub Guide</h3>
+                        <p>Learn how to use GitHub for collaboration and code review.</p>
+                    </div>
+                </a>
+                <a href="/docs/github_setup_guide.html" class="doc-link-card">
+                    <i class="ph ph-gear"></i>
+                    <div class="doc-link-content">
+                        <h3>GitHub Setup Guide</h3>
+                        <p>Step-by-step instructions to configure your GitHub environment.</p>
+                    </div>
+                </a>
+                <a href="/docs/gitlab_guide.html" class="doc-link-card">
+                    <i class="ph ph-gitlab-logo-simple"></i>
+                    <div class="doc-link-content">
+                        <h3>GitLab Guide</h3>
+                        <p>Learn how to use GitLab for collaboration and code review.</p>
+                    </div>
+                </a>
+                <a href="/docs/gitlab_setup_guide.html" class="doc-link-card">
+                    <i class="ph ph-gear"></i>
+                    <div class="doc-link-content">
+                        <h3>GitLab Setup Guide</h3>
+                        <p>Step-by-step instructions to configure your GitLab environment.</p>
+                    </div>
+                </a>
+                <a href="/docs/mentor_guide.html" class="doc-link-card">
+                    <i class="ph ph-chalkboard-teacher"></i>
+                    <div class="doc-link-content">
+                        <h3>Mentor Guide</h3>
+                        <p>Guidelines for mentors reviewing PRs and helping participants.</p>
+                    </div>
+                </a>
+            </div>
+        </main>
+
+        <footer class="footer-credits">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-weight: 500;">
+                <a href="https://foss.ceal.in" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/FOSS-light.png" alt="FOSS CEAL Logo" class="footer-logo" style="height: 2.5rem; width: auto;"></a>
+                <span style="color: var(--text-secondary); font-size: 0.9rem;">x</span>
+                <a href="https://fossclub-lbsitw.github.io/FOSS-WEBSITE/" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/LBSITW.png" alt="FOSS LBSITW Logo" class="footer-logo" style="height: 3.5rem; width: auto;"></a>
+            </div>
+            <p>&copy; <span id="current-year"></span> Commit Overflow Community. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/ascii-ripple.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentYearElement = document.getElementById('current-year');
+            if (currentYearElement) {
+                currentYearElement.textContent = new Date().getFullYear();
+            }
+        });
+    </script>
+</body>
+</html>

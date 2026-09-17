@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Github Guide | Commit Overflow</title>
+    <meta name="description" content="Guide for Commit Overflow.">
+    <link rel="canonical" href="https://commitoverflow.ceal.in/docs/github_guide.html" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+    <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+    <meta name="apple-mobile-web-app-title" content="C-O" />
+    <link rel="manifest" href="/site.webmanifest?v=20260702" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <link rel="preload" href="/css/style.css" as="style">
+    <link rel="preload" href="/css/components.css" as="style">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-gfm-heading-id/lib/index.umd.js"></script>
+    <style>
+        .public-wrapper {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+        .public-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .public-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .public-logo:hover {
+            color: white;
+            text-decoration: none;
+        }
+        .public-logo img {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: rotateY(0deg);
+        }
+        .public-logo:hover img {
+            transform: rotateY(360deg);
+        }
+        .public-logo i {
+            color: var(--accent-primary);
+            font-size: 1.75rem;
+        }
+        .footer-credits {
+            text-align: center;
+            margin-top: 5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Custom markdown styling for the dark theme */
+        .markdown-body {
+            background-color: transparent !important;
+            color: var(--text-primary) !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+            color: white !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+        .markdown-body a {
+            color: var(--accent-primary) !important;
+        }
+        .markdown-body pre {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        .markdown-body code {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        .markdown-body table tr {
+            background-color: transparent !important;
+            border-top: 1px solid var(--border-color) !important;
+        }
+        .markdown-body table th, .markdown-body table td {
+            border: 1px solid var(--border-color) !important;
+        }
+        .markdown-body table tr:nth-child(2n) {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+        }
+        .markdown-body blockquote {
+            color: var(--text-secondary) !important;
+            border-left-color: var(--accent-primary) !important;
+        }
+    </style>
+</head>
+<body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
+
+    <canvas id="bg-ascii-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;"></canvas>
+
+    <div class="public-wrapper" style="position: relative; z-index: 10;">
+        <header class="public-nav">
+            <a href="/docs/" class="public-logo">
+                <img src="/logo/logo-light-clr.svg" alt="Logo" width="36" height="36" style="height: 36px; width: auto;">
+                <span>Commit Overflow</span>
+            </a>
+        </header>
+
+        <main class="card glass-card">
+            <div id="content-container" class="markdown-body">
+                <div class="loading-container w-full" style="display: flex; flex-direction: column; gap: 1rem; padding: 0;">
+                    <div class="skeleton skeleton-text" style="height: 1.5rem; width: 40%; border-radius: 4px;"></div>
+                    <div class="skeleton skeleton-text" style="height: 1rem; width: 100%;"></div>
+                    <div class="skeleton skeleton-text" style="height: 1rem; width: 90%;"></div>
+                    <div class="skeleton skeleton-text" style="height: 1rem; width: 95%;"></div>
+                    <div class="skeleton skeleton-text" style="height: 1rem; width: 80%;"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer-credits">
+            <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.5rem; font-weight: 500;">
+                <a href="https://foss.ceal.in" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/FOSS-light.png" alt="FOSS CEAL Logo" class="footer-logo" style="height: 2.5rem; width: auto;"></a>
+                <span style="color: var(--text-secondary); font-size: 0.9rem;">x</span>
+                <a href="https://fossclub-lbsitw.github.io/FOSS-WEBSITE/" target="_blank" style="display: flex; align-items: center; gap: 0.5rem;"><img src="/logo/LBSITW.png" alt="FOSS LBSITW Logo" class="footer-logo" style="height: 3.5rem; width: auto;"></a>
+            </div>
+            <p>&copy; <span id="current-year"></span> Commit Overflow Community. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/ascii-ripple.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentYearElement = document.getElementById('current-year');
+            if (currentYearElement) {
+                currentYearElement.textContent = new Date().getFullYear();
+            }
+
+            // Configure marked to use GFM heading IDs
+            if (typeof markedGfmHeadingId !== 'undefined') {
+                marked.use(markedGfmHeadingId.gfmHeadingId());
+            }
+
+            fetch('/docs/github_guide.md')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    document.getElementById('content-container').innerHTML = marked.parse(markdown);
+                    if (window.initASCIIShift) setTimeout(window.initASCIIShift, 150);
+                    
+                    // After rendering, check if there's a hash in the URL and scroll to it
+                    setTimeout(() => {
+                        if (window.location.hash) {
+                            const id = window.location.hash.substring(1);
+                            const element = document.getElementById(id);
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }
+                    }, 100); // Small delay to ensure DOM is updated
+                })
+                .catch(error => {
+                    console.error('Error loading markdown:', error);
+                    document.getElementById('content-container').innerHTML = '<p style="color: #ff4a4a;">Error loading guide. Please try again later.</p>';
+                });
+        });
+    </script>
+</body>
+</html>
+
