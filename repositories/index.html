@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="robots" content="noindex, nofollow">
@@ -506,13 +506,14 @@
                     }
                     
                     // Difficulty bar percentages
-                    const diff = repo.difficulty_distribution || { easy: 0, medium: 0, hard: 0 };
-                    const totalIssues = diff.easy + diff.medium + diff.hard;
-                    let easyPct = 0, medPct = 0, hardPct = 0;
+                    const diff = repo.difficulty_distribution || { documentation: 0, easy: 0, medium: 0, hard: 0 };
+                    const totalIssues = (diff.documentation||0) + (diff.easy||0) + (diff.medium||0) + (diff.hard||0);
+                    let docsPct = 0, easyPct = 0, medPct = 0, hardPct = 0;
                     if (totalIssues > 0) {
-                        easyPct = (diff.easy / totalIssues) * 100;
-                        medPct = (diff.medium / totalIssues) * 100;
-                        hardPct = (diff.hard / totalIssues) * 100;
+                        docsPct = ((diff.documentation||0) / totalIssues) * 100;
+                        easyPct = ((diff.easy||0) / totalIssues) * 100;
+                        medPct = ((diff.medium||0) / totalIssues) * 100;
+                        hardPct = ((diff.hard||0) / totalIssues) * 100;
                     }
 
                     let platformIcon = '<i class="ph ph-git-fork text-primary"></i>';
@@ -542,20 +543,23 @@
                             <span class="text-secondary text-xs">Issue Difficulty Spread</span>
                             <div class="difficulty-bar">
                                 ${(()=>{
+                                    const docsS = Components.getTagStyles('docs');
                                     const easyS = Components.getTagStyles('easy');
                                     const medS = Components.getTagStyles('medium');
                                     const hardS = Components.getTagStyles('hard');
                                     return `
-                                        <div class="diff-segment" style="width: ${totalIssues > 0 ? easyPct : 33.3}%; background-color: ${easyS.text};"></div>
-                                        <div class="diff-segment" style="width: ${totalIssues > 0 ? medPct : 33.3}%; background-color: ${medS.text};"></div>
-                                        <div class="diff-segment" style="width: ${totalIssues > 0 ? hardPct : 33.3}%; background-color: ${hardS.text};"></div>
+                                        <div class="diff-segment" style="width: ${totalIssues > 0 ? docsPct : 25}%; background-color: ${docsS.text};"></div>
+                                        <div class="diff-segment" style="width: ${totalIssues > 0 ? easyPct : 25}%; background-color: ${easyS.text};"></div>
+                                        <div class="diff-segment" style="width: ${totalIssues > 0 ? medPct : 25}%; background-color: ${medS.text};"></div>
+                                        <div class="diff-segment" style="width: ${totalIssues > 0 ? hardPct : 25}%; background-color: ${hardS.text};"></div>
                                     `;
                                 })()}
                             </div>
                             <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                                <span>Easy: ${diff.easy}</span>
-                                <span>Medium: ${diff.medium}</span>
-                                <span>Hard: ${diff.hard}</span>
+                                <span>Docs: ${diff.documentation||0}</span>
+                                <span>Easy: ${diff.easy||0}</span>
+                                <span>Medium: ${diff.medium||0}</span>
+                                <span>Hard: ${diff.hard||0}</span>
                             </div>
                         </div>
                     `;
