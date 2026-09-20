@@ -304,6 +304,8 @@ const NotificationService = (() => {
 
   async function _handleDismiss(id) {
     const item = document.getElementById(`notif-item-${id}`);
+    // Cache the read state BEFORE animation removes/mutates the element
+    const wasUnread = item && item.classList.contains('unread');
     // Animate out
     if (item) {
       item.style.transition = 'opacity 0.2s, max-height 0.3s';
@@ -313,7 +315,7 @@ const NotificationService = (() => {
       setTimeout(() => item.remove(), 300);
     }
     // Update count if it was unread
-    if (item && item.classList.contains('unread')) {
+    if (wasUnread) {
       _unreadCount = Math.max(0, _unreadCount - 1);
       _updateBadge(_unreadCount);
     }
