@@ -1,5 +1,11 @@
 {
-  "title_sponsors": [],
+  "title_sponsors": [
+    {
+      "name": "<span style='color: #6d187c; font-weight: 700; font-family: Poppins, sans-serif; letter-spacing: .3px;'>Clin</span><span style='color: #a84eb7; font-weight: 700; font-family: Poppins, sans-serif; letter-spacing: .3px;'>Unity</span>",
+      "logo": "/logo/sponsors/cu-bg.png",
+      "link": "https://www.clinunity.com/"
+    }
+  ],
   "gold_sponsors": [],
   "silver_sponsors": [],
   "community_sponsors": []

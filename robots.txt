@@ -1,13 +1,14 @@
 User-agent: *
 Allow: /
-Disallow: /dashboard.html
-Disallow: /dashboard-about.html
-Disallow: /issues.html
-Disallow: /profile.html
-Disallow: /prs.html
-Disallow: /queries.html
-Disallow: /repositories.html
-Disallow: /logs.html
-Disallow: /onboarding.html
+Disallow: /admin/
+Disallow: /dashboard-about/
+Disallow: /issues/
+Disallow: /profile/
+Disallow: /prs/
+Disallow: /queries/
+Disallow: /repositories/
+Disallow: /logs/
+Disallow: /onboarding/
+Disallow: /notifications/
 
 Sitemap: https://commitoverflow.ceal.in/sitemap.xml
