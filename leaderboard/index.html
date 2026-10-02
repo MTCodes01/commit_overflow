@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -450,7 +450,7 @@
 
                     <div class="unified-search-filter">
                         <i class="ph ph-sort-ascending unified-search-filter-icon"></i>
-                        <select id="sort-select" class="unified-search-select">
+                        <select id="sort-select" aria-label="Sort options" class="unified-search-select">
                             <option value="highest">Sort: Score (Highest)</option>
                             <option value="lowest">Sort: Score (Lowest)</option>
                         </select>
@@ -460,7 +460,7 @@
 
                     <div class="unified-search-filter">
                         <i class="ph ph-graduation-cap unified-search-filter-icon"></i>
-                        <select id="college-select" class="unified-search-select">
+                        <select id="college-select" aria-label="College filter" class="unified-search-select">
                             <option value="all">Filter: All Colleges</option>
                         </select>
                     </div>
@@ -851,7 +851,7 @@
                 if (entry.avatar_url) {
                     avatarContainer.style.overflow = 'hidden';
                     avatarContainer.style.padding = '0';
-                    avatarContainer.innerHTML = `<img src="${entry.avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+                    avatarContainer.innerHTML = `<img src="${entry.avatar_url}" style="width:100%;height:100%;object-fit:cover;" alt="${entry.github_username}'s avatar">`;
                 } else {
                     avatarContainer.removeAttribute('style');
                     avatarContainer.innerHTML = `<i class="ph ph-user"></i>`;
