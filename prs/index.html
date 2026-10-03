@@ -253,30 +253,7 @@
             const prsListContainer = document.getElementById('prs-list');
 
             const renderPRs = () => {
-                const searchQuery = searchInput.value.toLowerCase().trim();
-                const selectedRepo = repoFilter.value;
-
-                let filtered = allPRs.filter(pr => {
-                    if (activeTab === 'pending') {
-                        return pr.status === 'under_review' || pr.status === 'approved' || pr.status === 'needs_changes' || pr.status === 'invalid_assignment';
-                    } else if (activeTab === 'merged') {
-                        return pr.status === 'merged';
-                    }
-                    return false;
-                });
-
-                if (selectedRepo) {
-                    filtered = filtered.filter(pr => pr.repo_name === selectedRepo);
-                }
-
-                if (searchQuery) {
-                    filtered = filtered.filter(pr => 
-                        pr.github_pr_id.toString().includes(searchQuery) ||
-                        pr.repo_name.toLowerCase().includes(searchQuery) ||
-                        (pr.title && pr.title.toLowerCase().includes(searchQuery)) ||
-                        (pr.issue_title && pr.issue_title.toLowerCase().includes(searchQuery))
-                    );
-                }
+                let filtered = allPRs;
 
                 if (filtered.length === 0) {
                     prsListContainer.innerHTML = `
@@ -368,11 +345,23 @@
 
             statusFilter.addEventListener('change', (e) => {
                 activeTab = e.target.value;
-                renderPRs();
+                currentPage = 1;
+                loadPRs();
             });
 
-            searchInput.addEventListener('input', renderPRs);
-            repoFilter.addEventListener('change', renderPRs);
+            let searchTimer;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    currentPage = 1;
+                    loadPRs();
+                }, 400);
+            });
+            
+            repoFilter.addEventListener('change', () => {
+                currentPage = 1;
+                loadPRs();
+            });
 
             let currentPage = 1;
             let currentLimit = 10;
@@ -382,22 +371,26 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     const queryUserId = urlParams.get('user_id') || 'me';
                     
-                    const res = await API.fetchUserPRs(queryUserId, currentPage, currentLimit);
+                    const searchQuery = searchInput.value.trim();
+                    const selectedRepo = repoFilter.value;
+
+                    const res = await API.fetchUserPRs(queryUserId, currentPage, currentLimit, searchQuery, activeTab, selectedRepo);
                     allPRs = res.data || [];
 
-                    // Populate repositories filter option list
-                    const repoNames = {};
-                    allPRs.forEach(pr => {
-                        repoNames[pr.repo_name] = true;
-                    });
-                    
-                    repoFilter.innerHTML = '<option value="">All Repositories</option>';
-                    Object.keys(repoNames).sort().forEach(name => {
-                        const opt = document.createElement('option');
-                        opt.value = name;
-                        opt.textContent = name;
-                        repoFilter.appendChild(opt);
-                    });
+                    // Populate repositories filter option list only if it's empty to preserve selection
+                    if (repoFilter.options.length <= 1) {
+                        const repoNames = {};
+                        allPRs.forEach(pr => {
+                            repoNames[pr.repo_name] = true;
+                        });
+                        
+                        Object.keys(repoNames).sort().forEach(name => {
+                            const opt = document.createElement('option');
+                            opt.value = name;
+                            opt.textContent = name;
+                            repoFilter.appendChild(opt);
+                        });
+                    }
 
                     if (queryUserId !== 'me') {
                         document.getElementById('prs-page-title').textContent = "User's PRs";

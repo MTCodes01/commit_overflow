@@ -269,21 +269,12 @@
             const issuesListContainer = document.getElementById('issues-list');
 
             const renderIssues = () => {
-                const searchQuery = searchInput.value.toLowerCase().trim();
                 const selectedLabel = labelFilter.value;
 
-                // The backend already filtered by activeTab, so we just do search and label here
+                // Search is handled by backend, so we only filter by label here (client-side)
                 let filtered = allIssues;
 
-                // 2. Filter by Search Query
-                if (searchQuery) {
-                    filtered = filtered.filter(issue => 
-                        issue.title.toLowerCase().includes(searchQuery) ||
-                        issue.body.toLowerCase().includes(searchQuery)
-                    );
-                }
-
-                // 3. Filter by Label
+                // Filter by Label
                 if (selectedLabel) {
                     filtered = filtered.filter(issue => 
                         issue.labels && issue.labels.includes(selectedLabel)
@@ -403,7 +394,15 @@
                 loadIssues();
             });
 
-            searchInput.addEventListener('input', renderIssues);
+            let searchTimer;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    currentPage = 1;
+                    loadIssues();
+                }, 400);
+            });
+
             labelFilter.addEventListener('change', renderIssues);
 
             let currentPage = 1;
@@ -414,18 +413,20 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     const queryUserId = urlParams.get('user_id') || 'me';
                     
-                    const res = await API.fetchUserIssues(queryUserId, currentPage, currentLimit, activeTab);
+                    const searchQuery = searchInput.value.trim();
+                    const res = await API.fetchUserIssues(queryUserId, currentPage, currentLimit, activeTab, searchQuery);
                     allIssues = res.data.issues || [];
                     allLabels = res.data.labels || [];
 
-                    // Populate label filter
-                    labelFilter.innerHTML = '<option value="">All Labels</option>';
-                    allLabels.sort().forEach(lbl => {
-                        const opt = document.createElement('option');
-                        opt.value = lbl;
-                        opt.textContent = lbl;
-                        labelFilter.appendChild(opt);
-                    });
+                    // Populate label filter only if it's empty to preserve selection
+                    if (labelFilter.options.length <= 1) {
+                        allLabels.sort().forEach(lbl => {
+                            const opt = document.createElement('option');
+                            opt.value = lbl;
+                            opt.textContent = lbl;
+                            labelFilter.appendChild(opt);
+                        });
+                    }
 
                     if (queryUserId !== 'me') {
                         document.getElementById('issues-page-title').textContent = "User's Issues";

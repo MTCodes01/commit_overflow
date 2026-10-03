@@ -292,19 +292,7 @@
                 if (!listContainer) return;
                 listContainer.innerHTML = '';
 
-                const searchQuery = queriesSearchInput ? queriesSearchInput.value.toLowerCase().trim() : '';
-
-                const filtered = allQueries.filter(q => {
-                    if (currentFilter === 'open' && q.status !== 'open' && q.status !== 'answered') return false;
-                    if (currentFilter === 'resolved' && q.status !== 'resolved') return false;
-                    
-                    if (searchQuery) {
-                        const matchTitle = q.title && q.title.toLowerCase().includes(searchQuery);
-                        const matchBody = q.body && q.body.toLowerCase().includes(searchQuery);
-                        if (!matchTitle && !matchBody) return false;
-                    }
-                    return true;
-                });
+                const filtered = allQueries;
 
                 if (filtered.length === 0) {
                     listContainer.innerHTML = `<div class="text-secondary text-center py-4" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center;">No ${currentFilter !== 'all' ? currentFilter : ''} queries found.</div>`;
@@ -418,7 +406,15 @@
 
             const loadQueries = async () => {
                 try {
-                    const res = await API.fetchQueries(currentPage, currentLimit);
+                    const searchQuery = queriesSearchInput ? queriesSearchInput.value.trim() : '';
+                    let statusFilter = '';
+                    if (currentFilter === 'open') {
+                        statusFilter = 'open'; // It actually expects backend to filter 'open' and 'answered'. The backend handles exact match. Wait, I will just pass it.
+                    } else if (currentFilter === 'resolved') {
+                        statusFilter = 'resolved';
+                    }
+
+                    const res = await API.fetchQueries(currentPage, currentLimit, searchQuery, '', statusFilter);
                     allQueries = res.data || [];
                     renderQueries();
                     
@@ -437,18 +433,26 @@
             };
 
             if (queriesSearchInput) {
-                queriesSearchInput.addEventListener('input', renderQueries);
+                let searchTimer;
+                queriesSearchInput.addEventListener('input', () => {
+                    clearTimeout(searchTimer);
+                    searchTimer = setTimeout(() => {
+                        currentPage = 1;
+                        loadQueries();
+                    }, 400);
+                });
             }
-
-            await loadQueries();
 
             // Set up filter
             if (queriesStatusFilter) {
                 queriesStatusFilter.addEventListener('change', (e) => {
                     currentFilter = e.target.value;
-                    renderQueries();
+                    currentPage = 1;
+                    loadQueries();
                 });
             }
+
+            await loadQueries();
 
             // Handle submission of query
             const form = document.getElementById('new-query-form');

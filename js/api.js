@@ -220,8 +220,12 @@ const API = {
     return this.request('/logs');
   },
 
-  async fetchQueries(page = 1, limit = 10) {
-    return this.request(`/queries?page=${page}&limit=${limit}`);
+  async fetchQueries(page = 1, limit = 10, search = '', category = '', status = '') {
+    let url = `/queries?page=${page}&limit=${limit}`;
+    if (search) url += `&q=${encodeURIComponent(search)}`;
+    if (category) url += `&category=${encodeURIComponent(category)}`;
+    if (status) url += `&status=${encodeURIComponent(status)}`;
+    return this.request(url);
   },
 
   async createQuery(title, body, category) {
@@ -244,12 +248,18 @@ const API = {
     return res;
   },
 
-  async fetchUserIssues(userId = 'me', page = 1, limit = 10, tab = 'open') {
-    return this.request(`/users/${userId}/issues?page=${page}&limit=${limit}&tab=${tab}`);
+  async fetchUserIssues(userId = 'me', page = 1, limit = 10, tab = 'open', search = '') {
+    let url = `/users/${userId}/issues?page=${page}&limit=${limit}&tab=${tab}`;
+    if (search) url += `&q=${encodeURIComponent(search)}`;
+    return this.request(url);
   },
 
-  async fetchUserPRs(userId = 'me', page = 1, limit = 10) {
-    return this.request(`/users/${userId}/prs?page=${page}&limit=${limit}`);
+  async fetchUserPRs(userId = 'me', page = 1, limit = 10, search = '', status = '', repo = '') {
+    let url = `/users/${userId}/prs?page=${page}&limit=${limit}`;
+    if (search) url += `&q=${encodeURIComponent(search)}`;
+    if (status) url += `&status=${encodeURIComponent(status)}`;
+    if (repo) url += `&repo=${encodeURIComponent(repo)}`;
+    return this.request(url);
   },
 
   async replyQuery(queryId, message) {
