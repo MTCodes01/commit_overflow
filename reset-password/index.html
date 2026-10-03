@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set New Password | Commit Overflow</title>
+    <meta name="description" content="Set a new password for your Commit Overflow account">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+    <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+    <meta name="apple-mobile-web-app-title" content="C-O" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
+
+    <div class="auth-container">
+        <div class="card auth-card glass-card">
+            <div class="auth-logo">
+                <img src="/logo/logo-light-clr.svg" alt="Logo" width="48" height="48" style="height: 48px; width: auto; margin-bottom: 0.5rem;"><br>
+                Commit Overflow
+            </div>
+            <h2 class="text-center mb-3">Set New Password</h2>
+
+            <form id="reset-password-form">
+                <div class="form-group mb-3">
+                    <label class="form-label" for="password">New Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Min. 6 characters" required minlength="6">
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label class="form-label" for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" class="form-control" placeholder="Retype password" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block mb-2" id="submit-btn">
+                    Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (!token) {
+                Components.showToast("Invalid or missing reset token.", "error");
+                document.getElementById('submit-btn').disabled = true;
+                return;
+            }
+
+            const form = document.getElementById('reset-password-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+                    const btn = document.getElementById('submit-btn');
+                    
+                    if (password !== confirmPassword) {
+                        Components.showToast("Passwords do not match.", "error");
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        Components.showToast("Password must be at least 6 characters.", "error");
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btn.textContent = "Updating...";
+                    
+                    try {
+                        await API.resetPassword(token, password);
+                        Components.showToast("Password updated successfully!", "success");
+                        setTimeout(() => {
+                            window.location.href = '/login/';
+                        }, 1500);
+                    } catch (err) {
+                        Components.showToast(err.message || "An error occurred. Please try again.", "error");
+                        btn.disabled = false;
+                        btn.textContent = "Update Password";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

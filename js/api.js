@@ -133,10 +133,10 @@ const API = {
     return data;
   },
 
-  async register(name, githubUsername, gitlabUsername, password, college) {
+  async register(name, githubUsername, gitlabUsername, password, college, email, phone) {
     const data = await this.request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ name, github_username: githubUsername, gitlab_username: gitlabUsername, password, college })
+      body: JSON.stringify({ name, github_username: githubUsername, gitlab_username: gitlabUsername, password, college, email, phone })
     });
     if (data && data.token) {
       localStorage.setItem('authToken', data.token);
@@ -151,6 +151,20 @@ const API = {
     localStorage.removeItem('currentUser');
     sessionStorage.clear(); // Clear cached data
     window.location.href = '/';
+  },
+
+  async forgotPassword(email) {
+    return this.request('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+  },
+
+  async resetPassword(token, newPassword) {
+    return this.request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, new_password: newPassword })
+    });
   },
 
   isAuthenticated() {
@@ -168,10 +182,10 @@ const API = {
     return user;
   },
 
-  async updateProfile(name, college, technologies, githubUsername, gitlabUsername) {
+  async updateProfile(name, college, technologies, githubUsername, gitlabUsername, email, phone) {
     const user = await this.request('/users/me', {
       method: 'PATCH',
-      body: JSON.stringify({ name, college, technologies, github_username: githubUsername, gitlab_username: gitlabUsername })
+      body: JSON.stringify({ name, college, technologies, github_username: githubUsername, gitlab_username: gitlabUsername, email, phone })
     });
     localStorage.setItem('currentUser', JSON.stringify(user));
     sessionStorage.removeItem('cache_/users/me');

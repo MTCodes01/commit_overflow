@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="robots" content="noindex, nofollow">
@@ -492,6 +492,16 @@
                     <label class="form-label">Display Name</label>
                     <input type="text" id="input-display-name" class="form-control" value="" placeholder="Display Name" required>
                 </div>
+                <div class="grid grid-cols-2 md:grid-cols-1 gap-2 mb-2">
+                    <div class="form-group">
+                        <label class="form-label">Email <span class="text-error">*</span></label>
+                        <input type="email" id="input-email" class="form-control" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number <span class="text-error">*</span></label>
+                        <input type="tel" id="input-phone" class="form-control" placeholder="+1234567890" required>
+                    </div>
+                </div>
                 <div class="form-group college-autocomplete-wrapper">
                     <label class="form-label">College Name</label>
                     <input
@@ -746,6 +756,20 @@
                     if (gitHubInput) gitHubInput.value = user.github_username || '';
                     const gitLabInput = document.getElementById('input-gitlab-username');
                     if (gitLabInput) gitLabInput.value = user.gitlab_username || '';
+
+                    const emailInput = document.getElementById('input-email');
+                    if (emailInput) emailInput.value = user.email || '';
+                    const phoneInput = document.getElementById('input-phone');
+                    if (phoneInput) phoneInput.value = user.phone || '';
+
+                    if (!isOtherUser && (!user.email || !user.phone)) {
+                        // Force user to update email and phone
+                        const modal = document.getElementById('edit-modal');
+                        modal.classList.add('active');
+                        document.getElementById('close-modal-btn').style.display = 'none';
+                        document.getElementById('cancel-modal-btn').style.display = 'none';
+                        Components.showToast("Please provide your email and phone number to continue.", "warning");
+                    }
                     
                     // Render Profile details including GitHub, GitLab, and Discord verified status
                     const githubDetails = document.querySelector('.profile-details');
@@ -1141,6 +1165,8 @@
                     const glInput = document.getElementById('input-gitlab-username');
                     const githubUsername = ghInput ? ghInput.value.trim() : '';
                     const gitlabUsername = glInput ? glInput.value.trim() : '';
+                    const email = document.getElementById('input-email').value.trim();
+                    const phone = document.getElementById('input-phone').value.trim();
 
                     if (!githubUsername && !gitlabUsername) {
                         Components.showToast("At least one username (GitHub or GitLab) is required.", "error");
@@ -1159,9 +1185,11 @@
                     }
                     
                     try {
-                        await API.updateProfile(name, college, selectedTech, githubUsername, gitlabUsername);
+                        await API.updateProfile(name, college, selectedTech, githubUsername, gitlabUsername, email, phone);
                         Components.showToast("Profile updated successfully!", "success");
                         document.getElementById('edit-modal').classList.remove('active');
+                        document.getElementById('close-modal-btn').style.display = 'block';
+                        document.getElementById('cancel-modal-btn').style.display = 'block';
                         
                         // Reload details
                         await loadProfileDetails();

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password | Commit Overflow</title>
+    <meta name="description" content="Reset your password for Commit Overflow">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260702" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260702" />
+    <link rel="shortcut icon" href="/favicon.ico?v=20260702" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260702" />
+    <meta name="apple-mobile-web-app-title" content="C-O" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true') document.body.classList.add('sidebar-collapsed');</script>
+
+    <div class="auth-container">
+        <div class="card auth-card glass-card">
+            <div class="auth-logo">
+                <img src="/logo/logo-light-clr.svg" alt="Logo" width="48" height="48" style="height: 48px; width: auto; margin-bottom: 0.5rem;"><br>
+                Commit Overflow
+            </div>
+            <h2 class="text-center mb-3">Reset Password</h2>
+            <p class="text-secondary text-center mb-4" style="font-size: 0.9rem;">Enter your email address and we'll send you a link to reset your password.</p>
+
+            <form id="forgot-password-form">
+                <div class="form-group mb-4">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="your@email.com" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block mb-2" id="submit-btn">
+                    Send Reset Link
+                </button>
+
+                <div class="text-center mt-3">
+                    <a href="/login/">Back to Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('forgot-password-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value.trim();
+                    const btn = document.getElementById('submit-btn');
+                    
+                    btn.disabled = true;
+                    btn.textContent = "Sending...";
+                    
+                    try {
+                        const res = await API.forgotPassword(email);
+                        // In dev mode we get the token in the response so we can easily test
+                        if (res && res.token) {
+                            Components.showToast("Reset link generated! (Check console for dev token)", "success");
+                            console.log(`[DEV ONLY] Reset token for ${email}: ${res.token}`);
+                            console.log(`[DEV ONLY] Reset Link: ${window.location.origin}/reset-password/?token=${res.token}`);
+                        } else {
+                            Components.showToast("If this email is registered, a password reset link has been sent.", "success");
+                        }
+                    } catch (err) {
+                        Components.showToast(err.message || "An error occurred. Please try again.", "error");
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = "Send Reset Link";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
