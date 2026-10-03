@@ -455,6 +455,15 @@
 						`;
 						tbody.appendChild(tr);
 					}
+				} else if (tbody) {
+					tbody.innerHTML = `
+						<tr>
+							<td colspan="4" style="text-align: center; padding: 3rem 0; color: var(--text-secondary); font-size: 0.95rem;">
+								<i class="ph ph-chart-bar" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; opacity: 0.5;"></i>
+								No data available yet
+							</td>
+						</tr>
+					`;
 				}
 			} catch (err) {
 				console.error("Error loading preview leaderboard", err);
