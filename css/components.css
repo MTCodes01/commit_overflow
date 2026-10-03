@@ -1078,6 +1078,27 @@ tr:hover {
   font-weight: 500;
 }
 
+@media (max-width: 768px) {
+  .floating-pagination-wrapper {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 95vw;
+    bottom: 16px;
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .floating-pagination-wrapper:hover {
+    transform: translate(-50%, -2px);
+  }
+
+  .pagination-label {
+    display: none;
+  }
+}
+
 /* Unified Search Bar */
 .search-control-bar {
     background: var(--bg-tertiary);
