@@ -960,10 +960,12 @@
                     } catch(e) {
                         console.error('Error calculating streak', e);
                     }
+                    const curDisplay = Math.max(0, currentStreak - 1);
+                    const longDisplay = Math.max(0, longestStreak - 1);
                     const curStreakEl = document.getElementById('stat-current-streak');
-                    if (curStreakEl) curStreakEl.textContent = currentStreak + (currentStreak === 1 ? ' day' : ' days');
+                    if (curStreakEl) curStreakEl.textContent = curDisplay + (curDisplay === 1 ? ' day' : ' days');
                     const longestStreakEl = document.getElementById('stat-longest-streak');
-                    if (longestStreakEl) longestStreakEl.textContent = longestStreak + (longestStreak === 1 ? ' day' : ' days');
+                    if (longestStreakEl) longestStreakEl.textContent = longDisplay + (longDisplay === 1 ? ' day' : ' days');
 
                     // Render Heatmap
                     const heatmapGrid = document.getElementById('heatmap-grid');
