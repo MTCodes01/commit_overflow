@@ -808,40 +808,7 @@
 
 		syncFundingData();
 
-		// Copy UPI ID functionality
-		const copyBtn = document.getElementById('copyBtn');
-		const upiIdText = document.getElementById('upiIdText').innerText;
-		const copyIcon = document.getElementById('copyIcon');
-		const copyBtnText = document.getElementById('copyBtnText');
 
-		copyBtn.addEventListener('click', async () => {
-			try {
-				await navigator.clipboard.writeText(upiIdText);
-				copyIcon.className = 'ph ph-check';
-				copyBtnText.innerText = 'Copied!';
-				copyBtn.style.backgroundColor = '#10B981';
-				copyBtn.style.color = '#0A0A0A';
-
-				setTimeout(() => {
-					copyIcon.className = 'ph ph-copy';
-					copyBtnText.innerText = 'Copy';
-				}, 2000);
-			} catch (err) {
-				const tempInput = document.createElement('input');
-				tempInput.value = upiIdText;
-				document.body.appendChild(tempInput);
-				tempInput.select();
-				document.execCommand('copy');
-				document.body.removeChild(tempInput);
-
-				copyIcon.className = 'ph ph-check';
-				copyBtnText.innerText = 'Copied!';
-				setTimeout(() => {
-					copyIcon.className = 'ph ph-copy';
-					copyBtnText.innerText = 'Copy';
-				}, 2000);
-			}
-		});
 	</script>
 
 </body>

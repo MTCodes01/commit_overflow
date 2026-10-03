@@ -76,33 +76,7 @@ const Components = {
 
     document.body.insertAdjacentHTML("afterbegin", sidebarHtml);
 
-    // Inject trial mode banner at the absolute top of the body
-    const trialBannerHtml = `
-      <div id="trial-mode-banner" style="position: relative; top: 0; left: 0; width: 100%; overflow: hidden; background: rgba(255, 166, 0, 0.15); border-bottom: 1px solid rgba(255, 166, 0, 0.3); color: #ffb84d; padding: 0.75rem 0; font-weight: 500; font-size: 0.95rem; z-index: 10;">
-        <div class="marquee-text">
-            🚧 <strong>Trial Mode Active:</strong> The platform is currently in trial mode. The official event and leaderboard scoring begins on <strong>October 4th</strong>.
-        </div>
-      </div>
-    `;
-    
-    if (!document.getElementById("trial-mode-banner")) {
-        document.body.insertAdjacentHTML("afterbegin", trialBannerHtml);
-        
-        const wrapper = document.querySelector(".app-wrapper") || document.body;
-        const banner = document.getElementById("trial-mode-banner");
-        if (wrapper && banner) {
-            // Force enough height so even short pages can scroll past the banner
-            wrapper.style.minHeight = `calc(100vh + ${banner.offsetHeight}px)`;
-        }
-        
-        // Auto-scroll past the banner so it's hidden by default
-        setTimeout(() => {
-            if (window.scrollY === 0) {
-                const banner = document.getElementById("trial-mode-banner");
-                window.scrollTo({ top: banner.offsetHeight, behavior: 'instant' });
-            }
-        }, 10);
-    }
+
 
     // Add mobile header if not exists
     if (!document.getElementById("mobile-header")) {
