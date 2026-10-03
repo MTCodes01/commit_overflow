@@ -456,7 +456,7 @@
                         if (selectedPlatform === 'gitlab') matchPlatform = !!repo.gitlab_url;
                     }
 
-                    return matchQuery && matchLang && matchPlatform;
+                    return matchQuery && matchLang && matchPlatform && repo.is_active !== false;
                 });
 
                 // Apply Sorting
