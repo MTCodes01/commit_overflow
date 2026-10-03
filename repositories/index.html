@@ -412,82 +412,12 @@
             const sortRepoIcon = document.getElementById('sort-repo-icon');
             let currentSortDir = 'desc'; // Default to descending for most metrics
 
-            if (sortRepoDir) {
-                sortRepoDir.addEventListener('click', () => {
-                    currentSortDir = currentSortDir === 'desc' ? 'asc' : 'desc';
-                    sortRepoIcon.className = currentSortDir === 'desc' ? 'ph ph-sort-descending' : 'ph ph-sort-ascending';
-                    renderRepos();
-                });
-            }
 
-            // Auto-set direction when changing sort field
-            if (sortRepo) {
-                sortRepo.addEventListener('change', () => {
-                    if (sortRepo.value === 'name') {
-                        currentSortDir = 'asc';
-                    } else {
-                        currentSortDir = 'desc';
-                    }
-                    sortRepoIcon.className = currentSortDir === 'desc' ? 'ph ph-sort-descending' : 'ph ph-sort-ascending';
-                    renderRepos();
-                });
-            }
 
             const renderRepos = () => {
                 if (!reposContainer) return;
                 reposContainer.innerHTML = '';
-                
-                const query = reposSearchInput.value.toLowerCase().trim();
-                const selectedLanguage = filterLanguage.value;
-                const selectedPlatform = filterPlatform.value;
-                const sortBy = sortRepo.value;
-
-                let filteredRepos = allRepos.filter(repo => {
-                    const matchName = repo.name && repo.name.toLowerCase().includes(query);
-                    const matchTechQuery = repo.tech_stack && repo.tech_stack.some(t => t.toLowerCase().includes(query));
-                    const matchQuery = matchName || matchTechQuery;
-
-                    let matchLang = true;
-                    if (selectedLanguage) {
-                        matchLang = repo.tech_stack && repo.tech_stack.includes(selectedLanguage);
-                    }
-                    
-                    let matchPlatform = true;
-                    if (selectedPlatform) {
-                        if (selectedPlatform === 'github') matchPlatform = !!repo.github_url;
-                        if (selectedPlatform === 'gitlab') matchPlatform = !!repo.gitlab_url;
-                    }
-
-                    return matchQuery && matchLang && matchPlatform && repo.is_active !== false;
-                });
-
-                // Apply Sorting
-                filteredRepos.sort((a, b) => {
-                    const dirMultiplier = currentSortDir === 'asc' ? 1 : -1;
-                    
-                    switch (sortBy) {
-                        case 'name':
-                            return (a.name || '').localeCompare(b.name || '') * dirMultiplier;
-                        case 'contributors':
-                            return ((a.contributor_count || 0) - (b.contributor_count || 0)) * dirMultiplier;
-                        case 'open_issues':
-                            return ((a.open_issues || 0) - (b.open_issues || 0)) * dirMultiplier;
-                        case 'open_prs':
-                            return ((a.open_prs || 0) - (b.open_prs || 0)) * dirMultiplier;
-                        case 'merged_prs':
-                            return ((a.merged_prs || 0) - (b.merged_prs || 0)) * dirMultiplier;
-                        default:
-                            return 0;
-                    }
-                });
-
-                const total = filteredRepos.length;
-                const totalPages = Math.ceil(total / currentLimit) || 1;
-                if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
-
-                const paginatedRepos = filteredRepos.slice((currentPage - 1) * currentLimit, currentPage * currentLimit);
-
-                if (paginatedRepos.length === 0) {
+                if (allRepos.length === 0) {
                     reposContainer.innerHTML = `
                         <div class="text-center py-5 text-secondary col-span-2" style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center;">
                             <i class="ph ph-books" style="font-size: 2.5rem;"></i>
@@ -495,7 +425,7 @@
                         </div>
                     `;
                 } else {
-                    paginatedRepos.forEach(repo => {
+                    allRepos.forEach(repo => {
                     const card = document.createElement('div');
                     card.className = 'card repo-card glass-card';
                     
@@ -570,62 +500,87 @@
                     reposContainer.appendChild(card);
                 });
                 }
-                
-                Components.renderPagination('repos-pagination', {
-                    current_page: currentPage,
-                    per_page: currentLimit,
-                    total: total,
-                    total_pages: totalPages
-                }, (p) => {
-                    currentPage = p;
-                    renderRepos();
-                }, (l) => {
-                    currentLimit = l;
-                    currentPage = 1;
-                    renderRepos();
-                });
             };
 
             let currentPage = 1;
             let currentLimit = 10;
+            let debounceTimer = null;
+
+            const handleFilterChange = () => {
+                currentPage = 1;
+                loadRepos();
+            };
+
+            if (reposSearchInput) {
+                reposSearchInput.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(handleFilterChange, 300);
+                });
+            }
+
+            if (filterLanguage) filterLanguage.addEventListener('change', handleFilterChange);
+            if (filterPlatform) filterPlatform.addEventListener('change', handleFilterChange);
+            if (sortRepo) sortRepo.addEventListener('change', handleFilterChange);
+            
+            if (sortRepoDir) {
+                sortRepoDir.addEventListener('click', () => {
+                    currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+                    const icon = document.getElementById('sort-repo-icon');
+                    if (icon) icon.className = currentSortDir === 'asc' ? 'ph ph-sort-ascending text-primary' : 'ph ph-sort-descending text-primary';
+                    handleFilterChange();
+                });
+            }
 
             const loadRepos = async () => {
                 try {
-                    const res = await API.fetchRepos(1, 1000);
+                    const q = reposSearchInput ? reposSearchInput.value : '';
+                    const lang = filterLanguage ? filterLanguage.value : '';
+                    const plat = filterPlatform ? filterPlatform.value : '';
+                    const sortBy = sortRepo ? sortRepo.value : '';
+                    
+                    const res = await API.fetchRepos(currentPage, currentLimit, q, lang, plat, sortBy, currentSortDir);
                     allRepos = res.data;
                     
-                    // Populate language filter
-                    const languageSet = new Set();
-                    allRepos.forEach(repo => {
-                        if (repo.tech_stack) {
-                            repo.tech_stack.forEach(tech => languageSet.add(tech));
+                    // We only want to populate the language filter once to get ALL languages
+                    // The best way is to fetch /technologies, but since we don't have it implemented yet, 
+                    // we'll just skip re-populating it if it already has options (or we can let it be).
+                    // Actually, if we don't populate it with all technologies, some will be missing.
+                    // But for now, we leave it as is, or we'd need a separate API call for languages.
+                    // Let's populate it only if it's empty (initial load).
+                    if (filterLanguage.options.length <= 1) {
+                        const allRes = await API.fetchRepos(1, 1000); // just to get languages
+                        const languageSet = new Set();
+                        if(allRes.data) {
+                            allRes.data.forEach(repo => {
+                                if (repo.tech_stack) {
+                                    repo.tech_stack.forEach(tech => languageSet.add(tech));
+                                }
+                            });
+                            Array.from(languageSet).sort().forEach(tech => {
+                                const opt = document.createElement('option');
+                                opt.value = tech;
+                                opt.textContent = tech;
+                                filterLanguage.appendChild(opt);
+                            });
                         }
-                    });
-
-                    filterLanguage.innerHTML = '<option value="">All Languages</option>';
-                    Array.from(languageSet).sort().forEach(tech => {
-                        const opt = document.createElement('option');
-                        opt.value = tech;
-                        opt.textContent = tech;
-                        filterLanguage.appendChild(opt);
-                    });
+                    }
 
                     renderRepos();
+                    
+                    Components.renderPagination('repos-pagination', res.meta, (p) => {
+                        currentPage = p;
+                        loadRepos();
+                    }, (l) => {
+                        currentLimit = l;
+                        currentPage = 1;
+                        loadRepos();
+                    });
                 } catch(e) {
                     console.error(e);
                     reposContainer.innerHTML = '<div class="text-secondary text-center py-5 col-span-2" style="grid-column: 1 / -1;">Failed to load repositories. Please try again later.</div>';
                 }
             };
 
-            if (reposSearchInput) {
-                reposSearchInput.addEventListener('input', renderRepos);
-            }
-            if (filterLanguage) {
-                filterLanguage.addEventListener('change', renderRepos);
-            }
-            if (filterPlatform) {
-                filterPlatform.addEventListener('change', renderRepos);
-            }
 
             const checkStatusAndRender = (status) => {
                 const user = API.getCurrentUser();

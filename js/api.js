@@ -267,8 +267,14 @@ const API = {
     return fetch('/config.json?t=' + Date.now()).then(res => res.json()).catch(() => ({}));
   },
 
-  async fetchRepos(page = 1, limit = 10) {
-    return this.request(`/repos?page=${page}&limit=${limit}`);
+  async fetchRepos(page = 1, limit = 10, q = '', language = '', platform = '', sort = 'name', dir = 'asc') {
+    let url = `/repos?page=${page}&limit=${limit}`;
+    if (q) url += `&q=${encodeURIComponent(q)}`;
+    if (language) url += `&language=${encodeURIComponent(language)}`;
+    if (platform) url += `&platform=${encodeURIComponent(platform)}`;
+    if (sort) url += `&sort=${encodeURIComponent(sort)}`;
+    if (dir) url += `&dir=${encodeURIComponent(dir)}`;
+    return this.request(url);
   },
 
   async fetchRepoDetail(id) {
