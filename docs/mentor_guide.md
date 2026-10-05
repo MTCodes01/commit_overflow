@@ -1,6 +1,6 @@
-# Commit Overflow — Mentor Guide
+# Commit Overflow - Mentor Guide
 
-Welcome to the Commit Overflow Mentor Team! 🚀
+Welcome to the Commit Overflow Mentor Team!
 
 As a mentor, your role is to help participants understand open-source contribution, guide them through the workflow, and support them when they face technical difficulties. You are not expected to solve every problem for the participant; your goal is to guide them towards solving problems independently while ensuring they have the support they need.
 
@@ -24,7 +24,7 @@ As a mentor, your role is to help participants understand open-source contributi
 ---
 
 ## 1. Understanding Your Role
-Each mentor will be assigned 1–2 participating repositories. You will be responsible for becoming familiar with your assigned repositories and helping participants who choose to contribute to them.
+Each mentor will be assigned 3-4 participating repositories. You will be responsible for becoming familiar with your assigned repositories and helping participants who choose to contribute to them.
 
 **Your responsibilities include:**
 *   Understanding your assigned repository and its architecture.
@@ -60,30 +60,30 @@ When a participant raises an issue, you must review it:
 3.  **Is it spam or a duplicate?**
 
 > [!WARNING]
-> If the issue is low-effort spam or a duplicate of an existing issue, apply the `invalid` or `duplicate` label and close the issue.
+> If the issue is low-effort spam or a duplicate of an existing issue, apply its respective label (`invalid` or `duplicate`) and close the issue.
 
 ---
 
 ## 4. Issue Difficulty & Approval
 If a participant raises a valid, well-documented issue, it is time to **Approve** it.
 
-You approve an issue by applying a **Difficulty Label**. Adding one of these labels triggers the Commit Overflow backend to officially approve the issue, start the deadline timer, and calculate the potential points.
+You approve an issue by applying the `commitoverflow` label. On top of it, you should add a difficulty or type label (`easy`, `medium`, `hard`, or `documentation`). For some first repositories of new users, also add the `goodfirstissue` label.
 
-🟢 **Easy (`easy`)**
+**Easy (`easy`)**
 Suitable for beginners. Usually involves small code changes, simple bug fixes, documentation improvements, or UI/text changes.
 
-🟡 **Medium (`medium`)**
+**Medium (`medium`)**
 Requires some understanding of the project. May involve multiple files, moderate code changes, debugging, or writing tests.
 
-🔴 **Hard (`hard`)**
+**Hard (`hard`)**
 Requires strong technical understanding. May involve major features, significant architectural changes, complex bugs, or API/Database modifications.
 
 ---
 
 ## 5. Issue Assignment
-Once you have applied the difficulty label to approve the issue:
-1. **Assign the issue** to the participant who raised it (or whoever claimed it).
-2. Leave an encouraging comment letting them know they are approved to start coding!
+Once you have approved the issue:
+1. **Assign the issue** to the person who raised it to solve it.
+2. Communicate with the participant within the issue as required. Leave an encouraging comment letting them know they are approved to start coding!
 
 > [!IMPORTANT]
 > **Do not assign multiple contributors to the same issue.** Wait for the assignee's deadline to expire or for them to explicitly give up before reassigning it.
@@ -146,8 +146,8 @@ When reviewing a PR/MR, check:
 ## 10. Giving Feedback
 Feedback should be: **Specific + Constructive + Respectful**
 
-❌ **Instead of:** *"This isn't good."*
-✅ **Say:** *"The functionality works, but this section doesn't handle the error case. Could you add error handling for that case and test it once more?"*
+**Instead of:** *"This isn't good."*
+**Say:** *"The functionality works, but this section doesn't handle the error case. Could you add error handling for that case and test it once more?"*
 
 > [!IMPORTANT]
 > Instead of fixing everything yourself, explain what needs improvement and allow the participant to make the changes on their branch. This is how they learn!
@@ -172,8 +172,8 @@ If a participant stops responding or misses their automated deadline:
 
 **During the Event**
 - [ ] Evaluate incoming issues raised by participants.
-- [ ] Label valid issues with `easy`, `medium`, or `hard` to approve them.
-- [ ] Label spam/duplicates as `invalid` or `duplicate`.
+- [ ] Label valid issues with `commitoverflow` and an appropriate label (`easy`/`medium`/`hard`/`documentation`). Add `goodfirstissue` for new users' first repos.
+- [ ] Label spam/duplicates with their respective labels (`invalid` or `duplicate`).
 - [ ] Assign issues.
 - [ ] Guide participants through Git and setup.
 - [ ] Review PRs/MRs and give constructive feedback.
@@ -193,4 +193,4 @@ Your role throughout Commit Overflow can be summarized as:
 
 Help participants make their first real-world contribution, understand the process behind it, and leave Commit Overflow with the confidence to contribute to open-source projects independently.
 
-**Happy mentoring! 🚀**
+**Happy mentoring!**
