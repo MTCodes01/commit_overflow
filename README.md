@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="logo/logo-dark-clr.svg">
-    <source media="(prefers-color-scheme: light)" srcset="logo/logo-light-clr.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="logo/logo-light-clr.svg">
+    <source media="(prefers-color-scheme: light)" srcset="logo/logo-dark-clr.svg">
     <img alt="Commit Overflow Logo" src="logo/logo-light-clr.svg" width="250">
   </picture>
 
