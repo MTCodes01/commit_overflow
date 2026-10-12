@@ -835,15 +835,17 @@
                     container.innerHTML = '';
                     const timeline = dashData.activity_timeline || [];
                     
-                    // Calculate Streak
-                    const activityCounts = {};
-                    timeline.forEach(item => {
-                        try {
-                            const date = new Date(item.created_at);
-                            const yyyymmdd = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-                            activityCounts[yyyymmdd] = (activityCounts[yyyymmdd] || 0) + 1;
-                        } catch(e){}
-                    });
+                    // Calculate Streak & Contribution Activity
+                    const activityCounts = Object.assign({}, dashData.activity_counts || {});
+                    if (Object.keys(activityCounts).length === 0 && timeline.length > 0) {
+                        timeline.forEach(item => {
+                            try {
+                                const date = new Date(item.created_at);
+                                const yyyymmdd = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+                                activityCounts[yyyymmdd] = (activityCounts[yyyymmdd] || 0) + 1;
+                            } catch(e){}
+                        });
+                    }
                     
                     let currentStreak = 0;
                     let longestStreak = 0;
@@ -893,7 +895,7 @@
                     } catch(e) {
                         console.error('Error calculating streak', e);
                     }
-                    const curDisplay = Math.max(0, currentStreak - 1);
+                    const curDisplay = (dashData.stats && dashData.stats.streak !== undefined) ? dashData.stats.streak : Math.max(0, currentStreak - 1);
                     const longDisplay = Math.max(0, longestStreak - 1);
                     const curStreakEl = document.getElementById('stat-current-streak');
                     if (curStreakEl) curStreakEl.textContent = curDisplay + (curDisplay === 1 ? ' day' : ' days');
