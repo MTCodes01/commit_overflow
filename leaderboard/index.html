@@ -755,6 +755,10 @@
                             else if (entry.rank === 2) mobileRankIcon = `<i class="ph ph-crown" style="color: silver; font-size: 1.5rem;"></i>`;
                             else if (entry.rank === 3) mobileRankIcon = `<i class="ph ph-crown" style="color: #cd7f32; font-size: 1.5rem;"></i>`;
                             
+                            const prsCount = entry.prs_count || 0;
+                            const issuesCount = entry.issues_count || 0;
+                            const reposCount = entry.repositories ? entry.repositories.length : 0;
+
                             const card = document.createElement('div');
                             card.className = `mobile-lb-card ${entry.rank === 1 ? 'rank-1' : ''}`;
                             card.innerHTML = `
@@ -765,9 +769,9 @@
                                         ${entry.avatar_url ? `<img src="${entry.avatar_url}" width="32" height="32" alt="avatar">` : `<i class="ph ph-user"></i>`}
                                     </div>
                                     <div class="mobile-lb-stats">
-                                        <div class="stat text-blue"><i class="ph ph-git-merge"></i> ${entry.prs || 0} PRs</div>
-                                        <div class="stat text-red"><i class="ph ph-warning-circle"></i> ${entry.issues || 0} Issues</div>
-                                        <div class="stat text-purple"><i class="ph ph-stack"></i> ${entry.repos || 0} Repos</div>
+                                        <div class="stat text-blue"><i class="ph ph-git-merge"></i> ${prsCount} PRs</div>
+                                        <div class="stat text-red"><i class="ph ph-warning-circle"></i> ${issuesCount} Issues</div>
+                                        <div class="stat text-purple"><i class="ph ph-stack"></i> ${reposCount} Repos</div>
                                     </div>
                                     <div class="mobile-lb-scorebox">
                                         <div class="score-val">${entry.total_points}</div>
