@@ -221,8 +221,39 @@
             Components.renderSidebar('prs');
 
             let allPRs = [];
-            let activeTab = 'pending'; // 'pending', 'merged'
+            const urlParams = new URLSearchParams(window.location.search);
             const user = API.getCurrentUser();
+            const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
+            let activeScope = urlParams.get('scope') || (urlParams.get('tab') === 'managed' ? 'managed' : 'my');
+            let activeTab = urlParams.get('status') || 'pending'; // 'pending', 'merged', 'all'
+
+            const prFilters = [
+                {
+                    id: 'filter-repo',
+                    icon: 'ph-git-repository',
+                    optionsHtml: '<option value="">All Repositories</option>'
+                },
+                {
+                    id: 'filter-status',
+                    icon: 'ph-git-pull-request',
+                    optionsHtml: `
+                        <option value="pending" ${activeTab === 'pending' ? 'selected' : ''}>Status: Pending Review</option>
+                        <option value="merged" ${activeTab === 'merged' ? 'selected' : ''}>Status: Merged</option>
+                        <option value="all" ${activeTab === 'all' ? 'selected' : ''}>Status: All Statuses</option>
+                    `
+                }
+            ];
+
+            if (isMentorOrAdmin) {
+                prFilters.unshift({
+                    id: 'filter-scope',
+                    icon: 'ph-shield-check',
+                    optionsHtml: `
+                        <option value="my" ${activeScope === 'my' ? 'selected' : ''}>Scope: My Pull Requests</option>
+                        <option value="managed" ${activeScope === 'managed' ? 'selected' : ''}>Scope: Managed Repos</option>
+                    `
+                });
+            }
 
             Components.renderSearchFilterBar({
                 containerId: 'search-filter-container',
@@ -230,26 +261,13 @@
                     id: 'prs-search',
                     placeholder: 'Search PR ID or associated issues...'
                 },
-                filters: [
-                    {
-                        id: 'filter-repo',
-                        icon: 'ph-git-repository',
-                        optionsHtml: '<option value="">All Repositories</option>'
-                    },
-                    {
-                        id: 'filter-status',
-                        icon: 'ph-git-pull-request',
-                        optionsHtml: `
-                            <option value="pending">Status: Pending Review</option>
-                            <option value="merged">Status: Merged</option>
-                        `
-                    }
-                ]
+                filters: prFilters
             });
 
             const searchInput = document.getElementById('prs-search');
             const repoFilter = document.getElementById('filter-repo');
             const statusFilter = document.getElementById('filter-status');
+            const scopeFilter = document.getElementById('filter-scope');
             const prsListContainer = document.getElementById('prs-list');
 
             const renderPRs = () => {
@@ -349,6 +367,14 @@
                 loadPRs();
             });
 
+            if (scopeFilter) {
+                scopeFilter.addEventListener('change', (e) => {
+                    activeScope = e.target.value;
+                    currentPage = 1;
+                    loadPRs();
+                });
+            }
+
             let searchTimer;
             searchInput.addEventListener('input', () => {
                 clearTimeout(searchTimer);
@@ -368,20 +394,21 @@
 
             const loadPRs = async () => {
                 try {
-                    const urlParams = new URLSearchParams(window.location.search);
                     const queryUserId = urlParams.get('user_id') || 'me';
                     
                     const searchQuery = searchInput.value.trim();
                     const selectedRepo = repoFilter.value;
+                    const tabParam = activeScope === 'managed' ? 'managed' : '';
+                    const statusParam = activeTab === 'all' ? '' : activeTab;
 
-                    const res = await API.fetchUserPRs(queryUserId, currentPage, currentLimit, searchQuery, activeTab, selectedRepo);
+                    const res = await API.fetchUserPRs(queryUserId, currentPage, currentLimit, searchQuery, statusParam, selectedRepo, tabParam);
                     allPRs = res.data || [];
 
                     // Populate repositories filter option list only if it's empty to preserve selection
                     if (repoFilter.options.length <= 1) {
                         const repoNames = {};
                         allPRs.forEach(pr => {
-                            repoNames[pr.repo_name] = true;
+                            if (pr.repo_name) repoNames[pr.repo_name] = true;
                         });
                         
                         Object.keys(repoNames).sort().forEach(name => {
@@ -392,7 +419,9 @@
                         });
                     }
 
-                    if (queryUserId !== 'me') {
+                    if (activeScope === 'managed') {
+                        document.getElementById('prs-page-title').textContent = "Managed Repository PRs";
+                    } else if (queryUserId !== 'me') {
                         document.getElementById('prs-page-title').textContent = "User's PRs";
                     } else {
                         document.getElementById('prs-page-title').textContent = "My PRs";

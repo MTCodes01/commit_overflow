@@ -254,11 +254,12 @@ const API = {
     return this.request(url);
   },
 
-  async fetchUserPRs(userId = 'me', page = 1, limit = 10, search = '', status = '', repo = '') {
+  async fetchUserPRs(userId = 'me', page = 1, limit = 10, search = '', status = '', repo = '', tab = '') {
     let url = `/users/${userId}/prs?page=${page}&limit=${limit}`;
     if (search) url += `&q=${encodeURIComponent(search)}`;
     if (status) url += `&status=${encodeURIComponent(status)}`;
     if (repo) url += `&repo=${encodeURIComponent(repo)}`;
+    if (tab) url += `&tab=${encodeURIComponent(tab)}`;
     return this.request(url);
   },
 

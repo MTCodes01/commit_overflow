@@ -52,9 +52,13 @@ const Components = {
           ${(() => {
             try {
               const u = JSON.parse(localStorage.getItem('currentUser') || '{}');
-              if (u && u.is_admin) {
+              if (u && (u.is_admin || u.is_super_admin)) {
+                const adminPortalUrl = sessionStorage.getItem('api_base_url') || '/';
                 return `<a href="/admin/broadcasts/" title="Broadcasts" class="nav-item ${activePage === "broadcasts" ? "active" : ""}">
                   <i class="ph ph-megaphone"></i> <span class="sidebar-text">Broadcasts</span>
+                </a>
+                <a href="${adminPortalUrl}" target="_blank" title="Admin Portal" class="nav-item" style="color: var(--accent-secondary, #a371f7);">
+                  <i class="ph ph-shield-check"></i> <span class="sidebar-text">Admin Portal</span>
                 </a>`;
               }
             } catch(_) {}
