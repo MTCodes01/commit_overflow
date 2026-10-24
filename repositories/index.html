@@ -52,6 +52,9 @@
             font-size: 0.875rem;
             color: var(--text-secondary);
         }
+        .repo-meta div.meta-full {
+            grid-column: 1 / -1;
+        }
         .repo-meta div {
             display: flex;
             align-items: center;
@@ -395,6 +398,7 @@
                         <option value="name">Sort: Name</option>
                         <option value="contributors">Sort: Contributors</option>
                         <option value="open_issues">Sort: Open Issues</option>
+                        <option value="closed_issues">Sort: Closed Issues</option>
                         <option value="open_prs">Sort: Open PRs</option>
                         <option value="merged_prs">Sort: Merged PRs</option>
                     `,
@@ -466,8 +470,9 @@
                             ${techBadges}
                         </div>
                         <div class="repo-meta">
-                            <div><i class="ph ph-users-three text-primary"></i> <span>Contributors: <strong class="text-primary">${repo.contributor_count}</strong></span></div>
+                            <div class="meta-full"><i class="ph ph-users-three text-primary"></i> <span>Contributors: <strong class="text-primary">${repo.contributor_count}</strong></span></div>
                             <div><i class="ph ph-warning-circle text-primary"></i> <span>Open Issues: <strong style="color: #d29922;">${repo.open_issues}</strong></span></div>
+                            <div><i class="ph ph-check-circle text-primary"></i> <span>Closed Issues: <strong style="color: #8957e5;">${repo.closed_issues || 0}</strong></span></div>
                             <div><i class="ph ph-git-pull-request text-primary"></i> <span>Open PRs: <strong style="color: #a371f7;">${repo.open_prs}</strong></span></div>
                             <div><i class="ph ph-git-merge text-primary"></i> <span>Merged PRs: <strong style="color: #3fb950;">${repo.merged_prs}</strong></span></div>
                         </div>
