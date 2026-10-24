@@ -219,11 +219,12 @@
             const urlParams = new URLSearchParams(window.location.search);
             let currentPage = parseInt(urlParams.get('page')) || 1;
             
-            // Temporary variables for URL param loading
-            let initialSearch = urlParams.get('search') || '';
-            let initialType = urlParams.get('event_type') || '';
-            let initialRepo = urlParams.get('repo_id') || '';
-            let initialSort = urlParams.get('sort') || 'newest';
+            // Temporary variables for URL param loading or saved settings
+            const savedLogsSettings = Components.getSearchSettings('logs') || {};
+            let initialSearch = urlParams.has('search') ? urlParams.get('search') : (savedLogsSettings.search || '');
+            let initialType = urlParams.has('event_type') ? urlParams.get('event_type') : (savedLogsSettings.type || '');
+            let initialRepo = urlParams.has('repo_id') ? urlParams.get('repo_id') : (savedLogsSettings.repo || '');
+            let initialSort = urlParams.has('sort') ? urlParams.get('sort') : (savedLogsSettings.sort || 'newest');
 
             searchInput.value = initialSearch;
             sortSelect.value = initialSort;
@@ -311,6 +312,13 @@
                 const newQueryString = params.toString();
                 const newUrl = window.location.pathname + (newQueryString ? '?' + newQueryString : '');
                 history.pushState(null, '', newUrl);
+
+                Components.saveSearchSettings('logs', {
+                    search: searchVal,
+                    type: typeFilter.value,
+                    repo: repoFilter.value,
+                    sort: sortSelect.value
+                });
 
                 loadLogs();
             };
@@ -450,6 +458,7 @@
                 repoFilter.value = '';
                 sortSelect.value = 'newest';
                 currentPage = 1;
+                Components.clearSearchSettings('logs');
                 updateUrlAndLoad();
             });
 

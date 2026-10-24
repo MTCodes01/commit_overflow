@@ -263,7 +263,8 @@
             Components.setupModal('create-query-modal', 'create-query-btn', 'modal-close');
 
             let allQueries = [];
-            let currentFilter = 'all';
+            const savedQueriesSettings = Components.getSearchSettings('queries') || {};
+            let currentFilter = savedQueriesSettings.status || 'all';
 
             Components.renderSearchFilterBar({
                 containerId: 'search-filter-container',
@@ -286,6 +287,20 @@
 
             const queriesSearchInput = document.getElementById('queries-search');
             const queriesStatusFilter = document.getElementById('filter-queries-status');
+
+            if (savedQueriesSettings.search && queriesSearchInput) {
+                queriesSearchInput.value = savedQueriesSettings.search;
+            }
+            if (queriesStatusFilter) {
+                queriesStatusFilter.value = currentFilter;
+            }
+
+            const saveQueriesFilters = () => {
+                Components.saveSearchSettings('queries', {
+                    search: queriesSearchInput ? queriesSearchInput.value.trim() : '',
+                    status: currentFilter
+                });
+            };
 
             const renderQueries = () => {
                 const listContainer = document.getElementById('queries-list');
@@ -438,6 +453,7 @@
                     clearTimeout(searchTimer);
                     searchTimer = setTimeout(() => {
                         currentPage = 1;
+                        saveQueriesFilters();
                         loadQueries();
                     }, 400);
                 });
@@ -448,6 +464,7 @@
                 queriesStatusFilter.addEventListener('change', (e) => {
                     currentFilter = e.target.value;
                     currentPage = 1;
+                    saveQueriesFilters();
                     loadQueries();
                 });
             }

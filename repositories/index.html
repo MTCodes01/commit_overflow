@@ -416,7 +416,15 @@
             const sortRepoIcon = document.getElementById('sort-repo-icon');
             let currentSortDir = 'desc'; // Default to descending for most metrics
 
-
+            // Restore saved filter settings
+            const savedRepoSettings = Components.getSearchSettings('repositories') || {};
+            if (savedRepoSettings.q && reposSearchInput) reposSearchInput.value = savedRepoSettings.q;
+            if (savedRepoSettings.plat && filterPlatform) filterPlatform.value = savedRepoSettings.plat;
+            if (savedRepoSettings.sort && sortRepo) sortRepo.value = savedRepoSettings.sort;
+            if (savedRepoSettings.dir) {
+                currentSortDir = savedRepoSettings.dir;
+                if (sortRepoIcon) sortRepoIcon.className = currentSortDir === 'asc' ? 'ph ph-sort-ascending text-primary' : 'ph ph-sort-descending text-primary';
+            }
 
             const renderRepos = () => {
                 if (!reposContainer) return;
@@ -513,6 +521,13 @@
 
             const handleFilterChange = () => {
                 currentPage = 1;
+                Components.saveSearchSettings('repositories', {
+                    q: reposSearchInput ? reposSearchInput.value : '',
+                    lang: filterLanguage ? filterLanguage.value : '',
+                    plat: filterPlatform ? filterPlatform.value : '',
+                    sort: sortRepo ? sortRepo.value : '',
+                    dir: currentSortDir
+                });
                 loadRepos();
             };
 
@@ -539,7 +554,7 @@
             const loadRepos = async () => {
                 try {
                     const q = reposSearchInput ? reposSearchInput.value : '';
-                    const lang = filterLanguage ? filterLanguage.value : '';
+                    const lang = (filterLanguage && filterLanguage.value) || (savedRepoSettings && savedRepoSettings.lang) || '';
                     const plat = filterPlatform ? filterPlatform.value : '';
                     const sortBy = sortRepo ? sortRepo.value : '';
                     
@@ -567,6 +582,9 @@
                                 opt.textContent = tech;
                                 filterLanguage.appendChild(opt);
                             });
+                            if (savedRepoSettings.lang) {
+                                filterLanguage.value = savedRepoSettings.lang;
+                            }
                         }
                     }
 

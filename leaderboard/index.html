@@ -791,12 +791,24 @@
                 // Setup search, sort, and college filter controls
                 const searchInput = document.getElementById('search-input');
                 const sortSelect = document.getElementById('sort-select');
+
+                // Restore saved search/filter settings
+                const savedLbSettings = Components.getSearchSettings('leaderboard') || {};
+                if (savedLbSettings.search && searchInput) searchInput.value = savedLbSettings.search;
+                if (savedLbSettings.sort && sortSelect) sortSelect.value = savedLbSettings.sort;
+                if (savedLbSettings.college && collegeSelect) collegeSelect.value = savedLbSettings.college;
                 
                 const filterAndSort = () => {
                     const query = searchInput.value.toLowerCase();
                     const sortVal = sortSelect.value;
                     const collegeVal = collegeSelect.value;
                     
+                    Components.saveSearchSettings('leaderboard', {
+                        search: searchInput ? searchInput.value : '',
+                        sort: sortSelect ? sortSelect.value : '',
+                        college: collegeSelect ? collegeSelect.value : ''
+                    });
+
                     let filtered = leaderboard.filter(entry => {
                         const nameMatch = entry.github_username.toLowerCase().includes(query) || 
                                           entry.name.toLowerCase().includes(query);
@@ -820,6 +832,10 @@
                 searchInput.addEventListener('input', filterAndSort);
                 sortSelect.addEventListener('change', filterAndSort);
                 collegeSelect.addEventListener('change', filterAndSort);
+
+                if (savedLbSettings.search || (savedLbSettings.sort && savedLbSettings.sort !== 'highest') || (savedLbSettings.college && savedLbSettings.college !== 'all')) {
+                    filterAndSort();
+                }
 
             } catch (err) {
                 console.error("Error fetching leaderboard", err);

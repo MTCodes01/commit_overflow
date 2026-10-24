@@ -152,11 +152,12 @@
   Components.renderSidebar('notifications');
 
   // ── State ───────────────────────────────────────────────────────────────────
+  const _savedNotifSettings = Components.getSearchSettings('notifications') || {};
   let _page = 1;
   let _limit = 20;
-  let _typeFilter = '';
-  let _readFilter = null;  // null = all, true = read, false = unread
-  let _search = '';
+  let _typeFilter = _savedNotifSettings.type || '';
+  let _readFilter = _savedNotifSettings.read === 'true' ? true : (_savedNotifSettings.read === 'false' ? false : null);
+  let _search = _savedNotifSettings.search || '';
   let _selectedIds = new Set();
   let _searchTimer = null;
 
@@ -193,6 +194,22 @@
           }
       ]
   });
+
+  const notifSearchInput = document.getElementById('notif-search');
+  const notifReadFilter = document.getElementById('filter-notif-read');
+  const notifTypeFilter = document.getElementById('filter-notif-type');
+
+  if (_savedNotifSettings.search && notifSearchInput) notifSearchInput.value = _savedNotifSettings.search;
+  if (_savedNotifSettings.read && notifReadFilter) notifReadFilter.value = _savedNotifSettings.read;
+  if (_savedNotifSettings.type && notifTypeFilter) notifTypeFilter.value = _savedNotifSettings.type;
+
+  function saveNotifSettings() {
+    Components.saveSearchSettings('notifications', {
+      search: notifSearchInput ? notifSearchInput.value.trim() : '',
+      read: notifReadFilter ? notifReadFilter.value : 'all',
+      type: notifTypeFilter ? notifTypeFilter.value : ''
+    });
+  }
 
   const TYPE_CONFIG = {
     system:      { color: '#58a6ff', bg: 'rgba(88,166,255,0.12)', icon: 'ph-info'           },
@@ -364,6 +381,7 @@
   document.getElementById('filter-notif-type').addEventListener('change', (e) => {
     _typeFilter = e.target.value;
     _page = 1;
+    saveNotifSettings();
     loadNotifications();
   });
 
@@ -371,6 +389,7 @@
     const v = e.target.value;
     _readFilter = v === 'all' ? null : v === 'true';
     _page = 1;
+    saveNotifSettings();
     loadNotifications();
   });
 
@@ -379,6 +398,7 @@
     _searchTimer = setTimeout(() => {
       _search = e.target.value.trim();
       _page = 1;
+      saveNotifSettings();
       loadNotifications();
     }, 400);
   });

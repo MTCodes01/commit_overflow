@@ -237,7 +237,8 @@
             let allIssues = [];
             let allLabels = [];
             const urlParams = new URLSearchParams(window.location.search);
-            let activeTab = urlParams.get('tab') || 'open'; // 'open', 'closed', 'assigned', 'managed'
+            const savedIssueSettings = Components.getSearchSettings('issues') || {};
+            let activeTab = urlParams.get('tab') || savedIssueSettings.type || 'open'; // 'open', 'closed', 'assigned', 'managed'
             const user = API.getCurrentUser();
             const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
 
@@ -274,6 +275,21 @@
             const labelFilter = document.getElementById('filter-label');
             const typeFilter = document.getElementById('filter-type');
             const issuesListContainer = document.getElementById('issues-list');
+
+            if (savedIssueSettings.search && searchInput) {
+                searchInput.value = savedIssueSettings.search;
+            }
+            if (typeFilter) {
+                typeFilter.value = activeTab;
+            }
+
+            const saveIssueFilters = () => {
+                Components.saveSearchSettings('issues', {
+                    search: searchInput ? searchInput.value.trim() : '',
+                    type: activeTab,
+                    label: labelFilter ? labelFilter.value : ''
+                });
+            };
 
             const renderIssues = () => {
                 const selectedLabel = labelFilter.value;
@@ -401,6 +417,7 @@
             typeFilter.addEventListener('change', (e) => {
                 activeTab = e.target.value;
                 currentPage = 1;
+                saveIssueFilters();
                 loadIssues();
             });
 
@@ -409,11 +426,15 @@
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(() => {
                     currentPage = 1;
+                    saveIssueFilters();
                     loadIssues();
                 }, 400);
             });
 
-            labelFilter.addEventListener('change', renderIssues);
+            labelFilter.addEventListener('change', () => {
+                saveIssueFilters();
+                renderIssues();
+            });
 
             let currentPage = 1;
             let currentLimit = 10;
@@ -436,6 +457,9 @@
                             opt.textContent = lbl;
                             labelFilter.appendChild(opt);
                         });
+                        if (savedIssueSettings.label) {
+                            labelFilter.value = savedIssueSettings.label;
+                        }
                     }
 
                     if (activeTab === 'managed') {

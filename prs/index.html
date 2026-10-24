@@ -224,8 +224,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const user = API.getCurrentUser();
             const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
-            let activeScope = urlParams.get('scope') || (urlParams.get('tab') === 'managed' ? 'managed' : 'my');
-            let activeTab = urlParams.get('status') || 'pending'; // 'pending', 'merged', 'all'
+            const savedPrSettings = Components.getSearchSettings('prs') || {};
+            let activeScope = urlParams.get('scope') || (urlParams.get('tab') === 'managed' ? 'managed' : (savedPrSettings.scope || 'my'));
+            let activeTab = urlParams.get('status') || savedPrSettings.status || 'pending'; // 'pending', 'merged', 'all'
 
             const prFilters = [
                 {
@@ -269,6 +270,21 @@
             const statusFilter = document.getElementById('filter-status');
             const scopeFilter = document.getElementById('filter-scope');
             const prsListContainer = document.getElementById('prs-list');
+
+            if (savedPrSettings.search && searchInput) {
+                searchInput.value = savedPrSettings.search;
+            }
+            if (statusFilter) statusFilter.value = activeTab;
+            if (scopeFilter) scopeFilter.value = activeScope;
+
+            const savePrFilters = () => {
+                Components.saveSearchSettings('prs', {
+                    search: searchInput ? searchInput.value.trim() : '',
+                    repo: repoFilter ? repoFilter.value : '',
+                    status: activeTab,
+                    scope: activeScope
+                });
+            };
 
             const renderPRs = () => {
                 let filtered = allPRs;
@@ -364,6 +380,7 @@
             statusFilter.addEventListener('change', (e) => {
                 activeTab = e.target.value;
                 currentPage = 1;
+                savePrFilters();
                 loadPRs();
             });
 
@@ -371,6 +388,7 @@
                 scopeFilter.addEventListener('change', (e) => {
                     activeScope = e.target.value;
                     currentPage = 1;
+                    savePrFilters();
                     loadPRs();
                 });
             }
@@ -380,12 +398,14 @@
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(() => {
                     currentPage = 1;
+                    savePrFilters();
                     loadPRs();
                 }, 400);
             });
             
             repoFilter.addEventListener('change', () => {
                 currentPage = 1;
+                savePrFilters();
                 loadPRs();
             });
 
@@ -397,7 +417,7 @@
                     const queryUserId = urlParams.get('user_id') || 'me';
                     
                     const searchQuery = searchInput.value.trim();
-                    const selectedRepo = repoFilter.value;
+                    const selectedRepo = repoFilter.value || savedPrSettings.repo || '';
                     const tabParam = activeScope === 'managed' ? 'managed' : '';
                     const statusParam = activeTab === 'all' ? '' : activeTab;
 
@@ -417,6 +437,9 @@
                             opt.textContent = name;
                             repoFilter.appendChild(opt);
                         });
+                        if (savedPrSettings.repo) {
+                            repoFilter.value = savedPrSettings.repo;
+                        }
                     }
 
                     if (activeScope === 'managed') {
