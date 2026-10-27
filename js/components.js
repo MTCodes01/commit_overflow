@@ -151,6 +151,18 @@ const Components = {
       }
     })();
 
+    // Keep currentUser refreshed live if logged in
+    if (localStorage.getItem("authToken")) {
+      (async () => {
+        try {
+          const freshUser = await API.fetchUserMe();
+          if (freshUser) {
+            window.dispatchEvent(new CustomEvent('userUpdated', { detail: freshUser }));
+          }
+        } catch (_) {}
+      })();
+    }
+
     // Initialize notification bell (only for authenticated users)
     if (typeof NotificationService !== 'undefined') {
       NotificationService.init();

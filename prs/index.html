@@ -222,7 +222,11 @@
 
             let allPRs = [];
             const urlParams = new URLSearchParams(window.location.search);
-            const user = API.getCurrentUser();
+            let user = API.getCurrentUser();
+            try {
+                const fresh = await API.fetchUserMe();
+                if (fresh) user = fresh;
+            } catch (_) {}
             const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
             const savedPrSettings = Components.getSearchSettings('prs') || {};
             let activeScope = urlParams.get('scope') || (urlParams.get('tab') === 'managed' ? 'managed' : (savedPrSettings.scope || 'my'));

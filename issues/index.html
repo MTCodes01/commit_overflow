@@ -240,7 +240,12 @@
             const savedIssueSettings = Components.getSearchSettings('issues') || {};
             let activeTab = urlParams.get('tab') || savedIssueSettings.type || 'open'; // 'open', 'closed', 'assigned', 'managed'
             let activeStatus = urlParams.get('status') || savedIssueSettings.status || ''; // '', 'pending', 'approved', 'assigned', 'closed'
-            const user = API.getCurrentUser();
+            
+            let user = API.getCurrentUser();
+            try {
+                const fresh = await API.fetchUserMe();
+                if (fresh) user = fresh;
+            } catch (_) {}
             const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
 
             let typeOptionsHtml = `
