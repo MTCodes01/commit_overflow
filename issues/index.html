@@ -246,7 +246,7 @@
                 const fresh = await API.fetchUserMe();
                 if (fresh) user = fresh;
             } catch (_) {}
-            const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
+            const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin || (user.assigned_repo_ids && user.assigned_repo_ids.length > 0));
 
             let typeOptionsHtml = `
                 <option value="open" ${activeTab === 'open' ? 'selected' : ''}>Type: Open</option>

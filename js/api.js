@@ -177,7 +177,8 @@ const API = {
   },
 
   async fetchUserMe() {
-    const user = await this.requestWithCache('/users/me', 60000);
+    sessionStorage.removeItem('cache_/users/me');
+    const user = await this.request('/users/me');
     localStorage.setItem('currentUser', JSON.stringify(user));
     return user;
   },

@@ -227,7 +227,7 @@
                 const fresh = await API.fetchUserMe();
                 if (fresh) user = fresh;
             } catch (_) {}
-            const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
+            const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin || (user.assigned_repo_ids && user.assigned_repo_ids.length > 0));
             const savedPrSettings = Components.getSearchSettings('prs') || {};
             let activeScope = urlParams.get('scope') || (urlParams.get('tab') === 'managed' ? 'managed' : (savedPrSettings.scope || 'my'));
             let activeTab = urlParams.get('status') || savedPrSettings.status || 'pending'; // 'pending', 'merged', 'all'
