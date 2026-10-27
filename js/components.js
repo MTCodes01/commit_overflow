@@ -340,14 +340,42 @@ const Components = {
         if (config.search || config.filters[0] !== filter) {
           html += `<div class="unified-search-divider"></div>`;
         }
-        html += `
-          <div class="unified-search-filter">
-              <i class="ph ${filter.icon} unified-search-filter-icon"></i>
-              <select id="${filter.id}" class="unified-search-select">
-                  ${filter.optionsHtml}
-              </select>
-          </div>
-        `;
+        if (filter.type === 'checklist') {
+          html += `
+            <div class="unified-search-filter unified-search-checklist-filter" id="${filter.id}-wrapper">
+                <i class="ph ${filter.icon} unified-search-filter-icon"></i>
+                <button type="button" id="${filter.id}-btn" class="unified-search-select checklist-trigger-btn" aria-haspopup="true" aria-expanded="false">
+                    <span id="${filter.id}-display-text" class="checklist-btn-text">${filter.placeholder || 'All Labels'}</span>
+                </button>
+                <div id="${filter.id}-dropdown" class="unified-checklist-dropdown" style="display: none;">
+                    <div class="checklist-header">
+                        <span class="checklist-title">${filter.title || 'Filter by Label'}</span>
+                        <div class="checklist-header-actions">
+                            <button type="button" class="checklist-action-link" id="${filter.id}-select-all">Select All</button>
+                            <span class="checklist-action-sep">•</span>
+                            <button type="button" class="checklist-action-link" id="${filter.id}-clear">Reset</button>
+                        </div>
+                    </div>
+                    <div class="checklist-search-box">
+                        <i class="ph ph-magnifying-glass checklist-search-icon"></i>
+                        <input type="text" id="${filter.id}-search" class="checklist-search-input" placeholder="Search labels..." autocomplete="off">
+                    </div>
+                    <div id="${filter.id}-list" class="checklist-items-container">
+                        <div class="checklist-empty-state">No labels available</div>
+                    </div>
+                </div>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="unified-search-filter">
+                <i class="ph ${filter.icon} unified-search-filter-icon"></i>
+                <select id="${filter.id}" class="unified-search-select">
+                    ${filter.optionsHtml}
+                </select>
+            </div>
+          `;
+        }
       });
     }
 
@@ -396,6 +424,208 @@ const Components = {
     container.innerHTML = html;
   },
 
+  setupChecklistFilter(config) {
+    const { id, onSelectionChange, placeholder = 'All Labels' } = config;
+    const wrapper = document.getElementById(`${id}-wrapper`);
+    const btn = document.getElementById(`${id}-btn`);
+    const displayText = document.getElementById(`${id}-display-text`);
+    const dropdown = document.getElementById(`${id}-dropdown`);
+    const searchInput = document.getElementById(`${id}-search`);
+    const listContainer = document.getElementById(`${id}-list`);
+    const clearBtn = document.getElementById(`${id}-clear`);
+    const selectAllBtn = document.getElementById(`${id}-select-all`);
+
+    if (!wrapper || !btn || !dropdown || !listContainer) return null;
+
+    let availableLabels = [];
+    let selectedLabels = new Set();
+
+    const updateDisplayText = () => {
+      const selected = Array.from(selectedLabels);
+      if (selected.length === 0 || (availableLabels.length > 0 && selected.length === availableLabels.length)) {
+        displayText.textContent = placeholder;
+      } else if (selected.length === 1) {
+        displayText.innerHTML = `<span style="text-transform: capitalize;">${selected[0].replace(/_/g, ' ')}</span>`;
+      } else if (selected.length === 2) {
+        displayText.innerHTML = `<span style="text-transform: capitalize;">${selected.map(s => s.replace(/_/g, ' ')).join(', ')}</span>`;
+      } else {
+        displayText.innerHTML = `${selected.length} Labels <span class="checklist-badge-count">${selected.length}</span>`;
+      }
+    };
+
+    const renderList = (filterTerm = '') => {
+      const term = filterTerm.toLowerCase();
+      const filtered = availableLabels.filter(item => {
+        const lbl = typeof item === 'string' ? item : item.label;
+        return lbl.toLowerCase().includes(term);
+      });
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `<div class="checklist-empty-state">${availableLabels.length === 0 ? 'No labels available' : 'No matching labels'}</div>`;
+        return;
+      }
+
+      listContainer.innerHTML = '';
+      filtered.forEach(item => {
+        const lbl = typeof item === 'string' ? item : item.label;
+        const count = typeof item === 'object' && item.count !== undefined ? item.count : null;
+        const isChecked = selectedLabels.has(lbl);
+        const styles = Components.getTagStyles(lbl);
+
+        const row = document.createElement('label');
+        row.className = `checklist-item ${isChecked ? 'selected' : ''}`;
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'checklist-checkbox';
+        cb.value = lbl;
+        cb.checked = isChecked;
+
+        cb.addEventListener('change', () => {
+          if (cb.checked) {
+            selectedLabels.add(lbl);
+            row.classList.add('selected');
+          } else {
+            selectedLabels.delete(lbl);
+            row.classList.remove('selected');
+          }
+          updateDisplayText();
+          if (typeof onSelectionChange === 'function') {
+            onSelectionChange(Array.from(selectedLabels));
+          }
+        });
+
+        const pill = document.createElement('span');
+        pill.className = 'checklist-tag-pill';
+        pill.style.backgroundColor = styles.bg;
+        pill.style.borderColor = styles.border;
+        pill.style.color = styles.text;
+        pill.textContent = lbl.replace(/_/g, ' ');
+
+        row.appendChild(cb);
+        row.appendChild(pill);
+
+        if (count !== null) {
+          const countSpan = document.createElement('span');
+          countSpan.className = 'checklist-item-count';
+          countSpan.textContent = count;
+          row.appendChild(countSpan);
+        }
+
+        listContainer.appendChild(row);
+      });
+    };
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.style.display !== 'none';
+      if (isOpen) {
+        dropdown.style.display = 'none';
+        wrapper.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        dropdown.style.display = 'flex';
+        wrapper.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+        if (searchInput) {
+          searchInput.value = '';
+          renderList('');
+          setTimeout(() => searchInput.focus(), 50);
+        }
+      }
+    });
+
+    dropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) {
+        dropdown.style.display = 'none';
+        wrapper.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && dropdown.style.display !== 'none') {
+        dropdown.style.display = 'none';
+        wrapper.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.focus();
+      }
+    });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        renderList(e.target.value.trim());
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        selectedLabels.clear();
+        updateDisplayText();
+        renderList(searchInput ? searchInput.value.trim() : '');
+        if (typeof onSelectionChange === 'function') {
+          onSelectionChange([]);
+        }
+      });
+    }
+
+    if (selectAllBtn) {
+      selectAllBtn.addEventListener('click', () => {
+        availableLabels.forEach(item => {
+          const lbl = typeof item === 'string' ? item : item.label;
+          selectedLabels.add(lbl);
+        });
+        updateDisplayText();
+        renderList(searchInput ? searchInput.value.trim() : '');
+        if (typeof onSelectionChange === 'function') {
+          onSelectionChange(Array.from(selectedLabels));
+        }
+      });
+    }
+
+    return {
+      setLabels(labels) {
+        availableLabels = labels || [];
+        updateDisplayText();
+        renderList(searchInput ? searchInput.value.trim() : '');
+      },
+      setSelected(labels) {
+        selectedLabels = new Set(labels || []);
+        updateDisplayText();
+        renderList(searchInput ? searchInput.value.trim() : '');
+      },
+      toggleLabel(lbl) {
+        if (selectedLabels.has(lbl)) {
+          selectedLabels.delete(lbl);
+        } else {
+          selectedLabels.add(lbl);
+        }
+        updateDisplayText();
+        renderList(searchInput ? searchInput.value.trim() : '');
+        if (typeof onSelectionChange === 'function') {
+          onSelectionChange(Array.from(selectedLabels));
+        }
+      },
+      getSelected() {
+        return Array.from(selectedLabels);
+      },
+      open() {
+        dropdown.style.display = 'flex';
+        wrapper.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+      },
+      close() {
+        dropdown.style.display = 'none';
+        wrapper.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    };
+  },
+
   getTagStyles(labelInput, fallbackColor = null) {
     const label = typeof labelInput === 'string' ? labelInput : (labelInput.name || '');
     const serverColor = fallbackColor || (typeof labelInput === 'object' ? labelInput.color : null);
@@ -411,7 +641,10 @@ const Components = {
       'duplicate':     { border: '#cfd3d7', bg: '#cfd3d71a', text: '#cfd3d7' },
       'invalid':       { border: '#bbff00', bg: '#bbff001a', text: '#bbff00' },
       'rework':        { border: '#ff6e6b', bg: '#ff6e6b1a', text: '#ff6e6b' },
-      'bug':           { border: '#85000d', bg: '#85000d1a', text: '#85000d' }
+      'bug':           { border: '#85000d', bg: '#85000d1a', text: '#85000d' },
+      'feature':       { border: '#a371f7', bg: '#a371f71a', text: '#a371f7' },
+      'improvement':   { border: '#38bdf8', bg: '#38bdf81a', text: '#38bdf8' },
+      'enhancement':   { border: '#a371f7', bg: '#a371f71a', text: '#a371f7' }
     };
     
     if (label && known[label.toLowerCase()]) {

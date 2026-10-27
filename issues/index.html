@@ -239,6 +239,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const savedIssueSettings = Components.getSearchSettings('issues') || {};
             let activeTab = urlParams.get('tab') || savedIssueSettings.type || 'open'; // 'open', 'closed', 'assigned', 'managed'
+            let activeStatus = urlParams.get('status') || savedIssueSettings.status || ''; // '', 'pending', 'approved', 'assigned', 'closed'
             const user = API.getCurrentUser();
             const isMentorOrAdmin = user && (user.is_admin || user.is_super_admin);
 
@@ -251,6 +252,14 @@
                 typeOptionsHtml += `<option value="managed" ${activeTab === 'managed' ? 'selected' : ''}>Type: Managed Repos</option>`;
             }
 
+            let statusOptionsHtml = `
+                <option value="" ${!activeStatus ? 'selected' : ''}>All Statuses</option>
+                <option value="pending" ${activeStatus === 'pending' ? 'selected' : ''}>Status: Pending</option>
+                <option value="approved" ${activeStatus === 'approved' ? 'selected' : ''}>Status: Approved</option>
+                <option value="assigned" ${activeStatus === 'assigned' ? 'selected' : ''}>Status: Assigned</option>
+                <option value="closed" ${activeStatus === 'closed' ? 'selected' : ''}>Status: Closed</option>
+            `;
+
             Components.renderSearchFilterBar({
                 containerId: 'search-filter-container',
                 search: {
@@ -260,8 +269,15 @@
                 filters: [
                     {
                         id: 'filter-label',
+                        type: 'checklist',
                         icon: 'ph-tag',
-                        optionsHtml: '<option value="">All Labels</option>'
+                        placeholder: 'All Labels',
+                        title: 'Filter by Label'
+                    },
+                    {
+                        id: 'filter-status',
+                        icon: 'ph-check-circle',
+                        optionsHtml: statusOptionsHtml
                     },
                     {
                         id: 'filter-type',
@@ -272,9 +288,30 @@
             });
 
             const searchInput = document.getElementById('issues-search');
-            const labelFilter = document.getElementById('filter-label');
+            const statusFilter = document.getElementById('filter-status');
             const typeFilter = document.getElementById('filter-type');
             const issuesListContainer = document.getElementById('issues-list');
+
+            let selectedLabels = [];
+            if (savedIssueSettings.labels && Array.isArray(savedIssueSettings.labels)) {
+                selectedLabels = savedIssueSettings.labels;
+            } else if (savedIssueSettings.label) {
+                selectedLabels = [savedIssueSettings.label];
+            }
+
+            const labelChecklist = Components.setupChecklistFilter({
+                id: 'filter-label',
+                placeholder: 'All Labels',
+                onSelectionChange: (labels) => {
+                    selectedLabels = labels;
+                    saveIssueFilters();
+                    renderIssues();
+                }
+            });
+
+            if (labelChecklist && selectedLabels.length > 0) {
+                labelChecklist.setSelected(selectedLabels);
+            }
 
             if (savedIssueSettings.search && searchInput) {
                 searchInput.value = savedIssueSettings.search;
@@ -282,26 +319,44 @@
             if (typeFilter) {
                 typeFilter.value = activeTab;
             }
+            if (statusFilter && activeStatus) {
+                statusFilter.value = activeStatus;
+            }
+
+            let currentPage = 1;
+            let currentLimit = savedIssueSettings.limit ? parseInt(savedIssueSettings.limit, 10) : 10;
 
             const saveIssueFilters = () => {
                 Components.saveSearchSettings('issues', {
                     search: searchInput ? searchInput.value.trim() : '',
                     type: activeTab,
-                    label: labelFilter ? labelFilter.value : ''
+                    status: statusFilter ? statusFilter.value : '',
+                    labels: selectedLabels,
+                    label: selectedLabels.length === 1 ? selectedLabels[0] : '',
+                    limit: currentLimit
                 });
             };
 
             const renderIssues = () => {
-                const selectedLabel = labelFilter.value;
-
-                // Search is handled by backend, so we only filter by label here (client-side)
+                // Search is handled by backend, so we only filter by status and label checklist here (client-side)
                 let filtered = allIssues;
 
-                // Filter by Label
-                if (selectedLabel) {
+                // Filter by Status
+                const currentStatus = statusFilter ? statusFilter.value.trim().toLowerCase() : '';
+                if (currentStatus && currentStatus !== 'all') {
                     filtered = filtered.filter(issue => 
-                        issue.labels && issue.labels.includes(selectedLabel)
+                        issue.status && issue.status.toLowerCase() === currentStatus
                     );
+                }
+
+                // Filter by Labels
+                if (selectedLabels && selectedLabels.length > 0) {
+                    filtered = filtered.filter(issue => {
+                        if (!issue.labels || issue.labels.length === 0) return false;
+                        return issue.labels.some(lbl => 
+                            selectedLabels.some(sel => sel.toLowerCase() === lbl.toLowerCase())
+                        );
+                    });
                 }
 
                 if (filtered.length === 0) {
@@ -358,7 +413,7 @@
                         labelHtml = `<div class="label-tags">` + 
                              issue.labels.map(lbl => {
                                  const styles = Components.getTagStyles(lbl);
-                                 return `<span class="tag-badge" style="background-color: ${styles.bg}; border-color: ${styles.border}; color: ${styles.text}; text-transform: capitalize;">${lbl.replace(/_/g, ' ')}</span>`;
+                                 return `<span class="tag-badge issue-label-tag" data-label="${lbl}" style="background-color: ${styles.bg}; border-color: ${styles.border}; color: ${styles.text}; text-transform: capitalize; cursor: pointer;" title="Click to filter by ${lbl}">${lbl.replace(/_/g, ' ')}</span>`;
                              }).join('') +
                             `</div>`;
                     }
@@ -414,6 +469,23 @@
                 });
             };
 
+            // Allow clicking on tag badges in cards to toggle checklist filter
+            issuesListContainer.addEventListener('click', (e) => {
+                const tag = e.target.closest('.issue-label-tag');
+                if (tag && tag.dataset.label && labelChecklist) {
+                    labelChecklist.toggleLabel(tag.dataset.label);
+                }
+            });
+
+            if (statusFilter) {
+                statusFilter.addEventListener('change', (e) => {
+                    activeStatus = e.target.value;
+                    currentPage = 1;
+                    saveIssueFilters();
+                    loadIssues();
+                });
+            }
+
             typeFilter.addEventListener('change', (e) => {
                 activeTab = e.target.value;
                 currentPage = 1;
@@ -431,35 +503,85 @@
                 }, 400);
             });
 
-            labelFilter.addEventListener('change', () => {
-                saveIssueFilters();
-                renderIssues();
-            });
-
-            let currentPage = 1;
-            let currentLimit = 10;
-
             const loadIssues = async () => {
                 try {
                     const urlParams = new URLSearchParams(window.location.search);
                     const queryUserId = urlParams.get('user_id') || 'me';
                     
                     const searchQuery = searchInput.value.trim();
-                    const res = await API.fetchUserIssues(queryUserId, currentPage, currentLimit, activeTab, searchQuery);
+                    const currentStatus = statusFilter ? statusFilter.value.trim() : '';
+                    const res = await API.fetchUserIssues(queryUserId, currentPage, currentLimit, activeTab, searchQuery, currentStatus);
                     allIssues = res.data.issues || [];
                     allLabels = res.data.labels || [];
 
-                    // Populate label filter only if it's empty to preserve selection
-                    if (labelFilter.options.length <= 1) {
-                        allLabels.sort().forEach(lbl => {
-                            const opt = document.createElement('option');
-                            opt.value = lbl;
-                            opt.textContent = lbl;
-                            labelFilter.appendChild(opt);
-                        });
-                        if (savedIssueSettings.label) {
-                            labelFilter.value = savedIssueSettings.label;
+                    // Populate missing labels from difficulty or title prefix ([Feature], [Improvement], [Docs])
+                    allIssues.forEach(issue => {
+                        if (!issue.labels) {
+                            issue.labels = [];
                         }
+                        if (issue.difficulty && issue.difficulty.trim()) {
+                            const diff = issue.difficulty.trim();
+                            if (!issue.labels.some(l => l.toLowerCase() === diff.toLowerCase())) {
+                                issue.labels.push(diff);
+                            }
+                        }
+                        if (issue.title) {
+                            const match = issue.title.match(/^\[([^\]]+)\]/);
+                            if (match && match[1]) {
+                                const titleTag = match[1].trim();
+                                if (titleTag && !issue.labels.some(l => l.toLowerCase() === titleTag.toLowerCase())) {
+                                    issue.labels.push(titleTag);
+                                }
+                            }
+                        }
+                    });
+
+                    // Build dynamic checklist items with counts
+                    const labelCounts = {};
+                    allIssues.forEach(issue => {
+                        if (issue.labels) {
+                            issue.labels.forEach(lbl => {
+                                const key = lbl.trim();
+                                labelCounts[key] = (labelCounts[key] || 0) + 1;
+                            });
+                        }
+                    });
+
+                    if (Array.isArray(allLabels)) {
+                        allLabels.forEach(lbl => {
+                            if (lbl) {
+                                const key = lbl.trim();
+                                if (!(key in labelCounts)) {
+                                    labelCounts[key] = 0;
+                                }
+                            }
+                        });
+                    }
+
+                    let labelsForChecklist = Object.keys(labelCounts).sort().map(lbl => ({
+                        label: lbl,
+                        count: labelCounts[lbl]
+                    }));
+
+                    if (labelsForChecklist.length === 0) {
+                        try {
+                            const cfgRes = await API.request('/label-configs');
+                            if (cfgRes && cfgRes.configs && cfgRes.configs.length > 0) {
+                                cfgRes.configs.forEach(c => {
+                                    if (c.label && !(c.label in labelCounts)) {
+                                        labelCounts[c.label] = 0;
+                                    }
+                                });
+                                labelsForChecklist = Object.keys(labelCounts).sort().map(lbl => ({
+                                    label: lbl,
+                                    count: labelCounts[lbl]
+                                }));
+                            }
+                        } catch (_) {}
+                    }
+
+                    if (labelChecklist) {
+                        labelChecklist.setLabels(labelsForChecklist);
                     }
 
                     if (activeTab === 'managed') {
@@ -478,6 +600,7 @@
                     }, (l) => {
                         currentLimit = l;
                         currentPage = 1;
+                        saveIssueFilters();
                         loadIssues();
                     });
                 } catch (e) {

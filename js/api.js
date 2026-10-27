@@ -248,9 +248,10 @@ const API = {
     return res;
   },
 
-  async fetchUserIssues(userId = 'me', page = 1, limit = 10, tab = 'open', search = '') {
+  async fetchUserIssues(userId = 'me', page = 1, limit = 10, tab = 'open', search = '', status = '') {
     let url = `/users/${userId}/issues?page=${page}&limit=${limit}&tab=${tab}`;
     if (search) url += `&q=${encodeURIComponent(search)}`;
+    if (status && status !== 'all') url += `&status=${encodeURIComponent(status)}`;
     return this.request(url);
   },
 
